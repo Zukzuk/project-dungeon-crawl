@@ -1,0 +1,9 @@
+.tile {
+  position: relative;
+  background-color: #eee;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #ddd;
+  }
+}

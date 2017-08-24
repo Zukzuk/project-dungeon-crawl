@@ -1,0 +1,8 @@
+{
+  "extends": "airbnb",
+  "rules": {
+    "jsx-quotes": [2, "prefer-single"],
+    "react/jsx-curly-spacing": [1, "always"],
+    "react/prefer-stateless-function": [2, { "ignorePureComponents": true }]
+  }
+}
