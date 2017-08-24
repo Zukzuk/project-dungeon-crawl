@@ -1,0 +1,7 @@
+bower_components
+libs
+polyfills
+src/**/test/**/*
+src/**/demo/**/*
+src/**/assets/**/*
+*.md
