@@ -42,7 +42,6 @@ export default {
 };
 
 const getOffset = (dispatch, getState, entity, reset) => {
-  debugger;
   const style = getStyle(getState(), dispatch, entity, reset);
   dispatch({
     type: ENTITY_CONSTANTS.ENTITY_OFFSET_SET,

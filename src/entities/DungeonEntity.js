@@ -1,10 +1,8 @@
 import React from 'react';
-
 import EntityContainer from '../containers/EntityContainer';
 import DungeonView from '../views/DungeonView';
 import RoomView from '../views/RoomView';
 import TileView from '../views/TileView';
-
 import { math } from '../helpers/helpers';
 
 const getTile = (props, index) => {
@@ -68,37 +66,38 @@ const getLayout = (amount, level, min) => {
       while (result.rows.length < factor) result.rows.push(side/factor);
     } else {
       result.rows.forEach(() => {
-        let squares = [];
+        let rects = [];
         factor = (side <= min) ? 1 : getFactor(side);
         const rows = result.rows[0];
         const columns = side/factor;
-        while (squares.length < factor) squares.push({rows, columns, tiles: rows*columns} );
-        result.squares = result.squares.concat(squares);
+        while (rects.length < factor) rects.push({rows, columns, tiles: rows*columns} );
+        result.rects = result.rects.concat(rects);
       });
     }
-    debugger;
     return result;
-  }, {rows: [], squares: []});
-};
-
-const setupDungeon = props => {
-  const numOfTiles = Math.pow(2, props.state.GameBoard.level);
-  const layout = getLayout(numOfTiles, props.state.GameBoard.level, 4);
-  const grids = layout.squares.reduce((result, square) => {
-    result.push(getGrid(props, square));
-    return result;
-  }, []);
-  debugger;
-
-  const rooms = grids.reduce((result, grid, i) => {
-    result.push(getRoom(grid, i));
-    return result;
-  }, []);
-  debugger;
-
-  return getDungeon(rooms);
+  }, {rows: [], rects: []});
 };
 
 export default {
-  create: props => setupDungeon(props)
+  create: props => {
+    const numOfTiles = Math.pow(2, props.state.GameBoard.level);
+
+    // get the layout of each grid as rectangles
+    const layout = getLayout(numOfTiles, props.state.GameBoard.level, 4);
+
+    // build grid entities from tiled-rectangles
+    const grids = layout.rects.reduce((result, square) => {
+      result.push(getGrid(props, square));
+      return result;
+    }, []);
+
+    // build room entities from grids
+    const rooms = grids.reduce((result, grid, i) => {
+      result.push(getRoom(grid, i));
+      return result;
+    }, []);
+
+    // build the dungeon from rooms
+    return getDungeon(rooms);
+  }
 };

@@ -15,7 +15,6 @@ export const dom = {
   },
 
   afterNextRender: (fn, args) => {
-    debugger;
     return setTimeout(() => fn.apply(undefined, args), 0);
   },
 

@@ -34,7 +34,6 @@ export default (state = initialState, action) => {
       };
 
     case PLAYER_CONSTANTS.PLAYER_POSITION_SET:
-      debugger;
       return {
         ...state,
         [action.name]: {

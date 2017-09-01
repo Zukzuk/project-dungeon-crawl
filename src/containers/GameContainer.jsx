@@ -1,42 +1,16 @@
 import React, { PureComponent } from 'react';
-import { connect } from 'react-redux';
-
+import GameView from '../views/GameView';
 import GameBoardContainer from './GameBoardContainer';
-import Game from '../views/GameView';
-import GameMenu from '../views/GameMenuView';
-import GameMenuActions from '../redux/actions/GameMenuActions';
-
-import { redux } from '../helpers/helpers';
+import GameMenuContainer from '../containers/GameMenuContainer';
 
 class GameContainer extends PureComponent {
 
-  /* lifecycle */
-
-  /* game menu */
-
-  getGameMenuChildren = props => {
-    const { actions, state } = props;
-    const togglePersp = () => actions.GameMenu.togglePerspective(!state.GameBoard.hasPerspective);
-    return [
-      <button key="TogglePersp" onClick={ togglePersp }>Turn perspective { state.GameMenu.perspectiveLabel }</button>
-    ]
-  };
-
-  /* render */
-
   render = () => (
-    <Game>
-      <GameMenu>{ this.getGameMenuChildren(this.props) }</GameMenu>
+    <GameView>
+      <GameMenuContainer />
       <GameBoardContainer />
-    </Game>
+    </GameView>
   );
 }
 
-export default connect(
-  state => redux.mapState(
-    state, ['GameBoard', 'GameMenu']
-  ),
-  dispatch => redux.mapActions(
-    dispatch, {GameMenu: GameMenuActions}
-  )
-)(GameContainer);
+export default GameContainer;
