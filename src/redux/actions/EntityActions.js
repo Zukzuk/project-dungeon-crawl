@@ -27,15 +27,13 @@ export default {
   entityOffsetRecalc: () => {
     return (dispatch, getState) => {
       return Object.keys(getState().Entity).forEach(name => {
-        if (name !== 'lastAction') {
-          const entities = document.querySelectorAll('.' + name.toLowerCase());
-          return entities.forEach(entity => {
-            const id = Number(entity.id.replace(name.toLowerCase(), ''));
-            entity.type = name;
-            entity.props = { children: { props: { id } } };
-            return getOffset(dispatch, getState, entity, true);
-          });
-        }
+        const entities = document.querySelectorAll('.' + name.toLowerCase());
+        return entities.forEach(entity => {
+          const id = Number(entity.id.replace(name.toLowerCase(), ''));
+          entity.type = name;
+          entity.props = { children: { props: { id } } };
+          return getOffset(dispatch, getState, entity, true);
+        });
       });
     };
   }

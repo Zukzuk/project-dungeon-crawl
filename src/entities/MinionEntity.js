@@ -33,5 +33,4 @@ export default {
   mount: (entity, childProps) => {
     return childProps.actions.entityOffsetAsync(entity);
   }
-
 };
