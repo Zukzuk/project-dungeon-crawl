@@ -1,3 +1,9 @@
 .room {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
+
+  position: absolute;
   background-color: palevioletred;
+  padding: 1px;
 }

@@ -5,9 +5,7 @@ export const ENTITY_CONSTANTS = {
 };
 
 export const TILE_CONSTANTS = {
-  TILE_POSITION_SET: 'tile/TILE_POSITION_SET',
   TILE_SELECT: 'tile/TILE_SELECT',
-  TILE_SIZE_SET: 'tile/TILE_SIZE_SET'
 };
 
 export const PLAYER_CONSTANTS = {

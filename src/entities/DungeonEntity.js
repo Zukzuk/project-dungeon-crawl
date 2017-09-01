@@ -7,6 +7,7 @@ import { math } from '../helpers/helpers';
 
 const getTile = (props, index) => {
   const selectTile = () => props.actions.selectTile(index - 1);
+  props.id = index - 1;
   return (
     <EntityContainer key={ index }>
       <TileView { ...props } onClick={ selectTile }/>
@@ -14,10 +15,11 @@ const getTile = (props, index) => {
   )
 };
 
-const getRoom = (grid, index) => {
+const getRoom = (props, grid, index) => {
+  props.id = index;
   return (
     <EntityContainer key={ index }>
-      <RoomView>{ grid }</RoomView>
+      <RoomView { ...props }>{ grid }</RoomView>
     </EntityContainer>
   );
 };
@@ -30,15 +32,16 @@ const getDungeon = rooms => {
   );
 };
 
-const getGrid = (props, room) => {
+const getGrid = (props, room, gutter) => {
+  const { rows, columns } = room;
   const tileProps = {
-    state: {
-      ...props.state.GameBoard,
-      ...props.state.Tile
+    style: {
+      margin: `${gutter}px`,
+      width: `calc(100% * (1/${columns}) - ${gutter * 2}px)`,
     },
+    state: props.state.Tile,
     actions: props.actions.Tile
   };
-  const { rows, columns } = room;
 
   let y = 0, grid = [];
   while (y++ < rows) {
@@ -91,13 +94,19 @@ export default {
 
     // build grid entities from tiled-rectangles
     const grids = layout.rects.reduce((result, square) => {
-      result.push(getGrid(props, square));
+      result.push(getGrid(props, square, props.state.Tile.gutter));
       return result;
     }, []);
 
     // build room entities from grids
     const rooms = grids.reduce((result, grid, i) => {
-      result.push(getRoom(grid, i));
+      const roomProps = {
+        style: {
+          width: `${props.state.Tile.width * grid.length}px`,
+          height: `${props.state.Tile.height * grid[0].length}px`
+        }
+      };
+      result.push(getRoom(roomProps, grid, i));
       return result;
     }, []);
 

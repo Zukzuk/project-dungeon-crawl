@@ -2,8 +2,6 @@ $ani-duration: .5s;
 
 .game-board {
   display: flex;
-  flex-flow: row wrap;
-  justify-content: flex-start;
 
   position: absolute;
   z-index: -1;
@@ -31,7 +29,7 @@ $ani-duration: .5s;
   will-change: transform;
   transform-style: preserve-3d;
   transition: all var($ani-duration);
-  transform: perspective(0px) rotateX(0deg) translate3d(0px, 0px, 0px) scale(.9);
+  transform: perspective(0px) rotateX(0deg) translate3d(0px, 0px, 0px) scale(1);
   transform-origin: 50% 100%;
 }
 

@@ -1,12 +1,7 @@
 .tile {
   position: relative;
-  background-color: #eee;
   cursor: pointer;
-  min-height: 20px;
-  min-width: 20px;
-  max-height: 100px;
-  max-width: 100px;
-  margin: 1px;
+  background-color: #eee;
 
   &:hover {
     background-color: #ddd;

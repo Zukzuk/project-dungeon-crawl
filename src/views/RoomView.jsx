@@ -2,7 +2,10 @@ import React from 'react';
 import './RoomView.scss';
 
 const RoomView = props => {
-  return <div className='room'>{ props.children }</div>;
+  const classList = 'room';
+  const id = 'room' + props.id;
+  const style = props.style;
+  return <div className={ classList } id={ id } style={ style }>{ props.children }</div>;
 };
 
 export default RoomView;

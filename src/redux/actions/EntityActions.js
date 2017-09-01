@@ -1,14 +1,12 @@
 import {
   ENTITY_CONSTANTS,
 } from '../../constants';
-import TileActions from './TileActions'
 import { dom } from '../../helpers/helpers'
-import ReactDOM from 'react-dom';
 
 export default {
 
   entityOffset: (entity, reset) => {
-    return (dispatch, getState) => getOffset(dispatch, getState, entity, reset);
+    return (dispatch, getState) => getOffset(dispatch, getState, entity);
   },
 
   entityOffsetAsync: entity => {
@@ -21,7 +19,7 @@ export default {
   },
 
   entityOffsetResize: entity => {
-    return (dispatch, getState) => getOffset(dispatch, getState, entity, true);
+    return (dispatch, getState) => getOffset(dispatch, getState, entity);
   },
 
   entityOffsetRecalc: () => {
@@ -57,7 +55,7 @@ const getSize = (dispatch, size, entity) => {
   });
 };
 
-const getStyle = (state, dispatch, entity = null, reset = false) => {
+const getStyle = (state, dispatch, entity = null) => {
   const entityState = state.Entity[entity.type];
   const entityId = entity.props.children.props.id;
 
@@ -66,32 +64,16 @@ const getStyle = (state, dispatch, entity = null, reset = false) => {
   const entityAlignment = entityState.alignment;
   const hasPerspective = state.GameBoard.hasPerspective;
 
-  // tile
-  let tileRect = state.Tile.size;
-  if (!tileRect && !entity) {
-    throw new Error('React component reference missing!');
-  } else if(reset || !tileRect) {
-    const tile = ReactDOM.findDOMNode(entity).parentNode;
-    tileRect = dom.getComputedSize(tile.children[entityPosition]);
-    dispatch(TileActions.tileSize(tileRect));
-  }
-
   // entity
-  let entityRect = entityState.size;
-  if (reset || !entityRect) {
-    entityRect = {
-      width:tileRect.width * entityRelativeSize.width,
-      height:tileRect.height * entityRelativeSize.height
-    };
-    getSize(dispatch, entityRect, entity);
-  }
+  const entityRect = {
+    width:state.Tile.width * entityRelativeSize.width,
+    height:state.Tile.height * entityRelativeSize.height
+  };
 
   // board offset
-  const columns = state.GameBoard.columns;
-  const row = Math.max(0, Math.floor(entityPosition / columns));
-  const column = Math.max(0, entityPosition - (row * columns));
-  const offsetTop = row * tileRect.height;
-  const offsetLeft = column * tileRect.width;
+  const tile = document.querySelector(`#tile${entityPosition}`);
+  const offsetTop = tile.offsetTop;
+  const offsetLeft = tile.offsetLeft;
 
   // inline offset
   let modifier;
@@ -101,8 +83,8 @@ const getStyle = (state, dispatch, entity = null, reset = false) => {
       modifier = .5;
       break;
   }
-  const inlineOffsetTop = tileRect.height * modifier - ((!hasPerspective) ? entityRect.height * modifier : entityRect.height);
-  const inlineOffsetLeft = tileRect.width * modifier - entityRect.width * modifier;
+  const inlineOffsetTop = state.Tile.height * modifier - (hasPerspective ? entityRect.height : entityRect.height * modifier);
+  const inlineOffsetLeft = state.Tile.width * modifier - entityRect.width * modifier;
 
   return {
     top: `${Math.round(offsetTop + inlineOffsetTop)}px`,
