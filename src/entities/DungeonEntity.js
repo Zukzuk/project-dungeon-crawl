@@ -32,6 +32,10 @@ const getDungeon = rooms => {
 
 const getGrid = (props, room) => {
   const tileProps = {
+    state: {
+      ...props.state.GameBoard,
+      ...props.state.Tile
+    },
     actions: props.actions.Tile
   };
   const { rows, columns } = room;
