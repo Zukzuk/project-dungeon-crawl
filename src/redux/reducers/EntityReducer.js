@@ -3,8 +3,8 @@ import {
   PLAYER_CONSTANTS
 } from '../../constants';
 import { redux } from '../../helpers/helpers';
-import PlayerStates from '../states/PlayerStates';
-import MinionStates from '../states/MinionStates';
+import PlayerStates from '../initialStates/PlayerState';
+import MinionStates from '../initialStates/MinionState';
 
 const initialState = {
   Player: PlayerStates,

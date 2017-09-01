@@ -1,11 +1,7 @@
 import {
   TILE_CONSTANTS
 } from '../../constants';
-import TileStates from '../states/TileStates';
-
-const initialState = {
-  ...TileStates
-};
+import initialState from '../initialStates/TileState';
 
 export default (state = initialState, action) => {
   switch (action.type) {

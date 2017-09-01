@@ -1,7 +1,5 @@
 import { GAME_MENU_CONSTANTS } from '../../constants';
-import GameBoardStates from '../states/GameBoardStates';
-
-const initialState = GameBoardStates;
+import initialState from '../initialStates/GameBoardState';
 
 export default (state = initialState, action) => {
   switch (action.type) {

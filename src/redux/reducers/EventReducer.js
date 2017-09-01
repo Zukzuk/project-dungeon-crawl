@@ -1,6 +1,4 @@
-const initialState = {
-  lastEvent: undefined
-};
+import initialState from '../initialStates/EventState';
 
 export default (state = initialState, action) => {
   return {

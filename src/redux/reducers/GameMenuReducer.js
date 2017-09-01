@@ -1,8 +1,7 @@
-import { GAME_MENU_CONSTANTS } from '../../constants';
-
-const initialState = {
-  perspectiveLabel: 'on'
-};
+import {
+  GAME_MENU_CONSTANTS
+} from '../../constants';
+import initialState from '../initialStates/GameMenuState';
 
 export default (state = initialState, action) => {
   switch (action.type) {
