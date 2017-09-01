@@ -14,8 +14,9 @@ export const dom = {
     return child ? React.cloneElement(child, {...props, key}) : null;
   },
 
-  afterNextRender: fn => {
-    return setTimeout(() => fn(), 0);
+  afterNextRender: (fn, args) => {
+    debugger;
+    return setTimeout(() => fn.apply(undefined, args), 0);
   },
 
   optimizedResize: () => {
@@ -52,6 +53,12 @@ export const dom = {
       height: sumOfPixels(style['height'] + style['margin-top'] + style['margin-bottom'] + style['padding-top'] + style['padding-bottom']),
     };
   }
+};
+
+export const math = {
+  factors: (size, amount) => Array
+    .from(Array(size), (_, i) => i)
+    .filter(i => size % i === 0 && i !== 1 && i !== amount)
 };
 
 export const redux = {

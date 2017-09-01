@@ -2,6 +2,8 @@
   position: relative;
   background-color: #eee;
   cursor: pointer;
+  max-height: 100px;
+  max-width: 100px;
 
   &:hover {
     background-color: #ddd;

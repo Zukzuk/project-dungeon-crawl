@@ -6,12 +6,12 @@ import EntityContainer from './EntityContainer';
 import GameBoardView from '../views/GameBoardView';
 import PlayerView from '../views/PlayerView';
 import MinionView from '../views/MinionView';
-import TileView from '../views/TileView';
 
 import EntityActions from '../redux/actions/EntityActions';
 import TileActions from '../redux/actions/TileActions';
 
 import { dom, redux } from '../helpers/helpers';
+import dungeon from '../helpers/dungeon';
 
 class GameBoardContainer extends PureComponent {
 
@@ -19,6 +19,8 @@ class GameBoardContainer extends PureComponent {
 
   componentDidMount = () => {
     dom.optimizedResize();
+    this.dungeon = this.getDungeon();
+    debugger;
     this.updateGameBoard({ ...this.props.state.GameBoard });
   };
 
@@ -26,37 +28,10 @@ class GameBoardContainer extends PureComponent {
     this.updateGameBoard({ ...nextProps.state.GameBoard });
   };
 
-  /* tile */
+  /* dungeon */
 
-  getTileGrid = () => {
-    const props = {
-      state: {
-        ...this.props.state.GameBoard,
-        ...this.props.state.Tile
-      },
-      actions: this.props.actions.Tile
-    };
-    const { columns, rows } = this.props.state.GameBoard;
-    // create grid
-    let y = 0, grid = [];
-    while (y++ < rows) {
-      let x = 0, row = [];
-      while (x++ < columns) {
-        let index = x + ((y-1)*columns);
-        row.push(this.getTile(props, index));
-      }
-      grid.push(row);
-    }
-    return grid;
-  };
-
-  getTile = (props, index) => {
-    const selectTile = () => props.actions.selectTile(index - 1);
-    return (
-      <EntityContainer key={index}>
-        <TileView {...props} onClick={ selectTile }/>
-      </EntityContainer>
-    )
+  getDungeon = () => {
+    return dungeon.create(this.props);
   };
 
   /* player */
@@ -119,7 +94,7 @@ class GameBoardContainer extends PureComponent {
 
   render = () => (
     <GameBoardView>
-      { this.getTileGrid() }
+      { this.dungeon }
       { this.getPlayers() }
       { this.getMinions() }
     </GameBoardView>
