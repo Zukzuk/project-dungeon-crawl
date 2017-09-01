@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
+import { redux } from '../helpers/helpers';
 
 import PlayerEntity from '../entities/PlayerEntity';
 import MinionEntity from '../entities/MinionEntity';
@@ -16,21 +17,26 @@ class EntityContainer extends PureComponent {
 
   componentConstruct = props => {
     this.type = props.children.type.name.replace('View', '');
-    const entities = {TileEntity, PlayerEntity, MinionEntity};
-    this.api = { ...entities[this.type + 'Entity'] };
+    this.childProps = this.props.children.props;
+    this.api = {
+      ...{
+        TileEntity,
+        PlayerEntity,
+        MinionEntity
+      }[this.type + 'Entity']
+    };
 
-    if (this.type === 'Player') this.api.resize(this, this.props.children.props);
-    if (this.type === 'Minion') this.api.resize(this, this.props.children.props);
-    if (this.api.init) this.api.init(this, this.props.children.props);
+    if (this.api.init) this.api.init(this, this.childProps);
   };
 
   componentDidMount = () => {
-    if (this.api.mount) this.api.mount(this, this.props.children.props);
+    if (this.api.mount) this.api.mount(this, this.childProps);
   };
 
   componentWillReceiveProps = nextProps => {
-    //if (this.type === 'PlayerView') debugger;
-    if (this.api.update) this.api.update(this, _.get(nextProps, 'children.props'));
+    //if (this.type === 'Player') debugger;
+    this.childProps = _.get(nextProps, 'children.props');
+    if (this.api.update) this.api.update(this, this.childProps, nextProps.state.Event);
   };
 
   /* render */
@@ -38,4 +44,8 @@ class EntityContainer extends PureComponent {
   render = () => this.props.children;
 }
 
-export default connect()(EntityContainer);
+export default connect(
+  state => redux.mapState(
+    state, ['Event']
+  )
+)(EntityContainer);

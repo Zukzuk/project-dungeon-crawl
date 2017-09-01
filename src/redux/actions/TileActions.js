@@ -1,4 +1,7 @@
-import { TILE_CONSTANTS } from '../../constants';
+import {
+  TILE_CONSTANTS
+} from '../../constants';
+import PlayerActions from './PlayerActions';
 
 export default {
   tilePosition: (gutter, columns) => {
@@ -14,7 +17,7 @@ export default {
   },
 
   tileSize: size => {
-    return dispatch=> {
+    return dispatch => {
       dispatch({
         type: TILE_CONSTANTS.TILE_SIZE_SET,
         payload: size
@@ -26,10 +29,10 @@ export default {
     return dispatch => {
       dispatch({
         type: TILE_CONSTANTS.TILE_SELECT,
-        payload: index,
-        name: 'Player',
-        id: 0
+        payload: index
       });
+
+      dispatch(PlayerActions.updatePosition(index));
     }
   }
 };

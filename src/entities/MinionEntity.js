@@ -3,12 +3,12 @@ import {
 } from '../constants';
 
 export default {
-  mount: (entity, childProps) => {
-    return childProps.actions.entityOffsetAsync(entity);
-  },
-
   resize: (entity, childProps) => {
     addEventListener("optimizedResize", () => childProps.actions.entityOffsetResize(entity));
+  },
+
+  mount: (entity, childProps) => {
+    return childProps.actions.entityOffsetAsync(entity);
   },
 
   update: (entity, childProps) => {

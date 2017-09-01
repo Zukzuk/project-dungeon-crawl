@@ -1,10 +1,10 @@
 import {
   TILE_CONSTANTS
 } from '../../constants';
+import TileStates from '../states/TileStates';
 
 const initialState = {
-  style: undefined,
-  size: undefined
+  ...TileStates
 };
 
 export default (state = initialState, action) => {
@@ -19,6 +19,12 @@ export default (state = initialState, action) => {
       return {
         ...state,
         size: action.payload
+      };
+
+    case TILE_CONSTANTS.TILE_SELECT:
+      return {
+        ...state,
+        currentId: action.payload
       };
 
     default:
