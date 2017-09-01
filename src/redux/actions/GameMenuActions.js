@@ -1,7 +1,7 @@
 import {
   GAME_MENU_CONSTANTS
 } from '../../constants';
-import PlayerActions from './EntityActions'
+import EntityActions from './EntityActions'
 
 export default {
   togglePerspective: flag => {
@@ -11,7 +11,7 @@ export default {
         payload: flag
       });
 
-      dispatch(PlayerActions.entityOffsetRecalc());
+      dispatch(EntityActions.entityOffsetRecalc());
     }
   }
 };
