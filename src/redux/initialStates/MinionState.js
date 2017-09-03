@@ -5,5 +5,8 @@ export default {
   spawns: [{
     position: 2,
     style: undefined
+  }, {
+    position: 0,
+    style: undefined
   }]
 }

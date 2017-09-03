@@ -27,7 +27,7 @@ export default {
   },
 
   resize: (entity, childProps) => {
-    addEventListener("optimizedResize", () => childProps.actions.entityOffsetResize(entity));
+    addEventListener("optimizedResize", () => childProps.actions.entityOffset(entity));
   },
 
   mount: (entity, childProps) => {

@@ -1,11 +1,11 @@
 import {
   ENTITY_CONSTANTS,
 } from '../../constants';
-import { dom } from '../../helpers/helpers'
+import {dom} from '../../helpers/helpers'
 
 export default {
 
-  entityOffset: (entity, reset) => {
+  entityOffset: entity => {
     return (dispatch, getState) => getOffset(dispatch, getState, entity);
   },
 
@@ -18,33 +18,39 @@ export default {
     }
   },
 
-  entityOffsetResize: entity => {
-    return (dispatch, getState) => getOffset(dispatch, getState, entity);
+  entityOffsetSingle: (type, id) => {
+    return (dispatch, getState) => {
+      const name = type.toLowerCase();
+      let entity = document.querySelector('#' + name.toLowerCase() + id);
+      entity.type = type;
+      entity.props = {children: {props: {id: Number(entity.id.replace(name, ''))}}};
+      getOffset(dispatch, getState, entity)
+    }
   },
 
-  entityOffsetRecalc: () => {
+  entityOffsetAll: () => {
     return (dispatch, getState) => {
       // get all entities on game-board
-      return Object.keys(getState().Entity).forEach(name => {
-        const entities = document.querySelectorAll('.' + name.toLowerCase());
-        return entities.forEach(entity => {
-          const id = Number(entity.id.replace(name.toLowerCase(), ''));
-          entity.type = name;
-          entity.props = { children: { props: { id } } };
-          return getOffset(dispatch, getState, entity, true);
+      Object.keys(getState().Entity)
+        .forEach(type => {
+          const name = type.toLowerCase();
+          document.querySelectorAll('.' + name)
+            .forEach(entity => {
+              entity.type = type;
+              entity.props = {children: {props: {id: Number(entity.id.replace(name, ''))}}};
+              getOffset(dispatch, getState, entity)
+            });
         });
-      });
-    };
+    }
   }
 };
 
-const getOffset = (dispatch, getState, entity, reset) => {
-  const style = getStyle(getState(), dispatch, entity, reset);
+const getOffset = (dispatch, getState, entity) => {
   dispatch({
     type: ENTITY_CONSTANTS.ENTITY_OFFSET_SET,
-    payload: style,
     name: entity.type,
     id: entity.props.children.props.id,
+    payload: getStyle(getState(), dispatch, entity)
   });
 };
 
@@ -65,8 +71,8 @@ const getStyle = (state, dispatch, entity = null) => {
 
   // tile
   const tileRect = {
-    width:state.Tile.width,
-    height:state.Tile.height
+    width: state.Tile.width,
+    height: state.Tile.height
   };
 
   // entity
