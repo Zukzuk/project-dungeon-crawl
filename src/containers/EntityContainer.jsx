@@ -1,10 +1,12 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
-import { redux } from '../helpers/helpers';
+import { redux, dom } from '../helpers/helpers';
 
+import DungeonEntity from '../entities/DungeonEntity';
+import RoomEntity from '../entities/RoomEntity';
+import TileEntity from '../entities/TileEntity';
 import PlayerEntity from '../entities/PlayerEntity';
 import MinionEntity from '../entities/MinionEntity';
-import TileEntity from '../entities/TileEntity';
 
 class EntityContainer extends PureComponent {
 
@@ -16,16 +18,18 @@ class EntityContainer extends PureComponent {
   /* lifecycle */
 
   componentConstruct = props => {
-    this.type = props.children.type.name.replace('View', '');
-    this.childProps = this.props.children.props;
+    this.child = dom.toArray(props.children)[0];
+    this.type = this.child.type.name.replace('View', '');
+    this.childProps = this.child.props;
     this.api = {
       ...{
+        DungeonEntity,
+        RoomEntity,
         TileEntity,
         PlayerEntity,
         MinionEntity
       }[this.type + 'Entity']
     };
-
     if (this.api.init) this.api.init(this, this.childProps);
   };
 
@@ -34,14 +38,14 @@ class EntityContainer extends PureComponent {
   };
 
   componentWillReceiveProps = nextProps => {
-    //if (this.type === 'Player') debugger;
-    this.childProps = _.get(nextProps, 'children.props');
+    this.child = dom.toArray(nextProps.children)[0];
+    this.childProps = this.child.props;
     if (this.api.update) this.api.update(this, this.childProps, nextProps.state.Event);
   };
 
   /* render */
 
-  render = () => this.props.children;
+  render = () => this.child;
 }
 
 export default connect(

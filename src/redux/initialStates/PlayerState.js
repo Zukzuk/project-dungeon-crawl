@@ -4,7 +4,7 @@ export default {
   relativeSize: { width: .5, height: .8 },
   currentId: 0,
   spawns: [{
-    position: 6,
+    position: 1,
     style: undefined,
   }]
 }

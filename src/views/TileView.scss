@@ -1,6 +1,12 @@
 .tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   position: relative;
   cursor: pointer;
+
+  color: #ccc;
   background-color: #eee;
 
   &:hover {

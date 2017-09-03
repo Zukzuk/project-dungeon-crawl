@@ -2,11 +2,22 @@ import React from 'react';
 import { bindActionCreators } from 'redux';
 
 export const dom = {
+  toArray: obj => {
+    let array = [];
+    const _obj = (obj.length === undefined) ? [obj] : obj;
+    // iterate backwards ensuring that length is an UInt32
+    for (let i = _obj.length >>> 0; i--;) {
+      array[i] = _obj[i];
+    }
+    return array;
+  },
+
   setClassList: payload => {
-    const {node, names, addif = true} = payload;
+    const {nodes, names, addif = true} = payload;
+    const elements = Array.isArray(nodes) ? nodes : [nodes];
     const list = Array.isArray(names) ? names : [names];
     const fn = (addif !== false) ? 'add' : 'remove';
-    list.forEach(name => node.classList[fn](name));
+    elements.forEach(element => list.forEach(name => element.classList[fn](name)) );
   },
 
   getChild: (child, props, index) => {

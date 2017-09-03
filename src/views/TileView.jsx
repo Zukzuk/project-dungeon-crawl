@@ -6,7 +6,7 @@ const TileView = props => {
   const id = 'tile' + props.id;
   const style = props.style;
   const onClick = props.onClick;
-  return <div className={ classList } id={ id } style={ style } onClick={ onClick }></div>;
+  return <div className={ classList } id={ id } style={ style } onClick={ onClick }>{ (props.id + 1) }</div>;
 };
 
 export default TileView;

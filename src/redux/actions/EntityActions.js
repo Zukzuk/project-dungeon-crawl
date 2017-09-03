@@ -24,6 +24,7 @@ export default {
 
   entityOffsetRecalc: () => {
     return (dispatch, getState) => {
+      // get all entities on game-board
       return Object.keys(getState().Entity).forEach(name => {
         const entities = document.querySelectorAll('.' + name.toLowerCase());
         return entities.forEach(entity => {
@@ -47,14 +48,6 @@ const getOffset = (dispatch, getState, entity, reset) => {
   });
 };
 
-const getSize = (dispatch, size, entity) => {
-  dispatch({
-    type: ENTITY_CONSTANTS.ENTITY_SIZE_SET,
-    payload: size,
-    name: entity.type
-  });
-};
-
 const getStyle = (state, dispatch, entity = null) => {
   const entityState = state.Entity[entity.type];
   const entityId = entity.props.children.props.id;
@@ -64,27 +57,36 @@ const getStyle = (state, dispatch, entity = null) => {
   const entityAlignment = entityState.alignment;
   const hasPerspective = state.GameBoard.hasPerspective;
 
-  // entity
-  const entityRect = {
-    width:state.Tile.width * entityRelativeSize.width,
-    height:state.Tile.height * entityRelativeSize.height
-  };
-
   // board offset
   const tile = document.querySelector(`#tile${entityPosition}`);
-  const offsetTop = tile.offsetTop;
-  const offsetLeft = tile.offsetLeft;
+  const room = tile.parentElement;
+  const offsetTop = tile.offsetTop + room.offsetTop;
+  const offsetLeft = tile.offsetLeft + room.offsetLeft;
+
+  // tile
+  const tileRect = {
+    width:state.Tile.width,
+    height:state.Tile.height
+  };
+
+  // entity
+  const entityRect = {
+    width: tileRect.width * entityRelativeSize.width,
+    height: tileRect.height * entityRelativeSize.height
+  };
 
   // inline offset
   let modifier;
   switch (entityAlignment) {
     case 'center-center':
     default:
-      modifier = .5;
+      modifier = {width: .5, height: .5};
       break;
   }
-  const inlineOffsetTop = state.Tile.height * modifier - (hasPerspective ? entityRect.height : entityRect.height * modifier);
-  const inlineOffsetLeft = state.Tile.width * modifier - entityRect.width * modifier;
+  const inlineOffsetTop = tileRect.height * modifier.height
+    - (hasPerspective ? entityRect.height : entityRect.height * modifier.height);
+  const inlineOffsetLeft = tileRect.width * modifier.width
+    - entityRect.width * modifier.width;
 
   return {
     top: `${Math.round(offsetTop + inlineOffsetTop)}px`,
