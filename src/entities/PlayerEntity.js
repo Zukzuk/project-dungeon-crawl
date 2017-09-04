@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
+import { connect } from 'react-redux';
+import { redux } from '../helpers/helpers';
+import EntityActions from '../redux/actions/EntityActions';
 import EntityContainer from '../containers/EntityContainer';
 import PlayerView from '../views/PlayerView';
-import {
-  PLAYER_CONSTANTS
-} from '../constants';
 
 const getPlayer = (props, index) => (
   <EntityContainer key={index}>
@@ -11,30 +11,45 @@ const getPlayer = (props, index) => (
   </EntityContainer>
 );
 
-export default {
-  create: props => {
+class PlayerContainer extends PureComponent {
+
+  constructor(props) {
+    super(props);
+    this.componentConstruct(props);
+  }
+
+  /* lifecycle */
+
+  componentConstruct = props => {
     const playerProps = {
-      state: {
-        ...props.state.Entity,
-        ...props.state.GameBoard
-      },
+      state: props.state.Entity,
       actions: props.actions.Entity
     };
     const spawns = props.state.Entity.Player.spawns;
 
-    return spawns.reduce((result, spawn, index) => {
+    this.players = spawns.reduce((result, spawn, index) => {
       playerProps.id = index;
       result.push(getPlayer(playerProps, index));
       return result;
     }, []);
-  },
+  };
 
-  init: (entity, childProps) => {
-    addEventListener("optimizedResize", () => childProps.actions.entityOffset(entity));
-  },
+  componentDidMount = () => {
+    this.props.actions.entityOffsetAsync(this);
+  };
 
-  mount: (entity, childProps) => {
-    return childProps.actions.entityOffsetAsync(entity);
-  }
+  /* updates */
 
-};
+  /* render */
+
+  render = () => this.players;
+}
+
+export default connect(
+  state => redux.mapState(state, [
+    'Entity'
+  ]),
+  dispatch => redux.mapActions(dispatch, {
+    Entity: EntityActions
+  })
+)(PlayerContainer);

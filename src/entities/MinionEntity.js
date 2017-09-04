@@ -11,10 +11,7 @@ const getMinion = (props, index) => (
 export default {
   create: props => {
     const playerProps = {
-      state: {
-        ...props.state.Entity,
-        ...props.state.GameBoard
-      },
+      state: props.state.Entity,
       actions: props.actions.Entity
     };
     const spawns = props.state.Entity.Minion.spawns;

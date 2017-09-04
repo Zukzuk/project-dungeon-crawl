@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { redux, dom } from '../helpers/helpers';
 
-import DungeonEntity from '../entities/DungeonEntity';
+import DungeonEntity from './DungeonContainer';
 import RoomEntity from '../entities/RoomEntity';
 import TileEntity from '../entities/TileEntity';
 import PlayerEntity from '../entities/PlayerEntity';

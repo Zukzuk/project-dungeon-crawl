@@ -1,12 +1,11 @@
-import React from 'react';
-import { dom } from '../helpers/helpers';
-import EntityContainer from '../containers/EntityContainer';
+import React, { PureComponent } from 'react';
+import { connect } from 'react-redux';
+import { redux, dom } from '../helpers/helpers';
+import TileContainer from './TileContainer';
+import TileView from '../views/TileView';
 import DungeonView from '../views/DungeonView';
 import RoomEntity from '../entities/RoomEntity';
-import TileEntity from '../entities/TileEntity';
-import {
-  ENTITY_CONSTANTS
-} from '../constants';
+import TileActions from '../redux/actions/TileActions';
 
 const getGrid = (props, rectangle, count) => {
   const { rows, columns } = rectangle;
@@ -15,7 +14,19 @@ const getGrid = (props, rectangle, count) => {
     let x = 0, row = [];
     while (x++ < columns) {
       let index = x + ((y-1)*columns);
-      row.push(TileEntity.create(props, count + index));
+      const tileProps = {
+        id: count + index - 1,
+        style: {
+          margin: `${props.state.Tile.gutter}px`,
+          width: `calc(100% * (1/${columns}) - ${props.state.Tile.gutter * 2}px)`,
+        }
+      };
+      const selectTile = () => props.actions.Tile.selectTile(tileProps.id);
+      row.push(
+        <TileContainer key={ index }>
+          <TileView { ...tileProps } onClick={ selectTile }/>
+        </TileContainer>
+      );
     }
     grid.push(row);
   }
@@ -28,12 +39,12 @@ const getSlices = (count, min, max, arr = []) => {
     width = (count - width < min) ? count : width;
     arr.push(width);
     count -= width;
-  };
+  }
   return arr;
 };
 
-const buildSquares = (amount, level) => {
-  if (amount === 2) return [{ width: 2, height: [1] }]; // columns -> rows -> length
+const buildRectangles = (amount, level) => {
+  if (level === 1) return [{ width: 2, height: [1] }]; // columns -> rows -> length
 
   const isEven = (level % 2 === 0);
   const mainWidth = isEven ? Math.sqrt(amount) : Math.sqrt(amount*2);
@@ -52,33 +63,25 @@ const buildSquares = (amount, level) => {
     return result;
   }, []);
 
-  const squares = columnsAndRows.reduce((result, slice) => {
-    const _squares = slice.heights.reduce((_result, height) => {
+  const rectangles = columnsAndRows.reduce((result, slice) => {
+    const _rectangles = slice.heights.reduce((_result, height) => {
       _result.push({
         columns: slice.width,
         rows: height
       });
       return _result;
     }, []);
-    result = result.concat(_squares);
+    result = result.concat(_rectangles);
     return result;
   }, []);
 
-  return squares;
+  return rectangles;
 };
 
 const buildTileGrids = (rectangles, props) => {
   let tileCount = 0;
   return rectangles.reduce((result, rectangle) => {
-    const tileProps = {
-      style: {
-        margin: `${props.state.Tile.gutter}px`,
-        width: `calc(100% * (1/${rectangle.columns}) - ${props.state.Tile.gutter * 2}px)`,
-      },
-      state: props.state.Tile,
-      actions: props.actions.Tile
-    };
-    result.push(getGrid(tileProps, rectangle, tileCount));
+    result.push(getGrid(props, rectangle, tileCount));
     tileCount += (rectangle.columns * rectangle.rows);
     return result;
   }, []);
@@ -100,34 +103,32 @@ const buildRooms = (grids, props) => {
   }, []);
 };
 
-const buildDungeon = (props, rooms, entities) => {
+const buildDungeon = (props, rooms) => {
   const dungeonProps = {
     state: props.state.GameBoard
   };
   return (
-    <EntityContainer>
       <DungeonView { ...dungeonProps }>
         { rooms }
-        { entities }
+        { props.children }
       </DungeonView>
-    </EntityContainer>
   );
 };
 
-const updatePerspective = ({hasPerspective}) => {
-  dom.setClassList({
-    nodes: dom.toArray(document.querySelector('#dungeon')),
-    names: 'perspective',
-    addif: hasPerspective
-  });
-};
+class DungeonContainer extends PureComponent {
 
-export default {
-  create: (props, entities) => {
+  constructor(props) {
+    super(props);
+    this.componentConstruct(props);
+  }
+
+  /* lifecycle */
+
+  componentConstruct = props => {
     const numOfTiles = Math.pow(2, props.state.GameBoard.level);
 
     // get squares of each grid as rectangles
-    const rectangles = buildSquares(numOfTiles, props.state.GameBoard.level);
+    const rectangles = buildRectangles(numOfTiles, props.state.GameBoard.level);
 
     // build tile entities from tiled-rectangles
     const tileGrids = buildTileGrids(rectangles, props);
@@ -136,18 +137,40 @@ export default {
     const rooms = buildRooms(tileGrids, props);
 
     // build the dungeon from rooms
-    return buildDungeon(props, rooms, entities);
-  },
+    this.dungeon = buildDungeon(props, rooms);
+  };
 
-  mount: (entity, childProps) => {
-    dom.optimizedResize();
-    updatePerspective({ ...childProps.state });
-  },
+  componentDidMount = () => {
+    this.view = document.querySelector('#dungeon');
 
-  update: (entity, childProps, event) => {
-    switch (event.lastEvent) {
-      case ENTITY_CONSTANTS.ENTITY_OFFSET_PREPARE:
-        return updatePerspective({ ...childProps.state });
-    }
-  }
-};
+    this.updatePerspective({ ...this.props.state.GameBoard });
+  };
+
+  componentWillReceiveProps = nextProps => {
+    this.updatePerspective({ ...nextProps.state.GameBoard });
+  };
+
+  /* updates */
+
+  updatePerspective = ({hasPerspective}) => {
+    dom.setClassList({
+      nodes: dom.toArray(this.view),
+      names: 'perspective',
+      addif: hasPerspective
+    });
+  };
+
+  /* render */
+
+  render = () => this.dungeon;
+}
+
+export default connect(
+  state => redux.mapState(state, [
+    'GameBoard',
+    'Tile',
+  ]),
+  dispatch => redux.mapActions(dispatch, {
+    Tile: TileActions,
+  })
+)(DungeonContainer);
