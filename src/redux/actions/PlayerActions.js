@@ -10,13 +10,13 @@ export default {
       const id = getState().Entity.Player.currentId;
 
       dispatch({
-        type: PLAYER_CONSTANTS.PLAYER_POSITION_SET,
+        type: PLAYER_CONSTANTS.POSITION_SET,
         name,
         id,
         payload: index
       });
 
-      dispatch(EntityActions.entityOffsetSingle(name, id));
+      dispatch(EntityActions.offsetSingleEntity(name, id));
     }
   }
 };

@@ -19,6 +19,8 @@ const getGrid = (props, rectangle, count) => {
       let index = x + ((y - 1) * columns);
       const tileProps = {
         id: count + index - 1,
+        column: x,
+        row: y,
         style: {
           margin: `${props.state.Tile.gutter}px`,
           width: `calc(100% * (1/${columns}) - ${props.state.Tile.gutter * 2}px)`,

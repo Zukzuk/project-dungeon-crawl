@@ -55,3 +55,7 @@ $ani-duration: .5s;
     transform: rotateX(-20deg);
   }
 }
+
+.light-radius {
+  transition: all var($ani-duration);
+}

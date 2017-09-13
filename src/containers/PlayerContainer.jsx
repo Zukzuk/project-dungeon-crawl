@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { dom, redux } from '../helpers/helpers';
 import EntityActions from '../redux/actions/EntityActions';
 import PlayerView from '../views/PlayerView';
+import LightRadiusView from '../views/LightRadiusView';
 
 class PlayerContainer extends PureComponent {
 
@@ -14,29 +15,45 @@ class PlayerContainer extends PureComponent {
   /* lifecycle */
 
   componentConstruct = props => {
-    const playerProps = {
-      state: props.state.Entity,
-      actions: props.actions.Entity
-    };
     const spawns = props.state.Entity.Player.spawns;
 
+    const playerProps = {
+      state: props.state.Entity.Player,
+      actions: props.actions.Entity.Player
+    };
     this.players = spawns.reduce((result, spawn, index) => {
       playerProps.key = index;
       playerProps.id = index;
       result.push(<PlayerView {...playerProps} />);
       return result;
     }, []);
+
+    const lightRadiusProps = {
+      state: props.state.Entity.Player
+    };
+    debugger;
+    this.lightRadius = <LightRadiusView {...lightRadiusProps} />
   };
 
   componentDidMount = () => {
-    dom.afterNextRender(this.props.actions.Entity.entityOffsetAll);
+    // place the player
+    dom.afterNextRender(this.props.actions.Entity.offsetAllEntities, ['Player']);
   };
 
   /* updates */
 
+  componentWillReceiveProps = nextProps => {
+    debugger;
+  };
+
   /* render */
 
-  render = () => <div className="players">{this.players}</div>;
+  render = () => (
+    <div className="players">
+      { this.players }
+      { this.lightRadius }
+    </div>
+  );
 }
 
 export default connect(

@@ -11,7 +11,7 @@ export default {
         payload: flag
       });
 
-      dispatch(EntityActions.entityOffsetAll());
+      dispatch(EntityActions.offsetAllEntities());
     }
   }
 };

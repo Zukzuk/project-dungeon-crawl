@@ -29,6 +29,24 @@ export const dom = {
     return setTimeout(() => fn.apply(undefined, args), 100);
   },
 
+  checkCollision: function() {
+    let hasJustCollided = false;
+    for (let i = 0; i < this.staticDivs.length; i++) {
+      const currentDiv = this.staticDivs[i];
+      const dx = currentDiv.position.left - this.moveableDiv.position.left;
+      const dy = currentDiv.position.top - this.moveableDiv.position.top;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      if (distance < currentDiv.position.radius + this.moveableDiv.position.radius) {
+        hasJustCollided = true;
+        if (!this.moveableDiv.ref.classList.contains('collision-state')) {
+          this.moveableDiv.ref.classList.add('collision-state');
+        }
+      } else if (this.moveableDiv.ref.classList.contains('collision-state') && !hasJustCollided) {
+        this.moveableDiv.ref.classList.remove('collision-state');
+      }
+    }
+  },
+
   optimizedResize: () => {
     // handle resize
     (() => {

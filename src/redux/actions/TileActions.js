@@ -8,7 +8,7 @@ export default {
   selectTile: index => {
     return dispatch => {
       dispatch({
-        type: TILE_CONSTANTS.TILE_SELECT,
+        type: TILE_CONSTANTS.SELECT,
         payload: index
       });
 

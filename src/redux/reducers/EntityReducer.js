@@ -15,7 +15,7 @@ export default (state = initialState, action) => {
 
   switch (action.type) {
 
-    case ENTITY_CONSTANTS.ENTITY_OFFSET_SET:
+    case ENTITY_CONSTANTS.OFFSET_SET:
       return {
         ...state,
         [action.name]: {
@@ -24,7 +24,16 @@ export default (state = initialState, action) => {
         }
       };
 
-    case PLAYER_CONSTANTS.PLAYER_POSITION_SET:
+    case ENTITY_CONSTANTS.LIGHTRADIUS_OFFSET_SET:
+      return {
+        ...state,
+        [action.name]: {
+          ...state[action.name],
+          spawns: redux.updateArray(state[action.name].spawns, action, 'lightRadiusStyle')
+        }
+      };
+
+    case PLAYER_CONSTANTS.POSITION_SET:
       return {
         ...state,
         [action.name]: {

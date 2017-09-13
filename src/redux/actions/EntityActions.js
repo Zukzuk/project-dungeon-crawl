@@ -4,33 +4,36 @@ import {
 
 export default {
 
-  entityOffsetSingle: (name, id) => {
+  offsetSingleEntity: (name, id) => {
     return (dispatch, getState) => {
-      getOffset(dispatch, getState, name, id);
+      entityOffset(dispatch, getState, name, id);
     }
   },
 
-  entityOffsetAll: () => {
+  offsetAllEntities: name => {
     return (dispatch, getState) => {
       // get all entities on game-board
-      Object.keys(getState().Entity)
-        .forEach(name => {
-          document.querySelectorAll('.' + name.toLowerCase())
-            .forEach(entity => {
-              const id = Number(entity.id.replace(name.toLowerCase(), ''));
-              getOffset(dispatch, getState, name, id)
-            });
-        });
+      const target = name ? [name] : Object.keys(getState().Entity);
+      target.forEach(name => {
+        document.querySelectorAll('.' + name.toLowerCase())
+          .forEach(entity => {
+            const id = Number(entity.id.replace(name.toLowerCase(), ''));
+            entityOffset(dispatch, getState, name, id);
+          });
+      });
     }
   }
 };
 
-const getOffset = (dispatch, getState, name, id) => {
+const entityOffset = (dispatch, getState, name, id) => {
+  const styles = getStyle(getState(), name, id);
   dispatch({
-    type: ENTITY_CONSTANTS.ENTITY_OFFSET_SET,
-    name,
-    id,
-    payload: getStyle(getState(), name, id)
+    type: ENTITY_CONSTANTS.OFFSET_SET, name, id,
+    payload: styles.entity
+  });
+  dispatch({
+    type: ENTITY_CONSTANTS.LIGHTRADIUS_OFFSET_SET, name, id,
+    payload: styles.lightRadius
   });
 };
 
@@ -39,6 +42,7 @@ const getStyle = (state, name, id) => {
   const entityId = id;
 
   const entityPosition = entityState.spawns[entityId].position;
+  const entityLightRadius = entityState.spawns[entityId].lightRadius || 0;
   const entityRelativeSize = entityState.relativeSize;
   const entityAlignment = entityState.alignment;
   const hasPerspective = state.GameBoard.hasPerspective;
@@ -61,6 +65,16 @@ const getStyle = (state, name, id) => {
     height: tileRect.height * entityRelativeSize.height
   };
 
+  const entity = getEntityOffset(offsetTop, offsetLeft, tileRect, entityRect, entityAlignment, hasPerspective);
+  const lightRadius = getLightRadiusOffset(offsetTop, offsetLeft, tileRect, entityLightRadius);
+
+  return {
+    entity,
+    lightRadius
+  };
+};
+
+const getEntityOffset = (offsetTop, offsetLeft, tileRect, entityRect, entityAlignment, hasPerspective) => {
   // inline offset
   let modifier;
   switch (entityAlignment) {
@@ -69,15 +83,38 @@ const getStyle = (state, name, id) => {
       modifier = {width: .5, height: .5};
       break;
   }
-  const inlineOffsetTop = tileRect.height * modifier.height
-    - (hasPerspective ? entityRect.height : entityRect.height * modifier.height);
-  const inlineOffsetLeft = tileRect.width * modifier.width
-    - entityRect.width * modifier.width;
+
+  const modifiedHeight = hasPerspective ? entityRect.height : entityRect.height * modifier.height;
+  const modifiedWidth = entityRect.width * modifier.width;
+
+  const inline = {
+    offsetTop: tileRect.height * modifier.height - modifiedHeight,
+    offsetLeft: tileRect.width * modifier.width - modifiedWidth
+  };
 
   return {
-    top: `${Math.round(offsetTop + inlineOffsetTop)}px`,
-    left: `${Math.round(offsetLeft + inlineOffsetLeft)}px`,
+    top: `${Math.round(offsetTop + inline.offsetTop)}px`,
+    left: `${Math.round(offsetLeft + inline.offsetLeft)}px`,
     width: `${Math.round(entityRect.width)}px`,
-    height: `${Math.round(entityRect.height)}px`,
+    height: `${Math.round(entityRect.height)}px`
+  }
+};
+
+const getLightRadiusOffset = (offsetTop, offsetLeft, tileRect, entityLightRadius) => {
+  // inline offset
+  const lightWidth = tileRect.width * entityLightRadius;
+  const lightHeight = tileRect.height * entityLightRadius;
+
+  const inline = {
+    offsetTop: - lightHeight*.5 + tileRect.height*.5,
+    offsetLeft: - lightWidth*.5 + tileRect.width*.5,
   };
+
+  return {
+    top: `${Math.round(offsetTop + inline.offsetTop)}px`,
+    left: `${Math.round(offsetLeft + inline.offsetLeft)}px`,
+    width: `${Math.round(lightWidth)}px`,
+    height: `${Math.round(lightHeight)}px`,
+    borderRadius: `${(lightHeight*.5)}px ${(lightWidth*.5)}px`,
+  }
 };

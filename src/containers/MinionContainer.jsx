@@ -14,29 +14,29 @@ class MinionContainer extends PureComponent {
   /* lifecycle */
 
   componentConstruct = props => {
-    const playerProps = {
-      state: props.state.Entity,
-      actions: props.actions.Entity
+    const minionProps = {
+      state: props.state.Entity.Minion,
+      actions: props.actions.Entity.Minion
     };
-    const spawns = props.state.Entity.Player.spawns;
+    const spawns = props.state.Entity.Minion.spawns;
 
-    this.players = spawns.reduce((result, spawn, index) => {
-      playerProps.key = index;
-      playerProps.id = index;
-      result.push(<MinionView {...playerProps} />);
+    this.minions = spawns.reduce((result, spawn, index) => {
+      minionProps.key = index;
+      minionProps.id = index;
+      result.push(<MinionView {...minionProps} />);
       return result;
     }, []);
   };
 
   componentDidMount = () => {
-    dom.afterNextRender(this.props.actions.Entity.entityOffsetAll);
+    dom.afterNextRender(this.props.actions.Entity.offsetAllEntities, ['Minion']);
   };
 
   /* updates */
 
   /* render */
 
-  render = () => <div className="players">{this.players}</div>;
+  render = () => <div className="minions">{this.minions}</div>;
 }
 
 export default connect(

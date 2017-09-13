@@ -4,9 +4,15 @@ import './TileView.scss';
 const TileView = props => {
   const classList = 'tile';
   const id = 'tile' + props.id;
-  const style = props.style;
-  const onClick = props.onClick;
-  return <div className={ classList } id={ id } style={ style } onClick={ onClick }>{ (props.id + 1) }</div>;
+  const tileNumber = props.id + 1;
+  const { style, onClick, column, row } = props;
+
+  return (
+    <div className={ classList } id={ id } style={ style }
+         onClick={ onClick } data-column={ column } data-row={ row }>
+      { tileNumber }
+    </div>
+  );
 };
 
 export default TileView;
