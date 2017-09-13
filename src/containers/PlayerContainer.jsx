@@ -31,7 +31,6 @@ class PlayerContainer extends PureComponent {
     const lightRadiusProps = {
       state: props.state.Entity.Player
     };
-    debugger;
     this.lightRadius = <LightRadiusView {...lightRadiusProps} />
   };
 
@@ -43,7 +42,6 @@ class PlayerContainer extends PureComponent {
   /* updates */
 
   componentWillReceiveProps = nextProps => {
-    debugger;
   };
 
   /* render */

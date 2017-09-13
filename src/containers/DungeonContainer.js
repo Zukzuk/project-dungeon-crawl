@@ -159,9 +159,7 @@ class DungeonContainer extends PureComponent {
   render = () => {
     return (
       <DungeonView>
-        <div className='inner'>
-          <div className='rooms'>{ this.rooms }</div>
-        </div>
+        <div className='rooms'>{ this.rooms }</div>
         <PlayerContainer />
         <MinionContainer />
       </DungeonView>

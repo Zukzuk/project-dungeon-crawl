@@ -115,6 +115,6 @@ const getLightRadiusOffset = (offsetTop, offsetLeft, tileRect, entityLightRadius
     left: `${Math.round(offsetLeft + inline.offsetLeft)}px`,
     width: `${Math.round(lightWidth)}px`,
     height: `${Math.round(lightHeight)}px`,
-    borderRadius: `${(lightHeight*.5)}px ${(lightWidth*.5)}px`,
+    borderRadius: `${(lightHeight*.5)}px ${(lightWidth*.5)}px`
   }
 };
