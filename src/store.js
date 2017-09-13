@@ -1,8 +1,14 @@
 import { createStore, applyMiddleware, compose } from 'redux';
 import { routerMiddleware } from 'react-router-redux';
 import thunk from 'redux-thunk';
+import { combineReducers } from 'redux';
+import { routerReducer } from 'react-router-redux';
 import createHistory from 'history/createBrowserHistory';
-import rootReducer from './redux/reducers/RootReducer';
+
+import GameMenu from './redux/reducers/GameMenuReducer';
+import GameBoard from './redux/reducers/GameBoardReducer';
+import Entity from './redux/reducers/EntityReducer';
+import Tile from './redux/reducers/TileReducer';
 
 export const history = createHistory();
 
@@ -25,6 +31,11 @@ const composedEnhancers = compose(
   applyMiddleware(...middleware),
   ...enhancers
 );
+
+const rootReducer = combineReducers({
+  routing: routerReducer,
+  GameMenu, GameBoard, Tile, Entity
+});
 
 const store = createStore(
   rootReducer,
