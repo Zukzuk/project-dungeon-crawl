@@ -15,15 +15,6 @@ export default (state = initialState, action) => {
 
   switch (action.type) {
 
-    case ENTITY_CONSTANTS.ENTITY_SIZE_SET:
-      return {
-        ...state,
-        [action.name]: {
-          ...state[action.name],
-          size: action.payload
-        }
-      };
-
     case ENTITY_CONSTANTS.ENTITY_OFFSET_SET:
       return {
         ...state,

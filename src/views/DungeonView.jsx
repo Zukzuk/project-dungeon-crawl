@@ -2,12 +2,9 @@ import React from 'react';
 import './DungeonView.scss';
 
 const DungeonView = props => {
+  debugger;
   return (
-    <div id='dungeon'>
-      <div id='dungeon-inner'>
-        { props.children }
-      </div>
-    </div>
+    <div id='dungeon'>{ props.children }</div>
   );
 };
 

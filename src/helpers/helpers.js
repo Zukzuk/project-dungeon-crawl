@@ -26,7 +26,7 @@ export const dom = {
   },
 
   afterNextRender: (fn, args) => {
-    return setTimeout(() => fn.apply(undefined, args), 0);
+    return setTimeout(() => fn.apply(undefined, args), 100);
   },
 
   optimizedResize: () => {

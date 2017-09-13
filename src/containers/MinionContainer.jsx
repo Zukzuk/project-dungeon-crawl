@@ -1,17 +1,10 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
-import { redux } from '../helpers/helpers';
+import { dom, redux } from '../helpers/helpers';
 import EntityActions from '../redux/actions/EntityActions';
-import EntityContainer from '../containers/EntityContainer';
-import PlayerView from '../views/PlayerView';
+import MinionView from '../views/MinionView';
 
-const getPlayer = (props, index) => (
-  <EntityContainer key={index}>
-    <PlayerView {...props} />
-  </EntityContainer>
-);
-
-class PlayerContainer extends PureComponent {
+class MinionContainer extends PureComponent {
 
   constructor(props) {
     super(props);
@@ -28,21 +21,22 @@ class PlayerContainer extends PureComponent {
     const spawns = props.state.Entity.Player.spawns;
 
     this.players = spawns.reduce((result, spawn, index) => {
+      playerProps.key = index;
       playerProps.id = index;
-      result.push(getPlayer(playerProps, index));
+      result.push(<MinionView {...playerProps} />);
       return result;
     }, []);
   };
 
   componentDidMount = () => {
-    this.props.actions.entityOffsetAsync(this);
+    dom.afterNextRender(this.props.actions.Entity.entityOffsetAll);
   };
 
   /* updates */
 
   /* render */
 
-  render = () => this.players;
+  render = () => <div className="players">{this.players}</div>;
 }
 
 export default connect(
@@ -52,4 +46,4 @@ export default connect(
   dispatch => redux.mapActions(dispatch, {
     Entity: EntityActions
   })
-)(PlayerContainer);
+)(MinionContainer);

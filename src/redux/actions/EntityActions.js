@@ -1,30 +1,12 @@
 import {
   ENTITY_CONSTANTS,
 } from '../../constants';
-import {dom} from '../../helpers/helpers'
 
 export default {
 
-  entityOffset: entity => {
-    return (dispatch, getState) => getOffset(dispatch, getState, entity);
-  },
-
-  entityOffsetAsync: entity => {
+  entityOffsetSingle: (name, id) => {
     return (dispatch, getState) => {
-      dispatch({
-        type: ENTITY_CONSTANTS.ENTITY_OFFSET_PREPARE
-      });
-      return dom.afterNextRender(getOffset, [dispatch, getState, entity]);
-    }
-  },
-
-  entityOffsetSingle: (type, id) => {
-    return (dispatch, getState) => {
-      const name = type.toLowerCase();
-      let entity = document.querySelector('#' + name.toLowerCase() + id);
-      entity.type = type;
-      entity.props = {children: {props: {id: Number(entity.id.replace(name, ''))}}};
-      getOffset(dispatch, getState, entity)
+      getOffset(dispatch, getState, name, id);
     }
   },
 
@@ -32,31 +14,29 @@ export default {
     return (dispatch, getState) => {
       // get all entities on game-board
       Object.keys(getState().Entity)
-        .forEach(type => {
-          const name = type.toLowerCase();
-          document.querySelectorAll('.' + name)
+        .forEach(name => {
+          document.querySelectorAll('.' + name.toLowerCase())
             .forEach(entity => {
-              entity.type = type;
-              entity.props = {children: {props: {id: Number(entity.id.replace(name, ''))}}};
-              getOffset(dispatch, getState, entity)
+              const id = Number(entity.id.replace(name.toLowerCase(), ''));
+              getOffset(dispatch, getState, name, id)
             });
         });
     }
   }
 };
 
-const getOffset = (dispatch, getState, entity) => {
+const getOffset = (dispatch, getState, name, id) => {
   dispatch({
     type: ENTITY_CONSTANTS.ENTITY_OFFSET_SET,
-    name: entity.type,
-    id: entity.props.children.props.id,
-    payload: getStyle(getState(), dispatch, entity)
+    name,
+    id,
+    payload: getStyle(getState(), name, id)
   });
 };
 
-const getStyle = (state, dispatch, entity = null) => {
-  const entityState = state.Entity[entity.type];
-  const entityId = entity.props.children.props.id;
+const getStyle = (state, name, id) => {
+  const entityState = state.Entity[name];
+  const entityId = id;
 
   const entityPosition = entityState.spawns[entityId].position;
   const entityRelativeSize = entityState.relativeSize;

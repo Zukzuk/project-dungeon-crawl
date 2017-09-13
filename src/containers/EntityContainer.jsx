@@ -4,8 +4,6 @@ import { redux, dom } from '../helpers/helpers';
 
 import DungeonEntity from './DungeonContainer';
 import RoomEntity from '../entities/RoomEntity';
-import TileEntity from '../entities/TileEntity';
-import PlayerEntity from '../entities/PlayerEntity';
 import MinionEntity from '../entities/MinionEntity';
 
 class EntityContainer extends PureComponent {
@@ -25,8 +23,6 @@ class EntityContainer extends PureComponent {
       ...{
         DungeonEntity,
         RoomEntity,
-        TileEntity,
-        PlayerEntity,
         MinionEntity
       }[this.type + 'Entity']
     };

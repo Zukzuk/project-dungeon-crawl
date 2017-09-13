@@ -9,6 +9,11 @@
   color: #ccc;
   background-color: #eee;
 
+  pointer-events: all;
+  > * {
+    pointer-events: none;
+  }
+
   &:hover {
     background-color: #ddd;
   }
