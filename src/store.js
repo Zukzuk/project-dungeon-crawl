@@ -9,6 +9,7 @@ import GameMenu from './redux/reducers/GameMenuReducer';
 import GameBoard from './redux/reducers/GameBoardReducer';
 import Entity from './redux/reducers/EntityReducer';
 import Tile from './redux/reducers/TileReducer';
+import Camera from './redux/reducers/CameraReducer';
 
 export const history = createHistory();
 
@@ -34,7 +35,7 @@ const composedEnhancers = compose(
 
 const rootReducer = combineReducers({
   routing: routerReducer,
-  GameMenu, GameBoard, Tile, Entity
+  GameMenu, GameBoard, Camera, Tile, Entity
 });
 
 const store = createStore(

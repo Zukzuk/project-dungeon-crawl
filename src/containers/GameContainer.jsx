@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import GameView from '../views/GameView';
 import GameBoardContainer from './GameBoardContainer';
-import GameMenuContainer from '../containers/GameMenuContainer';
+import GameMenuContainer from './GameMenuContainer';
 
 class GameContainer extends PureComponent {
 

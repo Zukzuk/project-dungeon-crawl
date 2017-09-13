@@ -8,6 +8,11 @@ export const TILE_CONSTANTS = {
   SELECT: 'tile/SELECT',
 };
 
+export const CAMERA_CONSTANTS = {
+  PAN: 'camera/PAN',
+  ZOOM: 'camera/ZOOM'
+};
+
 export const PLAYER_CONSTANTS = {
   POSITION_SET: 'player/POSITION_SET'
 };

@@ -5,10 +5,11 @@ import TileContainer from './TileContainer';
 import TileView from '../views/TileView';
 import RoomContainer from './RoomContainer';
 import RoomView from '../views/RoomView';
-import DungeonView from '../views/DungeonView';
-import TileActions from '../redux/actions/TileActions';
 import PlayerContainer from "./PlayerContainer";
 import MinionContainer from "./MinionContainer";
+import CameraContainer from "./CameraContainer";
+import DungeonView from '../views/DungeonView';
+import TileActions from '../redux/actions/TileActions';
 
 const getGrid = (props, rectangle, count) => {
   const {rows, columns} = rectangle;
@@ -159,9 +160,11 @@ class DungeonContainer extends PureComponent {
   render = () => {
     return (
       <DungeonView>
-        <div className='rooms'>{ this.rooms }</div>
-        <PlayerContainer />
-        <MinionContainer />
+        <CameraContainer>
+          <div className="rooms">{ this.rooms }</div>
+          <PlayerContainer />
+          <MinionContainer />
+        </CameraContainer>
       </DungeonView>
     );
   };
