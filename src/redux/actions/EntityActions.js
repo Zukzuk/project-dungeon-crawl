@@ -49,6 +49,7 @@ const getStyle = (state, name, id) => {
 
   // board offset
   const tile = document.querySelector(`#tile${entityPosition}`);
+  if (!tile) return false;
   const room = tile.parentElement;
   const offsetTop = tile.offsetTop + room.offsetTop;
   const offsetLeft = tile.offsetLeft + room.offsetLeft;

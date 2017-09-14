@@ -3,10 +3,10 @@ export default {
   size: undefined,
   relativeSize: { width: .3, height: .4 },
   spawns: [{
-    position: 2,
+    position: 1,
     style: undefined
   }, {
-    position: 0,
+    position: 2,
     style: undefined
   }]
 }

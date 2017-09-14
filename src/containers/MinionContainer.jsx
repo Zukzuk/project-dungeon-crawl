@@ -34,6 +34,9 @@ class MinionContainer extends PureComponent {
 
   /* updates */
 
+  componentWillReceiveProps = nextProps => {
+  };
+
   /* render */
 
   render = () => <div className="minions">{this.minions}</div>;

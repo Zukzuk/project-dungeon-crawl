@@ -13,6 +13,7 @@ const PlayerView = props => {
     width: style.width,
     height: style.height
   } : null;
+
   return (
     <div className={ classList } id={ id } style={ offsetStyle }>
       <div className='icon' style={ iconStyle }></div>

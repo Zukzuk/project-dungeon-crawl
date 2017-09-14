@@ -50,7 +50,7 @@ const getSlices = (count, min, max, arr = []) => {
 };
 
 const buildRectangles = (amount, level) => {
-  if (level === 1) return [{width: 2, height: [1]}]; // columns -> rows -> length
+  if (level === 1) return [{columns: 2, rows: [1]}]; // columns -> rows -> length
 
   const isEven = (level % 2 === 0);
   const mainWidth = isEven ? Math.sqrt(amount) : Math.sqrt(amount * 2);
@@ -125,13 +125,10 @@ class DungeonContainer extends PureComponent {
 
   componentConstruct = props => {
     const numOfTiles = Math.pow(2, props.state.GameBoard.level);
-
     // get squares of each grid as rectangles
     const rectangles = buildRectangles(numOfTiles, props.state.GameBoard.level);
-
     // build tile entities from tiled-rectangles
     const tileGrids = buildTileGrids(rectangles, props);
-
     // build room entities from grids
     this.rooms = buildRooms(tileGrids, props);
   };

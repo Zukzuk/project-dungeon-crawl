@@ -19,19 +19,28 @@ class PlayerContainer extends PureComponent {
 
     const playerProps = {
       state: props.state.Entity.Player,
-      actions: props.actions.Entity.Player
+      actions: props.actions.Entity.Player,
+      id: 0
     };
-    this.players = spawns.reduce((result, spawn, index) => {
-      playerProps.key = index;
-      playerProps.id = index;
-      result.push(<PlayerView {...playerProps} />);
-      return result;
-    }, []);
+    this.player = <PlayerView {...playerProps} />;
 
     const lightRadiusProps = {
       state: props.state.Entity.Player
     };
-    this.lightRadius = <LightRadiusView {...lightRadiusProps} />
+    this.lightRadius = <LightRadiusView {...lightRadiusProps} />;
+
+    const connectedPlayerProps = {
+      state: props.state.Entity.Player,
+      actions: props.actions.Entity.Player
+    };
+    this.connectedPlayers = spawns.reduce((result, spawn, index) => {
+      if (index) {
+        connectedPlayerProps.key = index;
+        connectedPlayerProps.id = index;
+        result.push(<PlayerView {...connectedPlayerProps} />);
+      }
+      return result;
+    }, []);
   };
 
   componentDidMount = () => {
@@ -48,7 +57,8 @@ class PlayerContainer extends PureComponent {
 
   render = () => (
     <div className="players">
-      { this.players }
+      { this.connectedPlayers }
+      { this.player }
       { this.lightRadius }
     </div>
   );
