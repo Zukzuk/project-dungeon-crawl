@@ -1,5 +1,9 @@
 .game-menu {
-  button {
-    cursor: pointer;
+  .menu-block {
+    float: left;
+    margin: 0 10px;
+    button {
+      cursor: pointer;
+    }
   }
 }
