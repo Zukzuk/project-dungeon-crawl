@@ -1,4 +1,4 @@
 export default {
-  level:8,
+  level:10,
   hasPerspective: true
 };

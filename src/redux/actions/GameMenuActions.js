@@ -13,5 +13,14 @@ export default {
 
       dispatch(EntityActions.offsetAllEntities());
     }
+  },
+
+  updateLevel: newLevel => {
+    return dispatch => {
+      dispatch({
+        type: GAME_MENU_CONSTANTS.UPDATE_LEVEL,
+        payload: newLevel
+      });
+    }
   }
 };

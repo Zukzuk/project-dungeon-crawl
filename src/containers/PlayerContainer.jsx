@@ -50,7 +50,8 @@ class PlayerContainer extends PureComponent {
 
   /* updates */
 
-  componentWillReceiveProps = nextProps => {
+  shouldComponentUpdate = (nextProps, nextState) => {
+    return true;
   };
 
   /* render */

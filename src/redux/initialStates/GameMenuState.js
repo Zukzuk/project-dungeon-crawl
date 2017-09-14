@@ -1,3 +1,5 @@
 export default {
-  perspectiveLabel: 'on'
+  perspectiveLabel: 'on',
+  incrementLevelLabel: '+',
+  decrementLevelLabel: '-'
 };

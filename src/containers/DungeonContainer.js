@@ -10,6 +10,7 @@ import MinionContainer from "./MinionContainer";
 import CameraContainer from "./CameraContainer";
 import DungeonView from '../views/DungeonView';
 import TileActions from '../redux/actions/TileActions';
+import EntityActions from '../redux/actions/EntityActions';
 
 const getGrid = (props, rectangle, count) => {
   const {rows, columns} = rectangle;
@@ -138,8 +139,20 @@ class DungeonContainer extends PureComponent {
     this.updatePerspective({...this.props.state.GameBoard});
   };
 
-  componentWillReceiveProps = nextProps => {
-    this.updatePerspective({...nextProps.state.GameBoard});
+  shouldComponentUpdate = nextProps => {
+    // update perspective
+    if (nextProps.state.GameBoard.hasPerspective !== this.props.state.GameBoard.hasPerspective) {
+      this.updatePerspective({...nextProps.state.GameBoard});
+      return true;
+    }
+    // update level
+    else if (nextProps.state.GameBoard.level !== this.props.state.GameBoard.level) {
+      this.componentConstruct(nextProps);
+      dom.afterNextRender(nextProps.actions.Entity.offsetAllEntities);
+      return true;
+    }
+    // do not update
+    return false;
   };
 
   /* updates */
@@ -155,6 +168,7 @@ class DungeonContainer extends PureComponent {
   /* render */
 
   render = () => {
+    debugger;
     return (
       <DungeonView>
         <CameraContainer>
@@ -174,5 +188,6 @@ export default connect(
   ]),
   dispatch => redux.mapActions(dispatch, {
     Tile: TileActions,
+    Entity: EntityActions,
   })
 )(DungeonContainer);

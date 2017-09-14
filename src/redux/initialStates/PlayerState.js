@@ -6,7 +6,7 @@ export default {
   spawns: [{
     position: 0,
     style: undefined,
-    lightRadius: 2,
+    lightRadius: 5,
     lightRadiusStyle: undefined
   },{
     position: 10,
