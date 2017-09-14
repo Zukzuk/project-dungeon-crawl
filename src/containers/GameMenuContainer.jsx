@@ -12,16 +12,18 @@ class GameMenuContainer extends PureComponent {
     const incrLevel = () => actions.GameMenu.updateLevel(state.GameBoard.level + 1);
     const decrLevel = () => actions.GameMenu.updateLevel(Math.max(1, state.GameBoard.level - 1));
     return [{
-      title: `perspective ${state.GameMenu.perspectiveLabel}`,
+      title: `perspective: ${state.GameMenu.perspectiveLabel}`,
       buttons: [
         <button key="TogglePersp" onClick={togglePersp}>Toggle</button>
       ]
-    }, {
-      title: `level ${this.props.state.GameBoard.level}`,
+    },{
+      title: `level: ${this.props.state.GameBoard.level}`,
       buttons: [
         <button key="DecrLevel" onClick={decrLevel}>{ state.GameMenu.decrementLevelLabel }</button>,
         <button key="IncrLevel" onClick={incrLevel}>{ state.GameMenu.incrementLevelLabel }</button>
       ]
+    }, {
+      title: `number of tiles: ${Math.pow(2, this.props.state.GameBoard.level)}`
     }]
   };
 
