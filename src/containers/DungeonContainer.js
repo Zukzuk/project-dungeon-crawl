@@ -168,7 +168,6 @@ class DungeonContainer extends PureComponent {
   /* render */
 
   render = () => {
-    debugger;
     return (
       <DungeonView>
         <CameraContainer>

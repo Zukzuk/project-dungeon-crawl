@@ -17,4 +17,8 @@
   &:hover {
     background-color: #ddd;
   }
+
+  &:not([light-radius]) {
+    visibility: hidden;
+  }
 }

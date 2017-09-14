@@ -29,20 +29,32 @@ export const dom = {
     return setTimeout(() => fn.apply(undefined, args), 100);
   },
 
-  checkCollision: function() {
-    let hasJustCollided = false;
-    for (let i = 0; i < this.staticDivs.length; i++) {
-      const currentDiv = this.staticDivs[i];
-      const dx = currentDiv.position.left - this.moveableDiv.position.left;
-      const dy = currentDiv.position.top - this.moveableDiv.position.top;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-      if (distance < currentDiv.position.radius + this.moveableDiv.position.radius) {
-        hasJustCollided = true;
-        if (!this.moveableDiv.ref.classList.contains('collision-state')) {
-          this.moveableDiv.ref.classList.add('collision-state');
-        }
-      } else if (this.moveableDiv.ref.classList.contains('collision-state') && !hasJustCollided) {
-        this.moveableDiv.ref.classList.remove('collision-state');
+  setCollision: (_rectangles, _circle, _radius) => {
+    // TODO: work this out when in perspective (through the columns and rows)
+    _circle = _circle.getBoundingClientRect();
+    const circle = { x: _circle.left+_radius, y: _circle.top+_radius, r: _radius};
+
+    for (let i = 0; i < _rectangles.length; i++) {
+      const _rect = _rectangles[i].getBoundingClientRect();
+      const rect = { x: _rect.left+_rect.width/2, y: _rect.top+_rect.height/2, w: _rect.width, h: _rect.height};
+      const distX = Math.abs(circle.x - rect.x-rect.w/2);
+      const distY = Math.abs(circle.y - rect.y-rect.h/2);
+
+      let collision;
+      if (distX > (rect.w/2 + circle.r) || distY > (rect.h/2 + circle.r)) {
+        collision = false;
+      } else if (distX <= (rect.w/2) || distY <= (rect.h/2)) {
+        collision = true;
+      } else {
+        const dx = distX - rect.w / 2;
+        const dy = distY - rect.h / 2;
+        collision = dx * dx + dy * dy <= (circle.r * circle.r);
+      }
+
+      if (collision) {
+        _rectangles[i].setAttribute('light-radius', true);
+      } else  {
+        _rectangles[i].removeAttribute('light-radius');
       }
     }
   },

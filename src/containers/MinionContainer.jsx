@@ -29,6 +29,7 @@ class MinionContainer extends PureComponent {
   };
 
   componentDidMount = () => {
+    // place the minions
     dom.afterNextRender(this.props.actions.Entity.offsetAllEntities, ['Minion']);
   };
 

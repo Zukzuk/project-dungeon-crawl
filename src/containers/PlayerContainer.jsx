@@ -44,13 +44,14 @@ class PlayerContainer extends PureComponent {
   };
 
   componentDidMount = () => {
-    // place the player
+    // place the players
     dom.afterNextRender(this.props.actions.Entity.offsetAllEntities, ['Player']);
   };
 
   /* updates */
 
   shouldComponentUpdate = (nextProps, nextState) => {
+    debugger;
     return true;
   };
 

@@ -1,12 +1,26 @@
 import {
   ENTITY_CONSTANTS,
 } from '../../constants';
+import EntityActions from './EntityActions';
+import { dom } from '../../helpers/helpers';
 
 export default {
 
+  lightRadiusCollision: () => {
+    return (dispatch, getState) => {
+      const state = getState();
+      dom.setCollision(
+        document.querySelector('#room0').childNodes,
+        document.querySelector('#light-radius'),
+        state.Tile.width * (state.Entity['Player'].spawns[0].lightRadius / 2) - 10
+      );
+    }
+  },
+
   offsetSingleEntity: (name, id) => {
     return (dispatch, getState) => {
-      entityOffset(dispatch, getState, name, id);
+      if (name === 'Player' && id === 0) dom.afterNextRender(dispatch, [EntityActions.lightRadiusCollision()]);
+      return EntityActions.entityOffset(dispatch, getState, name, id);
     }
   },
 
@@ -18,23 +32,24 @@ export default {
         document.querySelectorAll('.' + name.toLowerCase())
           .forEach(entity => {
             const id = Number(entity.id.replace(name.toLowerCase(), ''));
-            entityOffset(dispatch, getState, name, id);
+            if (name === 'Player' && id === 0) dom.afterNextRender(dispatch, [EntityActions.lightRadiusCollision()]);
+            return EntityActions.entityOffset(dispatch, getState, name, id);
           });
       });
     }
-  }
-};
+  },
 
-const entityOffset = (dispatch, getState, name, id) => {
-  const styles = getStyle(getState(), name, id);
-  dispatch({
-    type: ENTITY_CONSTANTS.OFFSET_SET, name, id,
-    payload: styles.entity
-  });
-  dispatch({
-    type: ENTITY_CONSTANTS.LIGHTRADIUS_OFFSET_SET, name, id,
-    payload: styles.lightRadius
-  });
+  entityOffset: (dispatch, getState, name, id) => {
+    const styles = getStyle(getState(), name, id);
+    dispatch({
+      type: ENTITY_CONSTANTS.OFFSET_SET, name, id,
+      payload: styles.entity
+    });
+    dispatch({
+      type: ENTITY_CONSTANTS.LIGHTRADIUS_OFFSET_SET, name, id,
+      payload: styles.lightRadius
+    });
+  }
 };
 
 const getStyle = (state, name, id) => {
