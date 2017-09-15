@@ -26,7 +26,7 @@ class PlayerContainer extends PureComponent {
     //   return result;
     // }, []);
     this.props.actions.Player.updatePosition(0);
-    this.props.actions.Player.updateLightRadius(1);
+    this.props.actions.Player.updateLightRadius(5);
   };
 
   /* updates */

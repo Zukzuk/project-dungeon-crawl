@@ -5,29 +5,6 @@ let collisionBuffer = {};
 
 export const dom = {
 
-  toArray: obj => {
-    let array = [];
-    const _obj = (obj.length === undefined) ? [obj] : obj;
-    // iterate backwards ensuring that length is an UInt32
-    for (let i = _obj.length >>> 0; i--;) {
-      array[i] = _obj[i];
-    }
-    return array;
-  },
-
-  setClassList: payload => {
-    const {nodes, names, addif = true} = payload;
-    const elements = Array.isArray(nodes) ? nodes : [nodes];
-    const list = Array.isArray(names) ? names : [names];
-    const fn = (addif !== false) ? 'add' : 'remove';
-    elements.forEach(element => list.forEach(name => element.classList[fn](name)) );
-  },
-
-  getChild: (child, props, index) => {
-    const key = index || 1;
-    return child ? React.cloneElement(child, {...props, key}) : null;
-  },
-
   afterNextRender: fn => {
     setTimeout(() => fn(), 100);
   },
@@ -53,7 +30,7 @@ export const dom = {
     const circle = {
       x: tileSize + (tileSize*(lightTile.column-1)),
       y: tileSize + (tileSize*(lightTile.row-1)),
-      r: radius * tileSize/2 + 10
+      r: radius * tileSize/2
     };
 
     for (let i = 0; i < tiles.length; i++) {
@@ -67,25 +44,13 @@ export const dom = {
       };
 
       // calculate collision
-      let collision;
       const distX = Math.abs(circle.x - rect.x-rect.w/2);
       const distY = Math.abs(circle.y - rect.y-rect.h/2);
-      if (distX > (rect.w/2 + circle.r) || distY > (rect.h/2 + circle.r)) {
-        collision = false;
-      } else if (distX <= (rect.w/2) || distY <= (rect.h/2)) {
-        collision = true;
-      } else {
-        const dx = distX - rect.w / 2;
-        const dy = distY - rect.h / 2;
-        collision = dx * dx + dy * dy <= (circle.r * circle.r);
-      }
-
+      const dx = distX - rect.w / 2;
+      const dy = distY - rect.h / 2;
+      const opacity = Math.max(0, 1 - ((dx * dx + dy * dy) / (circle.r * circle.r)) );
       const tileElm = room.elm.querySelector(`#tile${i}`);
-      if (collision) {
-        tileElm.setAttribute('light-radius', 'bright');
-      } else if (_.get(tileElm, 'attributes[\'light-radius\'].nodeValue') === 'bright') {
-        tileElm.setAttribute('light-radius', 'dim');
-      }
+      tileElm.style['opacity'] = (opacity > .62) ? 1 : opacity;
     }
   },
 

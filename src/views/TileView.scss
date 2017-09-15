@@ -8,6 +8,7 @@
 
   color: #ccc;
   background-color: #eee;
+  opacity: 0;
 
   pointer-events: all;
   > * {
@@ -16,17 +17,5 @@
 
   &:hover {
     background-color: #ddd;
-  }
-
-  &[light-radius="bright"] {
-    opacity: 1;
-  }
-
-  &[light-radius="dim"] {
-    opacity: .6;
-  }
-
-  &:not([light-radius]) {
-    opacity: .1;
   }
 }
