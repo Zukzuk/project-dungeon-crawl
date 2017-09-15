@@ -8,7 +8,6 @@ export default {
 
   offsetSingleEntity: (name, id) => {
     return (dispatch, getState) => {
-      if (name === 'Player' && id === 0) dom.afterNextRender(dispatch, [EntityActions.lightRadiusCollision()]);
       return EntityActions.entityOffset(dispatch, getState, name, id);
     }
   },
@@ -21,10 +20,25 @@ export default {
         document.querySelectorAll('.' + name.toLowerCase())
           .forEach(entity => {
             const id = Number(entity.id.replace(name.toLowerCase(), ''));
-            if (name === 'Player' && id === 0) dom.afterNextRender(dispatch, [EntityActions.lightRadiusCollision()]);
             return EntityActions.entityOffset(dispatch, getState, name, id);
           });
       });
+    }
+  },
+
+  entityOffset: (dispatch, getState, name, id) => {
+    const styles = getStyle(getState(), name, id);
+    dispatch({
+      type: ENTITY_CONSTANTS.OFFSET_SET, name, id,
+      payload: styles.entity
+    });
+
+    if (name === 'Player' && id === 0) {
+      dispatch({
+        type: ENTITY_CONSTANTS.LIGHTRADIUS_OFFSET_SET, name, id,
+        payload: styles.lightRadius
+      });
+      dom.afterNextRender(dispatch, [EntityActions.lightRadiusCollision()]);
     }
   },
 
@@ -40,17 +54,6 @@ export default {
     }
   },
 
-  entityOffset: (dispatch, getState, name, id) => {
-    const styles = getStyle(getState(), name, id);
-    dispatch({
-      type: ENTITY_CONSTANTS.OFFSET_SET, name, id,
-      payload: styles.entity
-    });
-    dispatch({
-      type: ENTITY_CONSTANTS.LIGHTRADIUS_OFFSET_SET, name, id,
-      payload: styles.lightRadius
-    });
-  }
 };
 
 const getStyle = (state, name, id) => {
@@ -83,8 +86,8 @@ const getStyle = (state, name, id) => {
   };
 
   const entity = getEntityOffset(offsetTop, offsetLeft, tileRect, entityRect, entityAlignment, hasPerspective);
-  const lightRadius = getLightRadiusOffset(offsetTop, offsetLeft, tileRect, entityLightRadius);
-
+  const lightRadius = (name === 'Player' && id === 0)
+    ? getLightRadiusOffset(offsetTop, offsetLeft, tileRect, entityLightRadius) : null;
   return {
     entity,
     lightRadius
