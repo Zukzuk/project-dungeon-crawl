@@ -6,17 +6,6 @@ import { dom } from '../../helpers/helpers';
 
 export default {
 
-  lightRadiusCollision: () => {
-    return (dispatch, getState) => {
-      const state = getState();
-      dom.setCollision(
-        document.querySelector('#room0').childNodes,
-        document.querySelector('#light-radius'),
-        state.Tile.width * (state.Entity['Player'].spawns[0].lightRadius / 2) - 10
-      );
-    }
-  },
-
   offsetSingleEntity: (name, id) => {
     return (dispatch, getState) => {
       if (name === 'Player' && id === 0) dom.afterNextRender(dispatch, [EntityActions.lightRadiusCollision()]);
@@ -36,6 +25,18 @@ export default {
             return EntityActions.entityOffset(dispatch, getState, name, id);
           });
       });
+    }
+  },
+
+  lightRadiusCollision: () => {
+    return (dispatch, getState) => {
+      const state = getState();
+      dom.computeCollision(
+        dom.getComponent(document.querySelector('#room0')),
+        state.Tile.size,
+        dom.getComponent(document.querySelector('#light-radius')),
+        state.Entity.Player.spawns[0].position
+      );
     }
   },
 
@@ -71,8 +72,8 @@ const getStyle = (state, name, id) => {
 
   // tile
   const tileRect = {
-    width: state.Tile.width,
-    height: state.Tile.height
+    width: state.Tile.size,
+    height: state.Tile.size
   };
 
   // entity

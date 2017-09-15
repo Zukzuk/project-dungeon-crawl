@@ -19,19 +19,21 @@ const getGrid = (props, rectangle, count) => {
     let x = 0, row = [];
     while (x++ < columns) {
       let index = x + ((y - 1) * columns);
+      const id = count + index - 1;
+      const selectTile = () => props.actions.Tile.selectTile(id);
       const tileProps = {
-        id: count + index - 1,
+        id,
         column: x,
         row: y,
         style: {
           margin: `${props.state.Tile.gutter}px`,
           width: `calc(100% * (1/${columns}) - ${props.state.Tile.gutter * 2}px)`,
-        }
+        },
+        onClick: selectTile
       };
-      const selectTile = () => props.actions.Tile.selectTile(tileProps.id);
       row.push(
         <TileContainer key={index}>
-          <TileView {...tileProps} onClick={selectTile}/>
+          <TileView {...tileProps}/>
         </TileContainer>
       );
     }
@@ -101,8 +103,8 @@ const buildRooms = (grids, props) => {
       id: index,
       style: {
         left: `${offsetLeft}px`,
-        width: `${props.state.Tile.width * tileGrid[0].length}px`,
-        height: `${props.state.Tile.height * tileGrid.length}px`
+        width: `${props.state.Tile.size * tileGrid[0].length}px`,
+        height: `${props.state.Tile.size * tileGrid.length}px`
       }
     };
     result.push(
@@ -110,7 +112,7 @@ const buildRooms = (grids, props) => {
         <RoomView { ...roomProps }>{ tileGrid }</RoomView>
       </RoomContainer>
     );
-    offsetLeft += (props.state.Tile.width * (grids[index][0].length + 1));
+    offsetLeft += (props.state.Tile.size * (grids[index][0].length + 1));
     return result;
   }, []);
 };

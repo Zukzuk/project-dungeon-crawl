@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { bindActionCreators } from 'redux';
 
 export const dom = {
@@ -29,18 +30,41 @@ export const dom = {
     return setTimeout(() => fn.apply(undefined, args), 100);
   },
 
-  setCollision: (_rectangles, _circle, _radius) => {
-    // TODO: work this out when in perspective (through the columns and rows)
-    _circle = _circle.getBoundingClientRect();
-    const circle = { x: _circle.left+_radius, y: _circle.top+_radius, r: _radius};
+  getComponent: dom => {
+    const internalInstance = dom[Object.keys(dom).find(key =>
+      key.startsWith('__reactInternalInstance$'))];
+    if (!internalInstance) return null;
+    return { comp: internalInstance._currentElement, elm: dom };
+  },
 
-    for (let i = 0; i < _rectangles.length; i++) {
-      const _rect = _rectangles[i].getBoundingClientRect();
-      const rect = { x: _rect.left+_rect.width/2, y: _rect.top+_rect.height/2, w: _rect.width, h: _rect.height};
+  computeCollision: (room, tileSize, light, position) => {
+    // flatten the room into tiles
+    const tiles = Array.prototype.concat.apply([], room.comp.props.children);
+    // get the tile where the light is centered
+    const lightTile = tiles[position].props.children.props;
+    // create bounding circle from light
+    const { width } = light.comp.props.style;
+    const radius = Number(_.trimEnd(width, 'px'))/2;
+    const circle = {
+      x: tileSize + (tileSize*(lightTile.column-1)),
+      y: tileSize + (tileSize*(lightTile.row-1)),
+      r: radius
+    };
+
+    for (let i = 0; i < tiles.length; i++) {
+      // create bounding box from tile
+      const tile = tiles[i].props.children.props;
+      const rect = {
+        x: tileSize/2 + (tileSize*(tile.column-1)),
+        y: tileSize/2 + (tileSize*(tile.row-1)),
+        w: tileSize,
+        h: tileSize
+      };
+
+      // calculate collision
+      let collision;
       const distX = Math.abs(circle.x - rect.x-rect.w/2);
       const distY = Math.abs(circle.y - rect.y-rect.h/2);
-
-      let collision;
       if (distX > (rect.w/2 + circle.r) || distY > (rect.h/2 + circle.r)) {
         collision = false;
       } else if (distX <= (rect.w/2) || distY <= (rect.h/2)) {
@@ -51,11 +75,9 @@ export const dom = {
         collision = dx * dx + dy * dy <= (circle.r * circle.r);
       }
 
-      if (collision) {
-        _rectangles[i].setAttribute('light-radius', true);
-      } else  {
-        _rectangles[i].removeAttribute('light-radius');
-      }
+      const tileElm = room.elm.querySelector(`#tile${i}`);
+      if (collision) tileElm.setAttribute('light-radius', true);
+      else tileElm.removeAttribute('light-radius');
     }
   },
 

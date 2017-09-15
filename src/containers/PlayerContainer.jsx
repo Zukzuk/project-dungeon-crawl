@@ -51,7 +51,6 @@ class PlayerContainer extends PureComponent {
   /* updates */
 
   shouldComponentUpdate = (nextProps, nextState) => {
-    debugger;
     return true;
   };
 

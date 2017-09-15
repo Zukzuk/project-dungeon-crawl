@@ -19,6 +19,7 @@
   }
 
   &:not([light-radius]) {
-    visibility: hidden;
+    //visibility: hidden;
+    opacity: .5;
   }
 }
