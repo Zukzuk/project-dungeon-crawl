@@ -6,6 +6,15 @@ import { dom } from '../../helpers/helpers';
 
 export default {
 
+  offsetReset: (name, id) => {
+    return dispatch => {
+      dispatch({
+        type: ENTITY_CONSTANTS.OFFSET_RESET, name, id,
+        payload: undefined
+      });
+    }
+  },
+
   offsetSingleEntity: (name, id) => {
     return (dispatch, getState) => {
       return EntityActions.entityOffset(dispatch, getState, name, id);

@@ -24,8 +24,15 @@ export default (state = initialState, action) => {
       newState = dotProp.set(newState, `${action.name}.spawns.${action.id}.style`, action.payload);
       return newState;
 
+    case ENTITY_CONSTANTS.OFFSET_RESET:
+      newState = dotProp.set(state, `${action.name}.spawns.${action.id}.styleId`, action.payload);
+      newState = dotProp.set(newState, `${action.name}.spawns.${action.id}.style`, action.payload);
+      newState = dotProp.set(newState, `${action.name}.spawns.${action.id}.position`, action.payload);
+      return newState;
+
     case PLAYER_CONSTANTS.LIGHT_RADIUS_SET:
-      return dotProp.set(state, `${action.name}.spawns.${action.id}.lightRadius`, action.payload);
+      const radius = Math.max(1, action.payload);
+      return dotProp.set(state, `${action.name}.spawns.${action.id}.lightRadius`, radius);
 
     case ENTITY_CONSTANTS.LIGHTRADIUS_OFFSET_SET:
       const lightRadiusStyleId = `${action.payload.top}${action.payload.left}${action.payload.width}${action.payload.height}${action.payload.borderRadius}`;

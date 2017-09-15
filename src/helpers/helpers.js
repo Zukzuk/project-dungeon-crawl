@@ -28,10 +28,8 @@ export const dom = {
     return child ? React.cloneElement(child, {...props, key}) : null;
   },
 
-  afterNextRender: (fn, args) => {
-    setTimeout(() => {
-      return fn.apply(undefined, args);
-    }, 100);
+  afterNextRender: fn => {
+    setTimeout(() => fn(), 100);
   },
 
   getComponent: dom => {
@@ -55,7 +53,7 @@ export const dom = {
     const circle = {
       x: tileSize + (tileSize*(lightTile.column-1)),
       y: tileSize + (tileSize*(lightTile.row-1)),
-      r: radius * tileSize/2
+      r: radius * tileSize/2 + 10
     };
 
     for (let i = 0; i < tiles.length; i++) {
@@ -95,9 +93,7 @@ export const dom = {
     if (collisionBuffer.tiles) {
       for (let i = 0; i < collisionBuffer.tiles.length; i++) {
         const tileElm = collisionBuffer.room.elm.querySelector(`#tile${i}`);
-        if (_.get(tileElm, 'attributes[\'light-radius\'].nodeValue') === 'dim') {
-          tileElm.removeAttribute('light-radius');
-        }
+        if (_.get(tileElm, 'attributes[\'light-radius\']')) tileElm.removeAttribute('light-radius');
       }
       collisionBuffer = {};
     }

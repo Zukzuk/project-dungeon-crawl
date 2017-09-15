@@ -1,5 +1,5 @@
 import {
-  GAME_MENU_CONSTANTS
+  GAME_MENU_CONSTANTS, PLAYER_CONSTANTS
 } from '../../constants';
 
 export default {

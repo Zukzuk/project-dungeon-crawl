@@ -157,7 +157,7 @@ class DungeonContainer extends PureComponent {
     }
     // render new level
     else if (nextProps.state.GameBoard.level !== this.props.state.GameBoard.level) {
-      this.constructDungeon(nextProps);
+      this.updateDungeon(nextProps);
       return true;
     }
     // do not update

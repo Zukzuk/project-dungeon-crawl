@@ -26,7 +26,7 @@ class PlayerContainer extends PureComponent {
     //   return result;
     // }, []);
     this.props.actions.Player.updatePosition(0);
-    this.props.actions.Player.updateLightRadius(3);
+    this.props.actions.Player.updateLightRadius(1);
   };
 
   /* updates */
@@ -45,13 +45,15 @@ class PlayerContainer extends PureComponent {
   };
 
   updateTileCollision = props => {
-    dom.afterNextRender(dom.computeCollision, [
-      '#room0',
-      '#light-radius',
-      props.state.Tile.size,
-      props.state.Entity.Player.spawns[0].position,
-      props.state.Entity.Player.spawns[0].lightRadius
-    ]);
+    dom.afterNextRender(() => {
+      dom.computeCollision(
+        '#room0',
+        '#light-radius',
+        props.state.Tile.size,
+        props.state.Entity.Player.spawns[0].position,
+        props.state.Entity.Player.spawns[0].lightRadius
+      );
+    });
   };
 
   shouldComponentUpdate = nextProps => {
@@ -71,7 +73,9 @@ class PlayerContainer extends PureComponent {
 
     // fire offset action on position change
     if (update.next.PlayerSpawn.position !== update.current.PlayerSpawn.position) {
-      dom.afterNextRender(this.props.actions.Entity.offsetSingleEntity, ['Player', 0]);
+      dom.afterNextRender(() => {
+        this.props.actions.Entity.offsetSingleEntity('Player', 0);
+      });
     }
     // fire offset action on INITIAL lightRadius change
     else if (update.next.PlayerSpawn.lightRadius === undefined) {
@@ -81,11 +85,6 @@ class PlayerContainer extends PureComponent {
     else if (nextProps.state.GameBoard.hasPerspective !== this.props.state.GameBoard.hasPerspective) {
       this.props.actions.Entity.offsetSingleEntity('Player', 0);
     }
-    // fire offset action on gameboard level change
-    else if (nextProps.state.GameBoard.level !== this.props.state.GameBoard.level) {
-      dom.resetCollision();
-      this.props.actions.Entity.offsetSingleEntity('Player', 0);
-    }
     // fire position action on tile change
     else if (nextProps.state.Tile.currentId !== this.props.state.Tile.currentId) {
       this.props.actions.Player.updatePosition(nextProps.state.Tile.currentId);
@@ -93,8 +92,18 @@ class PlayerContainer extends PureComponent {
 
     /* reactive rendering and optional actions */
 
+
+    // render offset action on gameboard level change
+    if (nextProps.state.GameBoard.level !== this.props.state.GameBoard.level) {
+      dom.resetCollision();
+      this.props.actions.Entity.offsetReset('Player', 0);
+      dom.afterNextRender(() => {
+        this.props.actions.Player.updatePosition(0);
+      });
+      return true;
+    }
     // render offset with collision detection
-    if (update.next.PlayerSpawn.styleId !== update.current.PlayerSpawn.styleId) {
+    else if (update.next.PlayerSpawn.styleId !== update.current.PlayerSpawn.styleId && update.next.PlayerSpawn.styleId !== undefined) {
       this.updateTileCollision(nextProps);
       return true;
     }
