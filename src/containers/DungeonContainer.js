@@ -143,6 +143,8 @@ class DungeonContainer extends PureComponent {
   };
 
   shouldComponentUpdate = nextProps => {
+    /* reactive rendering and optional internal updates */
+
     // update perspective
     if (nextProps.state.GameBoard.hasPerspective !== this.props.state.GameBoard.hasPerspective) {
       return true;

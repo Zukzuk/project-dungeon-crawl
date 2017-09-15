@@ -18,8 +18,15 @@
     background-color: #ddd;
   }
 
+  &[light-radius="bright"] {
+    opacity: 1;
+  }
+
+  &[light-radius="dim"] {
+    opacity: .6;
+  }
+
   &:not([light-radius]) {
-    //visibility: hidden;
-    opacity: .5;
+    opacity: .1;
   }
 }

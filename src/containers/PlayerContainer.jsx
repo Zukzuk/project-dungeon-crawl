@@ -46,45 +46,79 @@ class PlayerContainer extends PureComponent {
 
   updateTileCollision = (tileSize, playerPosition) => {
     dom.afterNextRender(dom.computeCollision, [
-      dom.getComponent(document.querySelector('#room0')),
-      dom.getComponent(document.querySelector('#light-radius')),
+      '#room0',
+      '#light-radius',
       tileSize,
       playerPosition
     ]);
   };
 
   shouldComponentUpdate = (nextProps, nextState) => {
-    // reactive action
-    if (nextProps.state.Entity.Player.spawns[0].position !== this.props.state.Entity.Player.spawns[0].position) {
+    // create update shorthand for some props
+    const update = {
+      next: {
+        PlayerSpawn: nextProps.state.Entity.Player.spawns[0]
+      },
+      current: {
+        PlayerSpawn: this.props.state.Entity.Player.spawns[0]
+      }
+    };
+
+    /* reactive action */
+
+    // fire offset action on position change
+    if (update.next.PlayerSpawn.position !== update.current.PlayerSpawn.position) {
       dom.afterNextRender(this.props.actions.Entity.offsetSingleEntity, ['Player', 0]);
-    } else if (nextProps.state.Tile.currentId !== this.props.state.Tile.currentId) {
+    }
+    // fire offset action on INITIAL lightRadius change
+    else if (update.next.PlayerSpawn.lightRadius === undefined) {
+      this.props.actions.Entity.offsetSingleEntity('Player', 0);
+    }
+    // fire offset action on gameboard perspective change
+    else if (nextProps.state.GameBoard.hasPerspective !== this.props.state.GameBoard.hasPerspective) {
+      this.props.actions.Entity.offsetSingleEntity('Player', 0);
+    }
+    // fire offset action on gameboard level change
+    else if (nextProps.state.GameBoard.level !== this.props.state.GameBoard.level) {
+      dom.resetCollision();
+      this.props.actions.Entity.offsetSingleEntity('Player', 0);
+    }
+    // fire position action on tile change
+    else if (nextProps.state.Tile.currentId !== this.props.state.Tile.currentId) {
       this.props.actions.Player.updatePosition(nextProps.state.Tile.currentId);
-    } else if (nextProps.state.Entity.Player.spawns[0].lightRadius !== this.props.state.Entity.Player.spawns[0].lightRadius) {
-      this.props.actions.Entity.offsetSingleEntity('Player', 0);
-    } else if (nextProps.state.GameBoard.hasPerspective !== this.props.state.GameBoard.hasPerspective) {
-      this.props.actions.Entity.offsetSingleEntity('Player', 0);
     }
 
-    // reactive render and optional internal updates
-    if (nextProps.state.Entity.Player.spawns[0].styleId !== this.props.state.Entity.Player.spawns[0].styleId) {
-      //this.updateTileCollision(nextProps.state.Tile.size, nextProps.state.Entity.Player.spawns[0].position);
-      return true;
-    } else if (nextProps.state.Entity.Player.spawns[0].lightRadiusStyleId !== this.props.state.Entity.Player.spawns[0].lightRadiusStyleId) {
-      //this.updateTileCollision(nextProps.state.Tile.size, nextProps.state.Entity.Player.spawns[0].position);
+    /* reactive rendering and optional internal updates */
+
+    // render offset with collision detection
+    if (update.next.PlayerSpawn.styleId !== update.current.PlayerSpawn.styleId) {
+      this.updateTileCollision(nextProps.state.Tile.size, update.next.PlayerSpawn.position);
       return true;
     }
+    // render lightRadius with collision detection
+    else if (update.next.PlayerSpawn.lightRadius !== update.current.PlayerSpawn.lightRadius && update.current.PlayerSpawn.lightRadius !== undefined) {
+      this.updateTileCollision(nextProps.state.Tile.size, update.next.PlayerSpawn.position);
+      return true;
+    }
+    // render lightRadius offset
+    else if (update.next.PlayerSpawn.lightRadiusStyleId !== update.current.PlayerSpawn.lightRadiusStyleId) {
+      return true;
+    }
+
     // do not render
     return false;
   };
 
   /* render */
 
-  render = () => (
-    <div className="player">
-      <PlayerView { ...this.getPlayerProps(this.props) } />
-      <LightRadiusView { ...this.getLightRadiusProps(this.props) } />
-    </div>
-  );
+  render = () => {
+    return (
+      <div className="player">
+        <PlayerView { ...this.getPlayerProps(this.props) } />
+        <LightRadiusView { ...this.getLightRadiusProps(this.props) } />
+      </div>
+    );
+  }
 }
 
 export default connect(

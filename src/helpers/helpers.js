@@ -1,8 +1,10 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { bindActionCreators } from 'redux';
 
+let collisionBuffer = {};
+
 export const dom = {
+
   toArray: obj => {
     let array = [];
     const _obj = (obj.length === undefined) ? [obj] : obj;
@@ -27,8 +29,7 @@ export const dom = {
   },
 
   afterNextRender: (fn, args) => {
-    return setTimeout(() => {
-      debugger;
+    setTimeout(() => {
       return fn.apply(undefined, args);
     }, 100);
   },
@@ -37,13 +38,17 @@ export const dom = {
     const internalInstance = dom[Object.keys(dom).find(key =>
       key.startsWith('__reactInternalInstance$'))];
     if (!internalInstance) return null;
-    debugger;
     return { comp: internalInstance._currentElement, elm: dom };
   },
 
-  computeCollision: (room, light, tileSize, position) => {
+  computeCollision: (roomSelector, lightSelector, tileSize, position) => {
+    // get components
+    const room = collisionBuffer.room || dom.getComponent(document.querySelector(roomSelector));
+    const light = collisionBuffer.light || dom.getComponent(document.querySelector(lightSelector));
     // flatten the room into tiles
-    const tiles = Array.prototype.concat.apply([], room.comp.props.children);
+    const tiles = collisionBuffer.tiles || Array.prototype.concat.apply([], room.comp.props.children);
+    // buffer components
+    collisionBuffer = { room, light, tiles };
     // get the tile where the light is centered
     const lightTile = tiles[position].props.children.props;
     // create bounding circle from light
@@ -80,8 +85,23 @@ export const dom = {
       }
 
       const tileElm = room.elm.querySelector(`#tile${i}`);
-      if (collision) tileElm.setAttribute('light-radius', true);
-      else tileElm.removeAttribute('light-radius');
+      if (collision) {
+        tileElm.setAttribute('light-radius', 'bright');
+      } else if (_.get(tileElm, 'attributes[\'light-radius\'].nodeValue') === 'bright') {
+        tileElm.setAttribute('light-radius', 'dim');
+      }
+    }
+  },
+
+  resetCollision: () => {
+    if (collisionBuffer.tiles) {
+      for (let i = 0; i < collisionBuffer.tiles.length; i++) {
+        const tileElm = collisionBuffer.room.elm.querySelector(`#tile${i}`);
+        if (_.get(tileElm, 'attributes[\'light-radius\'].nodeValue') === 'dim') {
+          tileElm.removeAttribute('light-radius');
+        }
+      }
+      collisionBuffer = {};
     }
   },
 
