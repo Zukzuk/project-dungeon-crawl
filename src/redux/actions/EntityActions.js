@@ -38,30 +38,14 @@ export default {
         type: ENTITY_CONSTANTS.LIGHTRADIUS_OFFSET_SET, name, id,
         payload: styles.lightRadius
       });
-      dispatch(EntityActions.lightRadiusCollision());
     }
-  },
-
-  lightRadiusCollision: () => {
-    return (dispatch, getState) => {
-      const state = getState();
-      dom.computeCollision(
-        dom.getComponent(document.querySelector('#room0')),
-        state.Tile.size,
-        dom.getComponent(document.querySelector('#light-radius')),
-        state.Entity.Player.spawns[0].position
-      );
-    }
-  },
-
+  }
 };
 
 const getStyle = (state, name, id) => {
   const entityState = state.Entity[name];
-  const entityId = id;
-
-  const entityPosition = entityState.spawns[entityId].position;
-  const entityLightRadius = entityState.spawns[entityId].lightRadius || 0;
+  const entityPosition = entityState.spawns[id].position;
+  const entityLightRadius = entityState.spawns[id].lightRadius || 0;
   const entityRelativeSize = entityState.relativeSize;
   const entityAlignment = entityState.alignment;
   const hasPerspective = state.GameBoard.hasPerspective;

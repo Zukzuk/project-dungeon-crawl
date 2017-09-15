@@ -11,8 +11,6 @@ export default {
         type: TILE_CONSTANTS.SELECT,
         payload: index
       });
-
-      dispatch(PlayerActions.updatePosition(index));
     }
   }
 };

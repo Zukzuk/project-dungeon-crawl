@@ -27,17 +27,21 @@ export const dom = {
   },
 
   afterNextRender: (fn, args) => {
-    return setTimeout(() => fn.apply(undefined, args), 100);
+    return setTimeout(() => {
+      debugger;
+      return fn.apply(undefined, args);
+    }, 100);
   },
 
   getComponent: dom => {
     const internalInstance = dom[Object.keys(dom).find(key =>
       key.startsWith('__reactInternalInstance$'))];
     if (!internalInstance) return null;
+    debugger;
     return { comp: internalInstance._currentElement, elm: dom };
   },
 
-  computeCollision: (room, tileSize, light, position) => {
+  computeCollision: (room, light, tileSize, position) => {
     // flatten the room into tiles
     const tiles = Array.prototype.concat.apply([], room.comp.props.children);
     // get the tile where the light is centered
@@ -79,27 +83,6 @@ export const dom = {
       if (collision) tileElm.setAttribute('light-radius', true);
       else tileElm.removeAttribute('light-radius');
     }
-  },
-
-  optimizedResize: () => {
-    // handle resize
-    (() => {
-      const throttle = (type, name, obj) => {
-        obj = obj || window;
-        let running = false;
-        obj.addEventListener(type, () => {
-          if (running) return;
-          running = true;
-          requestAnimationFrame(() => {
-            obj.dispatchEvent(new CustomEvent(name));
-            running = false;
-          });
-        });
-      };
-
-      /* init - you can init any event */
-      throttle('resize', 'optimizedResize');
-    })();
   },
 
   getComputedSize: node => {

@@ -149,7 +149,6 @@ class DungeonContainer extends PureComponent {
     }
     // update level
     else if (nextProps.state.GameBoard.level !== this.props.state.GameBoard.level) {
-      dom.afterNextRender(nextProps.actions.Entity.offsetAllEntities);
       return true;
     }
     // do not update
@@ -164,7 +163,7 @@ class DungeonContainer extends PureComponent {
         <CameraContainer>
           <div className='rooms'>{ this.constructDungeon(this.props) }</div>
           <PlayerContainer />
-          <MinionContainer />
+          {/*<MinionContainer />*/}
         </CameraContainer>
       </DungeonView>
     );

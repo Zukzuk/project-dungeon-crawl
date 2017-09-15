@@ -1,22 +1,29 @@
 import {
   PLAYER_CONSTANTS
 } from '../../constants';
-import EntityActions from './EntityActions';
 
 export default {
-  updatePosition: index => {
+  updatePosition: newPos => {
     return (dispatch, getState) => {
       const name = 'Player';
       const id = getState().Entity.Player.currentId;
 
       dispatch({
-        type: PLAYER_CONSTANTS.POSITION_SET,
-        name,
-        id,
-        payload: index
+        type: PLAYER_CONSTANTS.POSITION_SET, name, id,
+        payload: newPos
       });
+    }
+  },
 
-      dispatch(EntityActions.offsetSingleEntity(name, id));
+  updateLightRadius: newRadius => {
+    return (dispatch, getState) => {
+      const name = 'Player';
+      const id = getState().Entity.Player.currentId;
+
+      dispatch({
+        type: PLAYER_CONSTANTS.LIGHT_RADIUS_SET, name, id,
+        payload: newRadius
+      });
     }
   }
 };

@@ -14,6 +14,7 @@ class GameMenuContainer extends PureComponent {
     const decrLevel = () => actions.GameMenu.updateLevel(Math.max(1, state.GameBoard.level - 1));
     const incrLightRadius = () => actions.GameMenu.updateLightRadius(state.Entity.Player.spawns[0].lightRadius + 1);
     const decrLightRadius = () => actions.GameMenu.updateLightRadius(Math.max(2, state.Entity.Player.spawns[0].lightRadius - 1));
+
     return [{
       title: `perspective: ${state.GameMenu.perspectiveLabel}`,
       buttons: [

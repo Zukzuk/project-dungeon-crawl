@@ -11,17 +11,27 @@ const initialState = {
 };
 
 export default (state = initialState, action) => {
+  let newState;
 
   switch (action.type) {
 
-    case ENTITY_CONSTANTS.OFFSET_SET:
-      return dotProp.set(state, `${action.name}.spawns.${action.id}.style`, action.payload);
-
-    case ENTITY_CONSTANTS.LIGHTRADIUS_OFFSET_SET:
-      return dotProp.set(state, `${action.name}.spawns.${action.id}.lightRadiusStyle`, action.payload);
-
     case PLAYER_CONSTANTS.POSITION_SET:
       return dotProp.set(state, `${action.name}.spawns.${action.id}.position`, action.payload);
+
+    case ENTITY_CONSTANTS.OFFSET_SET:
+      const styleId = `${action.payload.top}${action.payload.left}${action.payload.width}${action.payload.height}`;
+      newState = dotProp.set(state, `${action.name}.spawns.${action.id}.styleId`, styleId);
+      newState = dotProp.set(newState, `${action.name}.spawns.${action.id}.style`, action.payload);
+      return newState;
+
+    case PLAYER_CONSTANTS.LIGHT_RADIUS_SET:
+      return dotProp.set(state, `${action.name}.spawns.${action.id}.lightRadius`, action.payload);
+
+    case ENTITY_CONSTANTS.LIGHTRADIUS_OFFSET_SET:
+      const lightRadiusStyleId = `${action.payload.top}${action.payload.left}${action.payload.width}${action.payload.height}${action.payload.borderRadius}`;
+      newState = dotProp.set(state, `${action.name}.spawns.${action.id}.lightRadiusStyleId`, lightRadiusStyleId);
+      newState = dotProp.set(newState, `${action.name}.spawns.${action.id}.lightRadiusStyle`, action.payload);
+      return newState;
 
     default:
       return state

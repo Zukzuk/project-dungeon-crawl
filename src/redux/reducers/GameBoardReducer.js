@@ -9,7 +9,7 @@ export default (state = initialState, action) => {
         hasPerspective: action.payload
       };
 
-    case GAME_MENU_CONSTANTS.UPDATE_LEVEL:
+    case GAME_MENU_CONSTANTS.LEVEL_SET:
       return {
         ...state,
         level: action.payload
