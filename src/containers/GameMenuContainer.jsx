@@ -19,22 +19,22 @@ class GameMenuContainer extends PureComponent {
     return [{
       title: `perspective: ${state.GameMenu.perspectiveLabel}`,
       buttons: [
-        <button key="TogglePersp" onClick={togglePersp}>Toggle</button>
+        <button key="TogglePersp" onClick={togglePersp}>toggle</button>
       ]
     },{
       title: `level: ${state.GameBoard.level}`,
       buttons: [
-        <button key="ReloadLevel" onClick={reloadLevel}>{ state.GameMenu.reloadLabel }</button>,
-        <button key="DecrLevel" onClick={decrLevel}>{ state.GameMenu.decrementLabel }</button>,
-        <button key="IncrLevel" onClick={incrLevel}>{ state.GameMenu.incrementLabel }</button>
+        <button key="ReloadLevel" onClick={reloadLevel}>reload</button>,
+        <button key="DecrLevel" onClick={decrLevel}>-</button>,
+        <button key="IncrLevel" onClick={incrLevel}>+</button>
       ]
     }, {
       title: `number of tiles: ${Math.pow(2, this.props.state.GameBoard.level)}`
     },{
       title: `lightradius: ${state.Entity.Player.spawns[0].lightRadius}`,
       buttons: [
-        <button key="DecrLightRadius" onClick={decrLightRadius}>{ state.GameMenu.decrementLabel }</button>,
-        <button key="IncrLightRadius" onClick={incrLightRadius}>{ state.GameMenu.incrementLabel }</button>
+        <button key="DecrLightRadius" onClick={decrLightRadius}>-</button>,
+        <button key="IncrLightRadius" onClick={incrLightRadius}>+</button>
       ]
     }]
   };

@@ -124,14 +124,9 @@ class DungeonContainer extends PureComponent {
 
   /* lifecycle */
 
-  constructDungeon = props => {
-    const numOfTiles = Math.pow(2, props.state.GameBoard.level);
-    // get squares of each grid as rectangles
-    const rectangles = buildRectangles(numOfTiles, props.state.GameBoard.level);
-    // build tile entities from tiled-rectangles
-    const tileGrids = buildTileGrids(rectangles, props);
-    // build room entities from grids
-    return buildRooms(tileGrids, props);
+  constructor(props) {
+    super(props);
+    this.updateDungeon(props);
   };
 
   /* update */
@@ -142,7 +137,18 @@ class DungeonContainer extends PureComponent {
     };
   };
 
+  updateDungeon = props => {
+    const numOfTiles = Math.pow(2, props.state.GameBoard.level);
+    // get squares of each grid as rectangles
+    const rectangles = buildRectangles(numOfTiles, props.state.GameBoard.level);
+    // build tile entities from tiled-rectangles
+    const tileGrids = buildTileGrids(rectangles, props);
+    // build room entities from grids
+    this.rooms = buildRooms(tileGrids, props);
+  };
+
   shouldComponentUpdate = nextProps => {
+
     /* reactive rendering and optional actions */
 
     // render perspective
@@ -151,6 +157,7 @@ class DungeonContainer extends PureComponent {
     }
     // render new level
     else if (nextProps.state.GameBoard.level !== this.props.state.GameBoard.level) {
+      this.constructDungeon(nextProps);
       return true;
     }
     // do not update
@@ -163,7 +170,7 @@ class DungeonContainer extends PureComponent {
     return (
       <DungeonView { ...this.getDungeonProps(this.props) }>
         <CameraContainer>
-          <div className='rooms'>{ this.constructDungeon(this.props) }</div>
+          <div className='rooms'>{ this.rooms }</div>
           <PlayerContainer />
           {/*<MinionContainer />*/}
         </CameraContainer>
