@@ -2,6 +2,7 @@ import {
   ENTITY_CONSTANTS, TILE_CONSTANTS
 } from '../../constants';
 import TileActions from './TileActions'
+import PlayerActions from './PlayerActions'
 import { dom } from '../../helpers/helpers'
 import ReactDOM from 'react-dom';
 import PF from 'pathfinding';
@@ -65,34 +66,47 @@ const getSize = (dispatch, size, entity) => {
     name: entity.type
   });
 };
+const indexToXY = (n, width) => { return [n%width, Math.floor(n/width)]; };
+const XYtoIndex = (xy, width) => { return xy[0] + xy[1] * width; };
 
-const calculateRoute = (source, destination) => {
-  const numArray = Array.apply(null, Array(20)).map( (v, i) => { return i; } );
-  numArray.map
+const calculateRoute = (source, destination, entity) => {
+  // create a grid(Arrray) containing rows(Array), where each entry is a number 0 or 1
+  // Number 0 indicates a walkable tile, while 1 indicates a blocked tile.
+  // This is strange since the method "setWalkable" accepts true or false, so I'd expect 1 to be walkable and 0 blocked
   let grid = [];
+  // initiate grid to 20 rows of 20 zeros
   for( let y = 0; y < 20; y++ ) {
     let row = [];
     for( let x = 0; x < 20; x++ )
       row.push(0);
     grid.push(row);
   }
+  // lookup entities in state, and block them on the grid
+  const minions = entity.Minion.spawns;
+  const players = entity.Player.spawns;
+  const obstacles = minions.concat(...players);
+  for( let i=0; i < obstacles.length; i++ ) {
+    let coord = indexToXY( obstacles[i].position, 20);
+    grid[coord[1]][coord[0]] = 1;
+  }
+
   grid = new PF.Grid(grid);
-  let finder = new PF.AStarFinder();
+  let finder = new PF.AStarFinder({heuristic: PF.Heuristic.chebyshev});
   return finder.findPath(source[0], source[1], destination[0], destination[1], grid);
 }
 const planRoute = (dispatch, getState, entity) => {
-  //const route = [20, 40, 60, 61, 62, 63, 83, 103];
   const playerIndex = getState().Entity.Player.spawns[0].position;
-  const playerXY = [playerIndex % 20, Math.floor(playerIndex/20)];
+  const playerXY = indexToXY(playerIndex, 20);
   const destinationIndex = getState().Tile.currentId;
-  const destinationXY = [destinationIndex % 20, Math.floor(destinationIndex/20)];
-  const routeXY = calculateRoute(playerXY, destinationXY);
+  const destinationXY = indexToXY(destinationIndex, 20);
+  const routeXY = calculateRoute(playerXY, destinationXY, getState().Entity);
   //console.log("PlayerXY:", playerXY);
   //console.log("destinationXY:", destinationXY);
   //console.log("routeXY:", routeXY);
-  const route = routeXY.map( (xy) => {return xy[0] + xy[1] * 20} );
-  console.log("route:", route);
-  // snakeHightlightTiles is a development action, which shouldn't fire in production
+  const route = routeXY.map( (xy) => {return XYtoIndex(xy, 20);} );
+  //const route = [20, 40, 60, 61, 62, 63, 83, 103];
+
+  // todo: snakeHightlightTiles is a development action, which shouldn't fire in production
   snakeHightlightTiles(dispatch, route);
 
   dispatch({
@@ -101,6 +115,7 @@ const planRoute = (dispatch, getState, entity) => {
     name: entity.type,
     id: entity.props.children.props.id,
   });
+  dispatch(PlayerActions.updatePosition(destinationIndex));
 };
 
 const snakeHightlightTiles = (dispatch, route) => {

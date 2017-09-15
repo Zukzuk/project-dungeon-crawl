@@ -29,7 +29,6 @@ export default {
         payload: index
       });
 
-      //dispatch(PlayerActions.updatePosition(index));
       dispatch(PlayerActions.moveToPosition(index));
     }
   },
