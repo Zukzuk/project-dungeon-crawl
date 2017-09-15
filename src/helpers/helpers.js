@@ -41,7 +41,7 @@ export const dom = {
     return { comp: internalInstance._currentElement, elm: dom };
   },
 
-  computeCollision: (roomSelector, lightSelector, tileSize, position) => {
+  computeCollision: (roomSelector, lightSelector, tileSize, position, radius) => {
     // get components
     const room = collisionBuffer.room || dom.getComponent(document.querySelector(roomSelector));
     const light = collisionBuffer.light || dom.getComponent(document.querySelector(lightSelector));
@@ -52,12 +52,10 @@ export const dom = {
     // get the tile where the light is centered
     const lightTile = tiles[position].props.children.props;
     // create bounding circle from light
-    const { width } = light.comp.props.style;
-    const radius = Number(_.trimEnd(width, 'px'))/2;
     const circle = {
       x: tileSize + (tileSize*(lightTile.column-1)),
       y: tileSize + (tileSize*(lightTile.row-1)),
-      r: radius
+      r: radius * tileSize/2
     };
 
     for (let i = 0; i < tiles.length; i++) {

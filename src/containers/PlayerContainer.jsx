@@ -44,12 +44,13 @@ class PlayerContainer extends PureComponent {
     };
   };
 
-  updateTileCollision = (tileSize, playerPosition) => {
+  updateTileCollision = (tileSize, playerPosition, lightRadius) => {
     dom.afterNextRender(dom.computeCollision, [
       '#room0',
       '#light-radius',
       tileSize,
-      playerPosition
+      playerPosition,
+      lightRadius
     ]);
   };
 
@@ -64,7 +65,7 @@ class PlayerContainer extends PureComponent {
       }
     };
 
-    /* reactive action */
+    /* reactive actions */
 
     // fire offset action on position change
     if (update.next.PlayerSpawn.position !== update.current.PlayerSpawn.position) {
@@ -88,16 +89,18 @@ class PlayerContainer extends PureComponent {
       this.props.actions.Player.updatePosition(nextProps.state.Tile.currentId);
     }
 
-    /* reactive rendering and optional internal updates */
+    /* reactive rendering and optional actions */
 
     // render offset with collision detection
     if (update.next.PlayerSpawn.styleId !== update.current.PlayerSpawn.styleId) {
-      this.updateTileCollision(nextProps.state.Tile.size, update.next.PlayerSpawn.position);
+      debugger;
+      this.updateTileCollision(nextProps.state.Tile.size, update.next.PlayerSpawn.position, update.current.PlayerSpawn.lightRadius);
       return true;
     }
     // render lightRadius with collision detection
     else if (update.next.PlayerSpawn.lightRadius !== update.current.PlayerSpawn.lightRadius && update.current.PlayerSpawn.lightRadius !== undefined) {
-      this.updateTileCollision(nextProps.state.Tile.size, update.next.PlayerSpawn.position);
+      this.props.actions.Entity.offsetSingleEntity('Player', 0);
+      this.updateTileCollision(nextProps.state.Tile.size, update.next.PlayerSpawn.position, update.next.PlayerSpawn.lightRadius);
       return true;
     }
     // render lightRadius offset

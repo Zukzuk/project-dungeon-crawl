@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import {redux} from '../helpers/helpers';
 import GameMenuView from '../views/GameMenuView';
 import GameMenuActions from '../redux/actions/GameMenuActions';
+import PlayerActions from '../redux/actions/PlayerActions';
 
 class GameMenuContainer extends PureComponent {
 
@@ -12,8 +13,8 @@ class GameMenuContainer extends PureComponent {
     const reloadLevel = () => actions.GameMenu.updateLevel(state.GameBoard.level);
     const incrLevel = () => actions.GameMenu.updateLevel(state.GameBoard.level + 1);
     const decrLevel = () => actions.GameMenu.updateLevel(Math.max(1, state.GameBoard.level - 1));
-    const incrLightRadius = () => actions.GameMenu.updateLightRadius(state.Entity.Player.spawns[0].lightRadius + 1);
-    const decrLightRadius = () => actions.GameMenu.updateLightRadius(Math.max(2, state.Entity.Player.spawns[0].lightRadius - 1));
+    const incrLightRadius = () => actions.Player.updateLightRadius(state.Entity.Player.spawns[0].lightRadius + 1);
+    const decrLightRadius = () => actions.Player.updateLightRadius(Math.max(2, state.Entity.Player.spawns[0].lightRadius - 1));
 
     return [{
       title: `perspective: ${state.GameMenu.perspectiveLabel}`,
@@ -50,6 +51,9 @@ export default connect(
     state, ['GameBoard', 'GameMenu', 'Entity']
   ),
   dispatch => redux.mapActions(
-    dispatch, {GameMenu: GameMenuActions}
+    dispatch, {
+      GameMenu: GameMenuActions,
+      Player: PlayerActions
+    }
   )
 )(GameMenuContainer);
