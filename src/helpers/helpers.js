@@ -1,5 +1,9 @@
 import React from 'react';
 import { bindActionCreators } from 'redux';
+import EntityActions from '../redux/actions/EntityActions';
+import PlayerActions from '../redux/actions/PlayerActions';
+import TileActions from '../redux/actions/TileActions';
+import GameMenuActions from '../redux/actions/GameMenuActions';
 
 let collisionBuffer = {};
 
@@ -94,8 +98,15 @@ export const redux = {
   },
 
   mapActions: (dispatch, actions) => {
-    return Object.keys(actions).reduce((result, key) => {
-      result.actions[key] = bindActionCreators({ ...actions[key] }, dispatch);
+    const imports = {
+      Entity: EntityActions,
+      Player: PlayerActions,
+      Tile: TileActions,
+      GameMenu: GameMenuActions
+    };
+    return actions.reduce((result, action) => {
+      if (!imports[action]) throw new Error(`Make sure you import ${action}Actions into helpers.js`);
+      result.actions[action] = bindActionCreators({ ...imports[action] }, dispatch);
       return result;
     }, { actions: {} });
   }

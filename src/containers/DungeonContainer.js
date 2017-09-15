@@ -1,6 +1,6 @@
 import React, {PureComponent} from 'react';
 import {connect} from 'react-redux';
-import {redux, dom} from '../helpers/helpers';
+import {redux} from '../helpers/helpers';
 
 import TileContainer from './TileContainer';
 import TileView from '../views/TileView';
@@ -11,9 +11,6 @@ import DungeonView from '../views/DungeonView';
 import PlayerContainer from "./PlayerContainer";
 import MinionContainer from "./MinionContainer";
 import CameraContainer from "./CameraContainer";
-
-import TileActions from '../redux/actions/TileActions';
-import EntityActions from '../redux/actions/EntityActions';
 
 const getGrid = (props, rectangle, count) => {
   const {rows, columns} = rectangle;
@@ -181,11 +178,9 @@ class DungeonContainer extends PureComponent {
 
 export default connect(
   state => redux.mapState(state, [
-    'GameBoard',
-    'Tile'
+    'GameBoard', 'Tile'
   ]),
-  dispatch => redux.mapActions(dispatch, {
-    Tile: TileActions,
-    Entity: EntityActions
-  })
+  dispatch => redux.mapActions(dispatch, [
+    'Tile', 'Entity'
+  ])
 )(DungeonContainer);

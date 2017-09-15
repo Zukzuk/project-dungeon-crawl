@@ -2,8 +2,6 @@ import React, {PureComponent} from 'react';
 import {connect} from 'react-redux';
 import {redux} from '../helpers/helpers';
 import GameMenuView from '../views/GameMenuView';
-import GameMenuActions from '../redux/actions/GameMenuActions';
-import PlayerActions from '../redux/actions/PlayerActions';
 
 class GameMenuContainer extends PureComponent {
 
@@ -47,13 +45,10 @@ class GameMenuContainer extends PureComponent {
 }
 
 export default connect(
-  state => redux.mapState(
-    state, ['GameBoard', 'GameMenu', 'Entity']
-  ),
-  dispatch => redux.mapActions(
-    dispatch, {
-      GameMenu: GameMenuActions,
-      Player: PlayerActions
-    }
-  )
+  state => redux.mapState(state, [
+    'GameBoard', 'GameMenu', 'Entity'
+  ]),
+  dispatch => redux.mapActions(dispatch, [
+    'GameMenu', 'Player'
+  ])
 )(GameMenuContainer);

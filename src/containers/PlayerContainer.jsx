@@ -1,8 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { dom, redux } from '../helpers/helpers';
-import EntityActions from '../redux/actions/EntityActions';
-import PlayerActions from '../redux/actions/PlayerActions';
 import PlayerView from '../views/PlayerView';
 import LightRadiusView from '../views/LightRadiusView';
 
@@ -136,12 +134,9 @@ class PlayerContainer extends PureComponent {
 
 export default connect(
   state => redux.mapState(state, [
-    'Entity',
-    'Tile',
-    'GameBoard',
+    'Entity', 'Tile', 'GameBoard',
   ]),
-  dispatch => redux.mapActions(dispatch, {
-    Entity: EntityActions,
-    Player: PlayerActions
-  })
+  dispatch => redux.mapActions(dispatch, [
+    'Entity', 'Player'
+  ])
 )(PlayerContainer);
