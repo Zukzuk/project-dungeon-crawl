@@ -7,40 +7,27 @@ import LightRadiusView from '../views/LightRadiusView';
 
 class PlayerContainer extends PureComponent {
 
+  /* lifecycle */
+
   constructor(props) {
     super(props);
     this.componentConstruct(props);
   }
 
-  /* lifecycle */
-
   componentConstruct = props => {
-    const spawns = props.state.Entity.Player.spawns;
+    // const connectedPlayerProps = {
+    //   state: props.state.Entity.Player,
+    //   actions: props.actions.Entity.Player
+    // };
 
-    const playerProps = {
-      state: props.state.Entity.Player,
-      actions: props.actions.Entity.Player,
-      id: 0
-    };
-    this.player = <PlayerView {...playerProps} />;
-
-    const lightRadiusProps = {
-      state: props.state.Entity.Player
-    };
-    this.lightRadius = <LightRadiusView {...lightRadiusProps} />;
-
-    const connectedPlayerProps = {
-      state: props.state.Entity.Player,
-      actions: props.actions.Entity.Player
-    };
-    this.connectedPlayers = spawns.reduce((result, spawn, index) => {
-      if (index) {
-        connectedPlayerProps.key = index;
-        connectedPlayerProps.id = index;
-        result.push(<PlayerView {...connectedPlayerProps} />);
-      }
-      return result;
-    }, []);
+    // this.connectedPlayers = spawns.reduce((result, spawn, index) => {
+    //   if (index) {
+    //     connectedPlayerProps.key = index;
+    //     connectedPlayerProps.id = index;
+    //     result.push(<PlayerView {...connectedPlayerProps} />);
+    //   }
+    //   return result;
+    // }, []);
   };
 
   componentDidMount = () => {
@@ -50,17 +37,39 @@ class PlayerContainer extends PureComponent {
 
   /* updates */
 
+  getPlayerProps(props) {
+    return {
+      state: props.state.Entity.Player,
+      actions: props.actions.Entity.Player,
+      id: 0
+    };
+  };
+
+  getLightRadiusProps(props) {
+    return {
+      state: props.state.Entity.Player
+    };
+  };
+
   shouldComponentUpdate = (nextProps, nextState) => {
-    return true;
+    // update position
+    if (nextProps.state.Entity.Player.spawns[0].position !== this.props.state.Entity.Player.spawns[0].position) {
+      return true;
+    }
+    // update lightRadius
+    if (nextProps.state.Entity.Player.spawns[0].lightRadius === this.props.state.Entity.Player.spawns[0].lightRadius) {
+      return true;
+    }
+    // do not render
+    return false;
   };
 
   /* render */
 
   render = () => (
-    <div className="players">
-      { this.connectedPlayers }
-      { this.player }
-      { this.lightRadius }
+    <div className="player">
+      <PlayerView { ...this.getPlayerProps(this.props) } />
+      <LightRadiusView { ...this.getLightRadiusProps(this.props) } />
     </div>
   );
 }

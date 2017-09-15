@@ -38,7 +38,7 @@ export default {
         type: ENTITY_CONSTANTS.LIGHTRADIUS_OFFSET_SET, name, id,
         payload: styles.lightRadius
       });
-      dom.afterNextRender(dispatch, [EntityActions.lightRadiusCollision()]);
+      dispatch(EntityActions.lightRadiusCollision());
     }
   },
 

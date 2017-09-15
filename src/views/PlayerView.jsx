@@ -1,7 +1,7 @@
 import React from 'react';
 import './PlayerView.scss';
 
-const PlayerView = props => {
+export default props => {
   const classList = 'entity player';
   const id = 'player' + props.id;
   const style = props.state.spawns[props.id].style;
@@ -20,5 +20,3 @@ const PlayerView = props => {
     </div>
   );
 };
-
-export default PlayerView;

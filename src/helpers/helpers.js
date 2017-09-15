@@ -136,13 +136,5 @@ export const redux = {
       result.actions[key] = bindActionCreators({ ...actions[key] }, dispatch);
       return result;
     }, { actions: {} });
-  },
-
-  updateArray: (array, action, key) => {
-    return array.map( (item, index) => {
-      if(index !== action.id) return item;
-      item[key] = action.payload;
-      return item;
-    });
   }
 };

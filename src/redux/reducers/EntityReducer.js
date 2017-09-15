@@ -2,7 +2,6 @@ import {
   ENTITY_CONSTANTS,
   PLAYER_CONSTANTS
 } from '../../constants';
-import { redux } from '../../helpers/helpers';
 import PlayerStates from '../initialStates/PlayerState';
 import MinionStates from '../initialStates/MinionState';
 
@@ -16,31 +15,13 @@ export default (state = initialState, action) => {
   switch (action.type) {
 
     case ENTITY_CONSTANTS.OFFSET_SET:
-      return {
-        ...state,
-        [action.name]: {
-          ...state[action.name],
-          spawns: redux.updateArray(state[action.name].spawns, action, 'style')
-        }
-      };
+      return dotProp.set(state, `${action.name}.spawns.${action.id}.style`, action.payload);
 
     case ENTITY_CONSTANTS.LIGHTRADIUS_OFFSET_SET:
-      return {
-        ...state,
-        [action.name]: {
-          ...state[action.name],
-          spawns: redux.updateArray(state[action.name].spawns, action, 'lightRadiusStyle')
-        }
-      };
+      return dotProp.set(state, `${action.name}.spawns.${action.id}.lightRadiusStyle`, action.payload);
 
     case PLAYER_CONSTANTS.POSITION_SET:
-      return {
-        ...state,
-        [action.name]: {
-          ...state[action.name],
-          spawns: redux.updateArray(state[action.name].spawns, action, 'position')
-        }
-      };
+      return dotProp.set(state, `${action.name}.spawns.${action.id}.position`, action.payload);
 
     default:
       return state

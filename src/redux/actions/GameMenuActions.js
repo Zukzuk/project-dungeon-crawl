@@ -22,5 +22,14 @@ export default {
         payload: newLevel
       });
     }
+  },
+
+  updateLightRadius: newRadius => {
+    return dispatch => {
+      dispatch({
+        type: GAME_MENU_CONSTANTS.UPDATE_LIGHT_RADIUS,
+        payload: newRadius
+      });
+    }
   }
 };

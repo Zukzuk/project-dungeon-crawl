@@ -6,21 +6,20 @@ import MinionView from '../views/MinionView';
 
 class MinionContainer extends PureComponent {
 
-  constructor(props) {
-    super(props);
-    this.componentConstruct(props);
-  }
-
   /* lifecycle */
 
-  componentConstruct = props => {
-    const minionProps = {
-      state: props.state.Entity.Minion,
-      actions: props.actions.Entity.Minion
-    };
-    const spawns = props.state.Entity.Minion.spawns;
+  constructor(props) {
+    super(props);
+  }
 
-    this.minions = spawns.reduce((result, spawn, index) => {
+  /* updates */
+
+  getMinions = props => {
+    const minionProps = {
+      state: props.state.Entity.Minion
+    };
+
+    props.state.Entity.Minion.spawns.reduce((result, spawn, index) => {
       minionProps.key = index;
       minionProps.id = index;
       result.push(<MinionView {...minionProps} />);
@@ -28,20 +27,14 @@ class MinionContainer extends PureComponent {
     }, []);
   };
 
-  componentDidMount = () => {
-    // place the minions
-    dom.afterNextRender(this.props.actions.Entity.offsetAllEntities, ['Minion']);
-  };
-
-  /* updates */
-
   shouldComponentUpdate = (nextProps, nextState) => {
+    // always render
     return true;
   };
 
   /* render */
 
-  render = () => <div className="minions">{this.minions}</div>;
+  render = () => <div className="minions">{ this.getMinions(this.props) }</div>;
 }
 
 export default connect(

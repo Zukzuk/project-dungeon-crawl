@@ -1,14 +1,17 @@
 import React, {PureComponent} from 'react';
 import {connect} from 'react-redux';
 import {redux, dom} from '../helpers/helpers';
+
 import TileContainer from './TileContainer';
 import TileView from '../views/TileView';
 import RoomContainer from './RoomContainer';
 import RoomView from '../views/RoomView';
+import DungeonView from '../views/DungeonView';
+
 import PlayerContainer from "./PlayerContainer";
 import MinionContainer from "./MinionContainer";
 import CameraContainer from "./CameraContainer";
-import DungeonView from '../views/DungeonView';
+
 import TileActions from '../redux/actions/TileActions';
 import EntityActions from '../redux/actions/EntityActions';
 
@@ -119,37 +122,33 @@ const buildRooms = (grids, props) => {
 
 class DungeonContainer extends PureComponent {
 
-  constructor(props) {
-    super(props);
-    this.componentConstruct(props);
-  }
-
   /* lifecycle */
 
-  componentConstruct = props => {
+  constructDungeon = props => {
     const numOfTiles = Math.pow(2, props.state.GameBoard.level);
     // get squares of each grid as rectangles
     const rectangles = buildRectangles(numOfTiles, props.state.GameBoard.level);
     // build tile entities from tiled-rectangles
     const tileGrids = buildTileGrids(rectangles, props);
     // build room entities from grids
-    this.rooms = buildRooms(tileGrids, props);
+    return buildRooms(tileGrids, props);
   };
 
-  componentDidMount = () => {
-    this.view = document.querySelector('#dungeon');
-    this.updatePerspective({...this.props.state.GameBoard});
+  /* update */
+
+  getDungeonProps = props => {
+    return {
+      state: props.state.GameBoard
+    };
   };
 
   shouldComponentUpdate = nextProps => {
     // update perspective
     if (nextProps.state.GameBoard.hasPerspective !== this.props.state.GameBoard.hasPerspective) {
-      this.updatePerspective({...nextProps.state.GameBoard});
       return true;
     }
     // update level
     else if (nextProps.state.GameBoard.level !== this.props.state.GameBoard.level) {
-      this.componentConstruct(nextProps);
       dom.afterNextRender(nextProps.actions.Entity.offsetAllEntities);
       return true;
     }
@@ -157,23 +156,13 @@ class DungeonContainer extends PureComponent {
     return false;
   };
 
-  /* updates */
-
-  updatePerspective = ({hasPerspective}) => {
-    dom.setClassList({
-      nodes: dom.toArray(this.view),
-      names: 'perspective',
-      addif: hasPerspective
-    });
-  };
-
   /* render */
 
   render = () => {
     return (
-      <DungeonView>
+      <DungeonView { ...this.getDungeonProps(this.props) }>
         <CameraContainer>
-          <div className="rooms">{ this.rooms }</div>
+          <div className='rooms'>{ this.constructDungeon(this.props) }</div>
           <PlayerContainer />
           <MinionContainer />
         </CameraContainer>
@@ -185,10 +174,10 @@ class DungeonContainer extends PureComponent {
 export default connect(
   state => redux.mapState(state, [
     'GameBoard',
-    'Tile',
+    'Tile'
   ]),
   dispatch => redux.mapActions(dispatch, {
     Tile: TileActions,
-    Entity: EntityActions,
+    Entity: EntityActions
   })
 )(DungeonContainer);

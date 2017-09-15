@@ -5,6 +5,7 @@ import { ConnectedRouter } from 'react-router-redux';
 import store, { history } from './store';
 
 import _ from 'lodash';
+window.dotProp = require('dot-prop-immutable');
 
 import AppContainer from './containers/AppContainer';
 
