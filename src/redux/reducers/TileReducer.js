@@ -27,6 +27,24 @@ export default (state = initialState, action) => {
         currentId: action.payload
       };
 
+    case TILE_CONSTANTS.TILE_CLASS_SET:
+      return {
+        ...state,
+        Tiles: [
+          ...state.Tiles.slice(0, action.index),
+          {cssClass: action.cssClass},
+          ...state.Tiles.slice(action.index + 1, state.Tiles.length)
+        ],
+      };
+    case TILE_CONSTANTS.TILE_HIGHLIGHT:
+      return {
+        ...state,
+        Tiles: [
+          ...state.Tiles.slice(0, action.index),
+          {highlight: action.highlight},
+          ...state.Tiles.slice(action.index + 1, state.Tiles.length)
+        ]
+      }
     default:
       return state
   }

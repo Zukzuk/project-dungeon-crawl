@@ -1,9 +1,10 @@
 import {
-  ENTITY_CONSTANTS,
+  ENTITY_CONSTANTS, TILE_CONSTANTS
 } from '../../constants';
 import TileActions from './TileActions'
 import { dom } from '../../helpers/helpers'
 import ReactDOM from 'react-dom';
+import PF from 'pathfinding';
 
 export default {
 
@@ -39,7 +40,12 @@ export default {
         }
       });
     };
+  },
+
+  entityPlanRoute: (entity, index) => {
+    return (dispatch, getState) => planRoute(dispatch, getState, entity);
   }
+
 };
 
 const getOffset = (dispatch, getState, entity, reset) => {
@@ -58,6 +64,49 @@ const getSize = (dispatch, size, entity) => {
     payload: size,
     name: entity.type
   });
+};
+
+const calculateRoute = (source, destination) => {
+  const numArray = Array.apply(null, Array(20)).map( (v, i) => { return i; } );
+  numArray.map
+  let grid = [];
+  for( let y = 0; y < 20; y++ ) {
+    let row = [];
+    for( let x = 0; x < 20; x++ )
+      row.push(0);
+    grid.push(row);
+  }
+  grid = new PF.Grid(grid);
+  let finder = new PF.AStarFinder();
+  return finder.findPath(source[0], source[1], destination[0], destination[1], grid);
+}
+const planRoute = (dispatch, getState, entity) => {
+  //const route = [20, 40, 60, 61, 62, 63, 83, 103];
+  const playerIndex = getState().Entity.Player.spawns[0].position;
+  const playerXY = [playerIndex % 20, Math.floor(playerIndex/20)];
+  const destinationIndex = getState().Tile.currentId;
+  const destinationXY = [destinationIndex % 20, Math.floor(destinationIndex/20)];
+  const routeXY = calculateRoute(playerXY, destinationXY);
+  //console.log("PlayerXY:", playerXY);
+  //console.log("destinationXY:", destinationXY);
+  //console.log("routeXY:", routeXY);
+  const route = routeXY.map( (xy) => {return xy[0] + xy[1] * 20} );
+  console.log("route:", route);
+  // snakeHightlightTiles is a development action, which shouldn't fire in production
+  snakeHightlightTiles(dispatch, route);
+
+  dispatch({
+    type: ENTITY_CONSTANTS.ENTITY_FOLLOW_PATH,
+    payload: route,
+    name: entity.type,
+    id: entity.props.children.props.id,
+  });
+};
+
+const snakeHightlightTiles = (dispatch, route) => {
+  for( let i=0; i < route.length; i++ ) {
+    dispatch(TileActions.highlightTile(route[i], i));
+  }
 };
 
 const getStyle = (state, dispatch, entity = null, reset = false) => {

@@ -42,7 +42,14 @@ export default (state = initialState, action) => {
           spawns: redux.updateArray(state[action.name].spawns, action, 'position')
         }
       };
-
+    case PLAYER_CONSTANTS.PLAYER_MOVE_TO_POSITION:
+      return {
+        ...state,
+        [action.name]: {
+          ...state[action.name],
+          spawns: redux.updateArray(state[action.name].spawns, action, 'routeTarget')
+        }
+      };
     default:
       return state
   }

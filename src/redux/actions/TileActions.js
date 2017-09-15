@@ -8,10 +8,7 @@ export default {
     return dispatch => {
       dispatch({
         type: TILE_CONSTANTS.TILE_POSITION_SET,
-        payload: {
-          margin: `${gutter}px`,
-          width: `calc(100% * (1/${columns}) - ${gutter * 2}px)`
-        }
+        payload: {margin: `${gutter}px`, width: `calc(100% * (1/${columns}) - ${gutter * 2}px)`},
       });
     }
   },
@@ -32,7 +29,32 @@ export default {
         payload: index
       });
 
-      dispatch(PlayerActions.updatePosition(index));
+      //dispatch(PlayerActions.updatePosition(index));
+      dispatch(PlayerActions.moveToPosition(index));
     }
-  }
+  },
+
+  highlightTile: (index, seq) => {
+    return (dispatch, getState) => {
+      //console.log("index:", index, "seq:", seq);
+      //console.log("getState", getState());
+      if( ! getState().Tile.Tiles[index].highlight ) {
+        setTimeout( () => {
+          dispatch({
+            type: TILE_CONSTANTS.TILE_HIGHLIGHT,
+            index: index,
+            highlight: "highlight",
+          });
+        }, 50 * seq);
+        setTimeout( () => {
+          dispatch({
+            type: TILE_CONSTANTS.TILE_HIGHLIGHT,
+            index: index,
+            highlight: null,
+          });
+        }, 50 * seq + 2000);
+      }
+    }
+  },
+
 };

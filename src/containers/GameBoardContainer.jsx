@@ -49,12 +49,12 @@ class GameBoardContainer extends PureComponent {
     }
     return grid;
   };
-
+  
   getTile = (props, index) => {
     const selectTile = () => props.actions.selectTile(index - 1);
     return (
       <EntityContainer key={index}>
-        <TileView {...props} onClick={ selectTile }/>
+        <TileView {...props} index={ index -1 } onClick={ selectTile }/>
       </EntityContainer>
     )
   };

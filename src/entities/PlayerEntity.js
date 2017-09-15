@@ -15,6 +15,8 @@ export default {
     switch (event.lastEvent) {
       case PLAYER_CONSTANTS.PLAYER_POSITION_SET:
         return childProps.actions.entityOffset(entity);
+      case PLAYER_CONSTANTS.PLAYER_MOVE_TO_POSITION:
+        return childProps.actions.entityPlanRoute(entity);
     }
   },
 
