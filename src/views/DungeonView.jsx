@@ -1,11 +1,9 @@
 import React from 'react';
 import './DungeonView.scss';
 
-const DungeonView = props => {
+export default props => {
   const classList = props.state.hasPerspective ? 'perspective' : '';
   return (
     <div id='dungeon' className={ classList }>{ props.children }</div>
   );
 };
-
-export default DungeonView;

@@ -1,7 +1,7 @@
 import React from 'react';
 import './MinionView.scss';
 
-const MinionView = props => {
+export default props => {
   const classList = 'entity minion';
   const id = 'minion' + props.id;
   const style = props.state.spawns[props.id].style;
@@ -20,5 +20,3 @@ const MinionView = props => {
     </div>
   );
 };
-
-export default MinionView;

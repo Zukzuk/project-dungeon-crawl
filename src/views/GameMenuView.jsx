@@ -1,7 +1,7 @@
 import React from 'react';
 import './GameMenuView.scss';
 
-const GameMenuView = props => {
+export default props => {
   return <div className='game-menu'>
     {
       props.children.map((menu, index) => {
@@ -15,5 +15,3 @@ const GameMenuView = props => {
     }
   </div>;
 };
-
-export default GameMenuView;
