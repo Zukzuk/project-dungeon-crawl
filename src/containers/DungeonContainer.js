@@ -1,6 +1,6 @@
 import React, {PureComponent} from 'react';
 import {connect} from 'react-redux';
-import {redux} from '../helpers/helpers';
+import {dom, redux} from '../helpers/helpers';
 
 import TileContainer from './TileContainer';
 import TileView from '../views/TileView';
@@ -136,12 +136,19 @@ class DungeonContainer extends PureComponent {
 
   updateDungeon(props) {
     const numOfTiles = Math.pow(2, props.state.GameBoard.level);
+    debugger;
     // get squares of each grid as rectangles
     const rectangles = buildRectangles(numOfTiles, props.state.GameBoard.level);
+    debugger;
+
     // build tile entities from tiled-rectangles
     const tileGrids = buildTileGrids(rectangles, props);
+    debugger;
+
     // build room entities from grids
     this.rooms = buildRooms(tileGrids, props);
+    debugger;
+
   }
 
   shouldComponentUpdate(nextProps) {
@@ -154,7 +161,10 @@ class DungeonContainer extends PureComponent {
     }
     // render new level
     else if (nextProps.state.GameBoard.level !== this.props.state.GameBoard.level) {
-      this.updateDungeon(nextProps);
+      this.rooms;
+      dom.afterNextRender(() => {
+        this.updateDungeon(nextProps);
+      });
       return true;
     }
     // do not update

@@ -24,7 +24,7 @@ class PlayerContainer extends PureComponent {
     //   return result;
     // }, []);
     this.props.actions.Tile.selectTile(0, 0);
-    this.props.actions.Player.updateLightRadius(5);
+    this.props.actions.Player.updateLightRadius(4);
   }
 
   /* updates */
@@ -96,7 +96,9 @@ class PlayerContainer extends PureComponent {
     // render offset action on gameboard level change
     if (nextProps.state.GameBoard.level !== this.props.state.GameBoard.level) {
       dom.resetCollision();
-      this.props.actions.Entity.offsetReset('Player', 0);
+      dom.afterNextRender(() => {
+        this.props.actions.Tile.selectTile(0, 0);
+      });
       return true;
     }
     // render offset with collision detection
