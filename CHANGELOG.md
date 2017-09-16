@@ -6,10 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.0.3] - 2017-08-16
+### Added
+- Collision detection
+
 ## [0.0.2] - 2017-08-14
 ### Added
 - Bare bone random room creator based on power of 2 tiles
-- Collision detection
 
 ## [0.0.1] - 2017-07-24
 ### Added
