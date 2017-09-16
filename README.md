@@ -1,4 +1,6 @@
-###Project X 
+### Project X 
+
+This is our attempt at being a game-developer and building a cool game...
 
 To install the project:
 
