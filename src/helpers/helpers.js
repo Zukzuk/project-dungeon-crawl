@@ -54,7 +54,7 @@ export const dom = {
       const dy = distY - rect.h / 2;
       const opacity = Math.max(0, 1 - ((dx * dx + dy * dy) / (circle.r * circle.r)) );
       const tileElm = room.elm.querySelector(`#tile${i}`);
-      tileElm.style['opacity'] = (opacity > .62) ? 1 : opacity;
+      tileElm.style['opacity'] = (opacity > .62) ? 1 : (opacity < .2) ? .2 : opacity;
     }
   },
 
