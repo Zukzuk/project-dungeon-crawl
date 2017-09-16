@@ -7,11 +7,13 @@ class GameBoardContainer extends PureComponent {
 
   /* render */
 
-  render = () => (
-    <GameBoardView>
-      <DungeonContainer />
-    </GameBoardView>
-  );
+  render() {
+    return (
+      <GameBoardView>
+        <DungeonContainer />
+      </GameBoardView>
+    );
+  }
 }
 
 export default connect()(GameBoardContainer);

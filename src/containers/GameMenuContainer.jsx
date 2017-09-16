@@ -5,7 +5,7 @@ import GameMenuView from '../views/GameMenuView';
 
 class GameMenuContainer extends PureComponent {
 
-  getMenuItems = props => {
+  getMenuItems(props) {
     const {actions, state} = props;
     const togglePersp = () => actions.GameMenu.togglePerspective(!state.GameBoard.hasPerspective);
     const reloadLevel = () => actions.GameMenu.updateLevel(state.GameBoard.level);
@@ -35,13 +35,15 @@ class GameMenuContainer extends PureComponent {
         <button key="IncrLightRadius" onClick={incrLightRadius}>+</button>
       ]
     }]
-  };
+  }
 
-  render = () => (
-    <GameMenuView>
-      { this.getMenuItems(this.props) }
-    </GameMenuView>
-  );
+  render() {
+    return (
+      <GameMenuView>
+        {this.getMenuItems(this.props)}
+      </GameMenuView>
+    );
+  }
 }
 
 export default connect(

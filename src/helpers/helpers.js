@@ -20,16 +20,18 @@ export const dom = {
     return { comp: internalInstance._currentElement, elm: dom };
   },
 
-  computeCollision: (roomSelector, lightSelector, tileSize, position, radius) => {
+  computeCollision: (roomSelector, lightSelector, tileSize, roomId, position, radius) => {
     // get components
     const room = collisionBuffer.room || dom.getComponent(document.querySelector(roomSelector));
     const light = collisionBuffer.light || dom.getComponent(document.querySelector(lightSelector));
     // flatten the room into tiles
     const tiles = collisionBuffer.tiles || Array.prototype.concat.apply([], room.comp.props.children);
     // buffer components
-    collisionBuffer = { room, light, tiles };
+    collisionBuffer = { roomId, room, light, tiles };
     // get the tile where the light is centered
-    const lightTile = tiles[position].props.children.props;
+    const offsetPosition = tiles[0].props.children.props.id;
+    const normalizedPosition = position - offsetPosition;
+    const lightTile = tiles[normalizedPosition].props.children.props;
     // create bounding circle from light
     const circle = {
       x: tileSize + (tileSize*(lightTile.column-1)),
@@ -52,17 +54,28 @@ export const dom = {
       const distY = Math.abs(circle.y - rect.y-rect.h/2);
       const dx = distX - rect.w / 2;
       const dy = distY - rect.h / 2;
-      const opacity = Math.max(0, 1 - ((dx * dx + dy * dy) / (circle.r * circle.r)) );
-      const tileElm = room.elm.querySelector(`#tile${i}`);
-      tileElm.style['opacity'] = (opacity > .62) ? 1 : (opacity < .2) ? .2 : opacity;
+      const ratio = Math.max(0, 1 - ((dx * dx + dy * dy) / (circle.r * circle.r)) );
+
+      const tileElm = room.elm.querySelector(`#tile${i+offsetPosition}`);
+      if (ratio) {
+        tileElm.setAttribute('data-light', 'on');
+        tileElm.style['opacity'] = (ratio > .62) ? 1 : (ratio < .2) ? .2 : ratio;
+      } else if (_.get(tileElm, 'attributes[\'data-light\'].nodeValue') === 'on') {
+        tileElm.setAttribute('data-light', 'off');
+      }
     }
   },
 
+  isValidCollision: roomId => {
+    return (collisionBuffer.roomId === undefined || collisionBuffer.roomId === roomId);
+  },
+
   resetCollision: () => {
-    if (collisionBuffer.tiles) {
+    if (collisionBuffer.roomId !== undefined) {
+      const offsetPosition = collisionBuffer.tiles[0].props.children.props.id;
       for (let i = 0; i < collisionBuffer.tiles.length; i++) {
-        const tileElm = collisionBuffer.room.elm.querySelector(`#tile${i}`);
-        if (_.get(tileElm, 'attributes[\'light-radius\']')) tileElm.removeAttribute('light-radius');
+        const tileElm = collisionBuffer.room.elm.querySelector(`#tile${i+offsetPosition}`);
+        tileElm.setAttribute('data-light', 'fogofwar');
       }
       collisionBuffer = {};
     }
@@ -105,8 +118,9 @@ export const redux = {
       GameMenu: GameMenuActions
     };
     return actions.reduce((result, action) => {
-      if (!imports[action]) throw new Error(`Make sure you import ${action}Actions into helpers.js`);
-      result.actions[action] = bindActionCreators({ ...imports[action] }, dispatch);
+      const importedAction = imports[action];
+      if (!importedAction) throw new Error(`Make sure you import ${action}Actions into helpers.js`);
+      result.actions[action] = bindActionCreators(importedAction, dispatch);
       return result;
     }, { actions: {} });
   }

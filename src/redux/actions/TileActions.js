@@ -5,11 +5,13 @@ import PlayerActions from './PlayerActions';
 
 export default {
 
-  selectTile: index => {
+  selectTile: (tileId, roomId) => {
     return dispatch => {
       dispatch({
         type: TILE_CONSTANTS.SELECT,
-        payload: index
+        payload: {
+          tileId, roomId
+        }
       });
     }
   }

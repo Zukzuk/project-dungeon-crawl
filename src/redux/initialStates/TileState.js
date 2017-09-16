@@ -1,5 +1,6 @@
 export default {
-  currentId: 0,
-  size: 80,
+  tileId: undefined,
+  roomId: undefined,
+  size: 50,
   gutter: 2
 }

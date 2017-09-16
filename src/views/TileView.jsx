@@ -8,7 +8,7 @@ export default props => {
   const { style, onClick } = props;
 
   return (
-    <div className={ classList } id={ id } style={ style } onClick={ onClick }>
+    <div className={ classList } id={ id } style={ style } onClick={ onClick } data-light='fogofwar'>
       { tileNumber }
     </div>
   );

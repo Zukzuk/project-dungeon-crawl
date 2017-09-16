@@ -9,7 +9,8 @@ export default (state = initialState, action) => {
     case TILE_CONSTANTS.SELECT:
       return {
         ...state,
-        currentId: action.payload
+        tileId: action.payload.tileId,
+        roomId: action.payload.roomId
       };
 
     default:

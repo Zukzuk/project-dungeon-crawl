@@ -1,19 +1,15 @@
-import React, { PureComponent } from 'react';
-import { connect } from 'react-redux';
-import { redux } from '../helpers/helpers';
+import React, {PureComponent} from 'react';
+import {connect} from 'react-redux';
+import {redux} from '../helpers/helpers';
 import MinionView from '../views/MinionView';
 
 class MinionContainer extends PureComponent {
 
   /* lifecycle */
 
-  constructor(props) {
-    super(props);
-  }
-
   /* updates */
 
-  getMinions = props => {
+  getMinions(props) {
     const minionProps = {
       state: props.state.Entity.Minion
     };
@@ -24,16 +20,22 @@ class MinionContainer extends PureComponent {
       result.push(<MinionView {...minionProps} />);
       return result;
     }, []);
-  };
+  }
 
-  shouldComponentUpdate = (nextProps, nextState) => {
+  shouldComponentUpdate(nextProps) {
     // always render
     return true;
-  };
+  }
 
   /* render */
 
-  render = () => <div className="minions">{ this.getMinions(this.props) }</div>;
+  render() {
+    return (
+      <div className="minions">
+        {this.getMinions(this.props)}
+      </div>
+    );
+  }
 }
 
 export default connect(

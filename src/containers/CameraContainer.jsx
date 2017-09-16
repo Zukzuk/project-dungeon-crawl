@@ -5,11 +5,13 @@ import CameraView from '../views/CameraView';
 
 class CameraContainer extends PureComponent {
 
-  render = () => (
-    <CameraView>
-      { this.props.children }
-    </CameraView>
-  );
+  render() {
+    return (
+      <CameraView>
+        { this.props.children }
+      </CameraView>
+    );
+  }
 }
 
 export default connect(

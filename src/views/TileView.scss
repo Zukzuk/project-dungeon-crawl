@@ -8,7 +8,12 @@
 
   color: #ccc;
   background-color: #eee;
-  opacity: .2;
+  &[data-light='fogofwar'] {
+    opacity: .05 !important;
+  }
+  &[data-light='off'] {
+    opacity: .2 !important;
+  }
 
   pointer-events: all;
   > * {

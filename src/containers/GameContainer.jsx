@@ -5,12 +5,14 @@ import GameMenuContainer from './GameMenuContainer';
 
 class GameContainer extends PureComponent {
 
-  render = () => (
-    <GameView>
-      <GameMenuContainer />
-      <GameBoardContainer />
-    </GameView>
-  );
+  render() {
+    return (
+      <GameView>
+        <GameMenuContainer />
+        <GameBoardContainer />
+      </GameView>
+    );
+  }
 }
 
 export default GameContainer;

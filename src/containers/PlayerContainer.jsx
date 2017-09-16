@@ -8,7 +8,7 @@ class PlayerContainer extends PureComponent {
 
   /* lifecycle */
 
-  componentDidMount = () => {
+  componentDidMount() {
 
     // const connectedPlayerProps = {
     //   state: props.state.Entity.Player,
@@ -23,38 +23,40 @@ class PlayerContainer extends PureComponent {
     //   }
     //   return result;
     // }, []);
-    this.props.actions.Player.updatePosition(0);
+    this.props.actions.Tile.selectTile(0, 0);
     this.props.actions.Player.updateLightRadius(5);
-  };
+  }
 
   /* updates */
 
-  getPlayerProps = props => {
+  getPlayerProps(props) {
     return {
       state: props.state.Entity.Player,
       id: 0
     };
-  };
+  }
 
-  getLightRadiusProps = props => {
+  getLightRadiusProps(props) {
     return {
       state: props.state.Entity.Player
     };
-  };
+  }
 
-  updateTileCollision = props => {
+  updateTileCollision(props) {
     dom.afterNextRender(() => {
+      if (!dom.isValidCollision(props.state.Tile.roomId)) dom.resetCollision();
       dom.computeCollision(
-        '#room0',
+        `#room${props.state.Tile.roomId}`,
         '#light-radius',
         props.state.Tile.size,
+        props.state.Tile.roomId,
         props.state.Entity.Player.spawns[0].position,
         props.state.Entity.Player.spawns[0].lightRadius
       );
     });
-  };
+  }
 
-  shouldComponentUpdate = nextProps => {
+  shouldComponentUpdate(nextProps) {
 
     /* create update shorthand for some props */
 
@@ -84,8 +86,8 @@ class PlayerContainer extends PureComponent {
       this.props.actions.Entity.offsetSingleEntity('Player', 0);
     }
     // fire position action on tile change
-    else if (nextProps.state.Tile.currentId !== this.props.state.Tile.currentId) {
-      this.props.actions.Player.updatePosition(nextProps.state.Tile.currentId);
+    else if (nextProps.state.Tile.tileId !== this.props.state.Tile.tileId) {
+      this.props.actions.Player.updatePosition(nextProps.state.Tile.tileId);
     }
 
     /* reactive rendering and optional actions */
@@ -95,9 +97,6 @@ class PlayerContainer extends PureComponent {
     if (nextProps.state.GameBoard.level !== this.props.state.GameBoard.level) {
       dom.resetCollision();
       this.props.actions.Entity.offsetReset('Player', 0);
-      dom.afterNextRender(() => {
-        this.props.actions.Player.updatePosition(0);
-      });
       return true;
     }
     // render offset with collision detection
@@ -118,11 +117,11 @@ class PlayerContainer extends PureComponent {
 
     // do not render
     return false;
-  };
+  }
 
   /* render */
 
-  render = () => {
+  render() {
     return (
       <div className="player">
         <PlayerView { ...this.getPlayerProps(this.props) } />
@@ -137,6 +136,6 @@ export default connect(
     'Entity', 'Tile', 'GameBoard',
   ]),
   dispatch => redux.mapActions(dispatch, [
-    'Entity', 'Player'
+    'Entity', 'Player', 'Tile'
   ])
 )(PlayerContainer);
