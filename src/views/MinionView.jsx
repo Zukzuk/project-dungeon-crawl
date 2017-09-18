@@ -1,10 +1,22 @@
 import React from 'react';
 import './MinionView.scss';
 
-const MinionView = props => {
+export default props => {
+  const classList = 'entity minion';
   const id = 'minion' + props.id;
-  const style = props.state.Minion.spawns[props.id].style;
-  return <div className='entity minion' id={ id } style={ style }></div>;
-};
+  const style = props.state.spawns[props.id].style;
+  const offsetStyle = style ? {
+    top: style.top,
+    left: style.left
+  } : null;
+  const iconStyle = style ? {
+    width: style.width,
+    height: style.height
+  } : null;
 
-export default MinionView;
+  return (
+    <div className={ classList } id={ id } style={ offsetStyle }>
+      <div className='icon' style={ iconStyle }></div>
+    </div>
+  );
+};

@@ -1,7 +1,24 @@
 .tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   position: relative;
-  background-color: #eee;
   cursor: pointer;
+
+  color: #ccc;
+  background-color: #eee;
+  &[data-light='fogofwar'] {
+    opacity: .05 !important;
+  }
+  &[data-light='off'] {
+    opacity: .2 !important;
+  }
+
+  pointer-events: all;
+  > * {
+    pointer-events: none;
+  }
 
   &:hover {
     background-color: #ddd;

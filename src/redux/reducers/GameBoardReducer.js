@@ -1,11 +1,5 @@
 import { GAME_MENU_CONSTANTS } from '../../constants';
-
-const initialState = {
-  columns: 20,
-  rows: 20,
-  gutter: 1,
-  hasPerspective: false
-};
+import initialState from '../initialStates/GameBoardState';
 
 export default (state = initialState, action) => {
   switch (action.type) {
@@ -13,6 +7,12 @@ export default (state = initialState, action) => {
       return {
         ...state,
         hasPerspective: action.payload
+      };
+
+    case GAME_MENU_CONSTANTS.LEVEL_SET:
+      return {
+        ...state,
+        level: action.payload
       };
 
     default:

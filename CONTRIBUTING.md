@@ -1,1 +1,1 @@
-If you want to add your component to the Daily Banking app, please refer to the appropriate guides in [our onboarding documentation](https://gitlab.ing.net/Platinum/ing-app-daily-banking/wikis/docs/onboarding).
+Just build stuff and make a pull request. We make sure to look at it!

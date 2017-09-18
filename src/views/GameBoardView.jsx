@@ -1,8 +1,6 @@
 import React from 'react';
 import './GameBoardView.scss';
 
-const GameBoardView = props => (
+export default props => (
   <div className='game-board'>{ props.children }</div>
 );
-
-export default GameBoardView;

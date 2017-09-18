@@ -1,11 +1,22 @@
 import React from 'react';
 import './PlayerView.scss';
 
-const PlayerView = props => {
-  const classList = props.id ? 'entity player' : 'entity player user';
+export default props => {
+  const classList = 'entity player';
   const id = 'player' + props.id;
-  const style = props.state.Player.spawns[props.id].style;
-  return <div className={ classList } id={ id } style={ style }></div>;
-};
+  const style = props.state.spawns[props.id].style;
+  const offsetStyle = style ? {
+    top: style.top,
+    left: style.left
+  } : null;
+  const iconStyle = style ? {
+    width: style.width,
+    height: style.height
+  } : null;
 
-export default PlayerView;
+  return (
+    <div className={ classList } id={ id } style={ offsetStyle }>
+      <div className='icon' style={ iconStyle }></div>
+    </div>
+  );
+};

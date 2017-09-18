@@ -1,7 +1,6 @@
 import {
-  GAME_MENU_CONSTANTS
+  GAME_MENU_CONSTANTS, PLAYER_CONSTANTS
 } from '../../constants';
-import EntityActions from './EntityActions'
 
 export default {
   togglePerspective: flag => {
@@ -10,8 +9,15 @@ export default {
         type: GAME_MENU_CONSTANTS.PERSPECTIVE_TOGGLE,
         payload: flag
       });
+    }
+  },
 
-      dispatch(EntityActions.entityOffsetRecalc());
+  updateLevel: newLevel => {
+    return dispatch => {
+      dispatch({
+        type: GAME_MENU_CONSTANTS.LEVEL_SET,
+        payload: newLevel
+      });
     }
   }
 };
