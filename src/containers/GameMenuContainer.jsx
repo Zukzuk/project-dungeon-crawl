@@ -9,7 +9,7 @@ class GameMenuContainer extends PureComponent {
     const {actions, state} = props;
     const togglePersp = () => actions.GameMenu.togglePerspective(!state.GameBoard.hasPerspective);
     const reloadLevel = () => actions.GameMenu.updateLevel(state.GameBoard.level);
-    const incrLevel = () => actions.GameMenu.updateLevel(state.GameBoard.level + 1);
+    const incrLevel = () => actions.GameMenu.updateLevel(Math.min(12, state.GameBoard.level + 1));
     const decrLevel = () => actions.GameMenu.updateLevel(Math.max(1, state.GameBoard.level - 1));
     const incrLightRadius = () => actions.Player.updateLightRadius(state.Entity.Player.spawns[0].lightRadius + 1);
     const decrLightRadius = () => actions.Player.updateLightRadius(state.Entity.Player.spawns[0].lightRadius - 1);
@@ -23,8 +23,8 @@ class GameMenuContainer extends PureComponent {
       title: `level: ${state.GameBoard.level}`,
       buttons: [
         <button key="ReloadLevel" onClick={reloadLevel}>reload</button>,
-        <button key="DecrLevel" onClick={decrLevel}>-</button>,
-        <button key="IncrLevel" onClick={incrLevel}>+</button>
+        <button key="DecrLevel" disabled={state.GameBoard.level === 1} onClick={decrLevel}>-</button>,
+        <button key="IncrLevel" disabled={state.GameBoard.level === 12} onClick={incrLevel}>+</button>
       ]
     }, {
       title: `number of tiles: ${Math.pow(2, this.props.state.GameBoard.level)}`

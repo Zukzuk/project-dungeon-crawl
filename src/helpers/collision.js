@@ -5,17 +5,24 @@ let collisionBuffer = {};
 export default {
 
   compute: (roomSelector, lightSelector, tileSize, roomId, position, radius) => {
+    if (isNaN(tileSize) || isNaN(roomId) || isNaN(position) || isNaN(radius)) return;
+
     // get components
     const room = collisionBuffer.room || dom.getComponent(document.querySelector(roomSelector));
     const light = collisionBuffer.light || dom.getComponent(document.querySelector(lightSelector));
     // flatten the room into tiles
-    const tiles = collisionBuffer.tiles || Array.prototype.concat.apply([], room.comp.props.children);
+    const tiles = collisionBuffer.tiles ? collisionBuffer.tiles : room.comp.props.children ? Array.prototype.concat.apply([], room.comp.props.children) : null;
+    if (!room || !light || !tiles) return;
+
     // buffer components
     collisionBuffer = { roomId, room, light, tiles };
+
     // get the tile where the light is centered
     const offsetPosition = tiles[0].props.children.props.id;
     const normalizedPosition = position - offsetPosition;
     const lightTile = tiles[normalizedPosition].props.children.props;
+    debugger;
+
     // create bounding circle from light
     const circle = {
       x: tileSize + (tileSize*(lightTile.column-1)),
@@ -50,18 +57,15 @@ export default {
     }
   },
 
-  isValid: roomId => {
-    return (collisionBuffer.roomId === undefined || collisionBuffer.roomId === roomId);
-  },
-
-  reset: () => {
+  resetAndRecalculate: (callback, props) => {
     if (collisionBuffer.roomId !== undefined) {
       const offsetPosition = collisionBuffer.tiles[0].props.children.props.id;
       for (let i = 0; i < collisionBuffer.tiles.length; i++) {
         const tileElm = collisionBuffer.room.elm.querySelector(`#tile${i+offsetPosition}`);
-        tileElm.setAttribute('data-light', 'fogofwar');
+        if (tileElm) tileElm.setAttribute('data-light', 'fogofwar');
       }
       collisionBuffer = {};
     }
+    callback(props);
   }
 };

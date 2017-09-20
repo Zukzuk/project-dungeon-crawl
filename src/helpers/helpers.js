@@ -33,6 +33,12 @@ export const dom = {
   }
 };
 
+export const react = {
+  stateDidUpdate: (current, next, slice) => {
+    return _.get(next, `state[${slice}]`) !== _.get(current, `state[${slice}]`);
+  }
+};
+
 export const redux = {
   mapState: (state, slices) => {
     return slices.reduce((result, slice) => {
@@ -48,6 +54,7 @@ export const redux = {
       Tile: TileActions,
       GameMenu: GameMenuActions
     };
+
     return actions.reduce((result, action) => {
       const importedAction = imports[action];
       if (!importedAction) throw new Error(`Make sure you import ${action}Actions into helpers.js`);
