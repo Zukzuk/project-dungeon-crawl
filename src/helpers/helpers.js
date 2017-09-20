@@ -7,15 +7,11 @@ import GameMenuActions from '../redux/actions/GameMenuActions';
 
 export const dom = {
 
-  afterNextRender: fn => {
-    setTimeout(() => fn(), 100);
-  },
-
   getComponent: dom => {
     const internalInstance = dom[Object.keys(dom).find(key =>
       key.startsWith('__reactInternalInstance$'))];
     if (!internalInstance) return null;
-    return { comp: internalInstance._currentElement, elm: dom };
+    return { instance: internalInstance._currentElement, elm: dom };
   },
 
   getComputedSize: node => {
@@ -36,7 +32,9 @@ export const dom = {
 
 export const react = {
   stateDidUpdate: (current, next, slice) => {
-    return _.get(next, `state[${slice}]`) !== _.get(current, `state[${slice}]`);
+    const doUpdate = _.get(next, `state[${slice}]`) !== _.get(current, `state[${slice}]`);
+    if (doUpdate) console.log(slice, ':', _.get(current, `state[${slice}]`), '=>', _.get(next, `state[${slice}]`));
+    return _.get(current, `state[${slice}]`) !== _.get(next, `state[${slice}]`);
   }
 };
 

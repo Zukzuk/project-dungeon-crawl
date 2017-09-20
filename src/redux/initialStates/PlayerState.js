@@ -4,10 +4,6 @@ export default {
   currentId: 0,
   spawns: [{
     position: {},
-    style: undefined,
-    styleId: undefined,
-    lightRadius: undefined,
-    lightRadiusStyle: undefined,
-    lightRadiusStyleId: undefined
+    lightRadius: undefined
   }]
 }
