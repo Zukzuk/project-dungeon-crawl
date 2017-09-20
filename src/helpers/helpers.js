@@ -20,12 +20,13 @@ export const dom = {
 
   getComputedSize: node => {
     const style = getComputedStyle(node);
-    const sumOfPixels = pixels => (
-      pixels.split('px').reduce((result, amount) => {
+    const sumOfPixels = pixels => {
+      return pixels.split('px').reduce((result, amount) => {
         if (Number(amount)) result += Number(amount);
         return result;
       }, 0)
-    );
+    };
+
     return {
       width: sumOfPixels(style['width'] + style['margin-left'] + style['margin-right'] + style['padding-left'] + style['padding-right']),
       height: sumOfPixels(style['height'] + style['margin-top'] + style['margin-bottom'] + style['padding-top'] + style['padding-bottom']),

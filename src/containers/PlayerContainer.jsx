@@ -1,6 +1,6 @@
-import React, { PureComponent } from 'react';
-import { connect } from 'react-redux';
-import { react, dom, redux } from '../helpers/helpers';
+import React, {PureComponent} from 'react';
+import {connect} from 'react-redux';
+import {react, redux} from '../helpers/helpers';
 import collision from '../helpers/collision';
 import PlayerView from '../views/PlayerView';
 import LightRadiusView from '../views/LightRadiusView';
@@ -8,6 +8,14 @@ import LightRadiusView from '../views/LightRadiusView';
 class PlayerContainer extends PureComponent {
 
   /* lifecycle */
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      playerProps: null,
+      lightRadiusProps: null
+    }
+  }
 
   componentDidMount() {
     this.props.actions.Tile.selectTile(0, 0);
@@ -17,20 +25,26 @@ class PlayerContainer extends PureComponent {
   /* updates */
 
   getPlayerProps(props) {
-    return {
-      state: props.state.Entity.Player,
-      id: 0
-    };
+    debugger;
+    this.setState({ ...this.state,
+      playerProps: {
+        style: props.state.Entity.Player.spawns[0].style,
+        id: 0
+      }
+    }, this.getLightRadiusProps);
   }
 
-  getLightRadiusProps(props) {
-    return {
-      state: props.state.Entity.Player
-    };
+  getLightRadiusProps() {
+    debugger;
+    this.setState({ ...this.state,
+      lightRadiusProps: {
+        style: this.props.state.Entity.Player.spawns[0].lightRadiusStyle,
+      }
+    });
   }
 
-  updateTileCollision(props) {
-    collision.compute(
+  calculateTileCollision(props) {
+    collision.tileCollision(
       `#room${props.state.Tile.roomId}`,
       '#light-radius',
       props.state.Tile.size,
@@ -54,7 +68,7 @@ class PlayerContainer extends PureComponent {
       react.stateDidUpdate(this.props, nextProps, 'Entity.Player.spawns[0].position.roomId') ||
       react.stateDidUpdate(this.props, nextProps, 'GameBoard.level')
     ) {
-      collision.resetAndRecalculate(this.updateTileCollision, nextProps);
+      collision.resetAndRecalculate(this.calculateTileCollision, nextProps);
     }
 
     // recalculate tile collision
@@ -62,7 +76,23 @@ class PlayerContainer extends PureComponent {
       react.stateDidUpdate(this.props, nextProps, 'Entity.Player.spawns[0].position.tileId') ||
       react.stateDidUpdate(this.props, nextProps, 'Entity.Player.spawns[0].lightRadius')
     ) {
-      this.updateTileCollision(nextProps);
+      this.calculateTileCollision(nextProps);
+    }
+
+    // reset player style offset
+    if (
+      react.stateDidUpdate(this.props, nextProps, 'Entity.Player.spawns[0].position.tileId') ||
+      react.stateDidUpdate(this.props, nextProps, 'Entity.Player.spawns[0].position.roomId') ||
+      react.stateDidUpdate(this.props, nextProps, 'GameBoard.level')
+    ) {
+      this.props.actions.Entity.offsetSingleEntity('Player', 0);
+    }
+
+    // render player offset
+    if (
+      react.stateDidUpdate(this.props, nextProps, 'Entity.Player.spawns[0].styleId')
+    ) {
+      this.getPlayerProps(nextProps);
     }
   }
 
@@ -71,8 +101,8 @@ class PlayerContainer extends PureComponent {
   render() {
     return (
       <div className="player">
-        <PlayerView { ...this.getPlayerProps(this.props) } />
-        <LightRadiusView { ...this.getLightRadiusProps(this.props) } />
+        <PlayerView { ...this.state.playerProps } />
+        <LightRadiusView { ...this.state.lightRadiusProps } />
       </div>
     );
   }

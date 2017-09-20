@@ -1,6 +1,4 @@
-
 import PF from 'pathfinding';
-
 import PlayerActions from '../redux/actions/PlayerActions';
 import ENTITY_CONSTANTS from '../constants';
 

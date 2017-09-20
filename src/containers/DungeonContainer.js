@@ -149,7 +149,9 @@ class DungeonContainer extends PureComponent {
     // build room entities from grids
     const rooms = buildRooms(tileGrids, props);
     //update internal state
-    this.setState({ ...this.state, rooms });
+    this.setState({ ...this.state,
+      rooms
+    });
   }
 
   componentWillReceiveProps(nextProps) {

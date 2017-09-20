@@ -44,7 +44,7 @@ export default {
 
 const getStyle = (state, name, id) => {
   const entityState = state.Entity[name];
-  const entityPosition = entityState.spawns[id].position.tile;
+  const entityPosition = entityState.spawns[id].position.tileId;
   const entityLightRadius = entityState.spawns[id].lightRadius || 0;
   const entityRelativeSize = entityState.relativeSize;
   const entityAlignment = entityState.alignment;
