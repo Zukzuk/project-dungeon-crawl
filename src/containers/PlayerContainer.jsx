@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { dom, redux } from '../helpers/helpers';
+import collision from '../helpers/collision';
 import PlayerView from '../views/PlayerView';
 import LightRadiusView from '../views/LightRadiusView';
 
@@ -44,8 +45,8 @@ class PlayerContainer extends PureComponent {
 
   updateTileCollision(props) {
     dom.afterNextRender(() => {
-      if (!dom.isValidCollision(props.state.Tile.roomId)) dom.resetCollision();
-      dom.computeCollision(
+      if (!collision.isValid(props.state.Tile.roomId)) collision.reset();
+      collision.compute(
         `#room${props.state.Tile.roomId}`,
         '#light-radius',
         props.state.Tile.size,
