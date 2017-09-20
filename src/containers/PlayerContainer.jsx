@@ -26,7 +26,13 @@ class PlayerContainer extends PureComponent {
     }, 1000);
   }
 
-  /* updates */
+  componentWillReceiveProps(nextProps) {
+    this.setPlayerPosition(nextProps);
+    this.setTileCollision(nextProps);
+    this.setPlayerOffset(nextProps);
+  }
+
+  /* local state */
 
   getPlayerProps(style, lightRadiusStyle) {
     this.setState({
@@ -40,6 +46,8 @@ class PlayerContainer extends PureComponent {
       }
     });
   }
+
+  /* calculate */
 
   getCollisionBuffer(props) {
     this.collisionBuffer = collision.getBuffer(props.state.Entity.Player.spawns[0].position.roomId);
@@ -68,7 +76,9 @@ class PlayerContainer extends PureComponent {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  /* updates */
+
+  setPlayerPosition(nextProps) {
     // set player position
     if (
       react.stateDidUpdate(this.props, nextProps, 'Tile.tileId') ||
@@ -76,8 +86,10 @@ class PlayerContainer extends PureComponent {
     ) {
       this.props.actions.Player.updatePosition();
     }
+  }
 
-    // reset and recalculate collisions
+  setTileCollision(nextProps) {
+    // reset and recalculate collisions on level change
     if (
       react.stateDidUpdate(this.props, nextProps, 'GameBoard.level')
     ) {
@@ -89,18 +101,22 @@ class PlayerContainer extends PureComponent {
       } else {
         this.props.actions.Tile.selectTile(0, 0);
       }
+      // reset and recalculate collisions on room change
     } else if (
       react.stateDidUpdate(this.props, nextProps, 'Entity.Player.spawns[0].position.roomId')
     ) {
       this.collisionBuffer = collision.resetCollision(this.collisionBuffer);
       this.calculateTileCollision(nextProps);
+      // recalculate collisions on tile or radius change
     } else if (
       react.stateDidUpdate(this.props, nextProps, 'Entity.Player.spawns[0].position.tileId') ||
       react.stateDidUpdate(this.props, nextProps, 'Entity.Player.spawns[0].lightRadius')
     ) {
       this.calculateTileCollision(nextProps);
     }
+  }
 
+  setPlayerOffset(nextProps) {
     // update player style offset
     if (
       react.stateDidUpdate(this.props, nextProps, 'Entity.Player.spawns[0].position.tileId') ||

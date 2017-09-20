@@ -132,7 +132,11 @@ class DungeonContainer extends PureComponent {
     this.props.actions.GameMenu.updateLevel(1);
   }
 
-  /* update */
+  componentWillReceiveProps(nextProps) {
+    this.setDungeon(nextProps);
+  }
+
+  /* local state */
 
   getDungeonProps(props) {
     return {
@@ -140,7 +144,9 @@ class DungeonContainer extends PureComponent {
     };
   }
 
-  updateDungeon(props) {
+  /* calculate */
+
+  calculateDungeon(props) {
     const numOfTiles = Math.pow(2, props.state.GameBoard.level);
     // get squares of each grid as rectangles
     const rectangles = buildRectangles(numOfTiles, props.state.GameBoard.level);
@@ -154,12 +160,14 @@ class DungeonContainer extends PureComponent {
     });
   }
 
-  componentWillReceiveProps(nextProps) {
+  /* updates */
+
+  setDungeon(nextProps) {
     if (
       react.stateDidUpdate(this.props, nextProps, 'GameBoard.hasPerpective') ||
       react.stateDidUpdate(this.props, nextProps, 'GameBoard.level')
     ) {
-      this.updateDungeon(nextProps);
+      this.calculateDungeon(nextProps);
     }
   }
 
