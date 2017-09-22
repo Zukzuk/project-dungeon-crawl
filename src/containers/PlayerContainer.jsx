@@ -61,7 +61,6 @@ class PlayerContainer extends PureComponent {
         this.props.state.Entity.Player.spawns[0].position.tileId,
         e.key
       );
-      debugger;
       if (!isNaN(index)) this.props.actions.Tile.selectTile(
         index,
         this.props.state.Entity.Player.spawns[0].position.roomId
