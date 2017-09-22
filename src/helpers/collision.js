@@ -1,5 +1,37 @@
 export default {
 
+  roomCollision: (room, rooms, ignored) => {
+    for (var i = 0; i < rooms.length; i++) {
+      if (i == ignored) continue;
+      const check = rooms[i];
+      if (!((room.x + room.w < check.x) || (room.x > check.x + check.w) || (room.y + room.h < check.y) || (room.y > check.y + check.h))) return true;
+    }
+    return false;
+  },
+
+  roomSquash: (rooms, roomCollision) => {
+    for (var i = 0; i < 10; i++) {
+      for (var j = 0; j < rooms.length; j++) {
+        var room = rooms[j];
+        while (true) {
+          var old_position = {
+            x: room.x,
+            y: room.y
+          };
+          if (room.x > 1) room.x -= 50;
+          if (room.y > 1) room.y -= 50;
+          if ((room.x <= 0) && (room.y <= 0)) break;
+          if (roomCollision(room, rooms, j)) {
+            room.x = old_position.x;
+            room.y = old_position.y;
+            break;
+          }
+        }
+      }
+    }
+    return rooms;
+  },
+
   tileCollision: (component, tileId, radius, tileSize) => {
     if (!component || isNaN(tileId) || isNaN(radius) || isNaN(tileSize)) return;
     // flatten the room into tiles
@@ -12,8 +44,8 @@ export default {
 
     // create bounding circle from light
     const circle = {
-      x: tileSize + (tileSize*(currentTile.column-1)),
-      y: tileSize + (tileSize*(currentTile.row-1)),
+      x: tileSize + (tileSize*(currentTile.x-1)),
+      y: tileSize + (tileSize*(currentTile.y-1)),
       r: radius * tileSize/2
     };
 
@@ -21,8 +53,8 @@ export default {
       // create bounding box from tile
       const tile = tiles[i].props.children.props;
       const rect = {
-        x: tileSize/2 + (tileSize*(tile.column-1)),
-        y: tileSize/2 + (tileSize*(tile.row-1)),
+        x: tileSize/2 + (tileSize*(tile.x-1)),
+        y: tileSize/2 + (tileSize*(tile.y-1)),
         w: tileSize,
         h: tileSize
       };
@@ -62,7 +94,7 @@ export default {
 
     const normalized = tileId - offsetIndex;
     const currentTile = tiles[normalized].props.children.props;
-    const coord = { x: currentTile.column, y: currentTile.row };
+    const coord = { x: currentTile.x, y: currentTile.y };
 
     switch (pressedKey) {
       case "ArrowDown":

@@ -2,10 +2,10 @@ import React from 'react';
 import './TileView.scss';
 
 export default props => {
-  const { id, row, column, style, onClick } = props;
+  const { id, x, y, style, onClick } = props;
   const classList = 'tile';
   const tileId = `tile${id}`;
-  const coord = `${column}-${row}`;
+  const coord = `${x}-${y}`;
   const tileNumber = id + 1;
 
   return (

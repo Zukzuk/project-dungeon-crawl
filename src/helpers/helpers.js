@@ -38,6 +38,12 @@ export const react = {
   }
 };
 
+export const math = {
+  rand: (min, max) => {
+    return Math.random() * (max - min) + min;
+  }
+};
+
 export const redux = {
   mapState: (state, slices) => {
     return slices.reduce((result, slice) => {

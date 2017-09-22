@@ -1,10 +1,12 @@
 import React from 'react';
+import {math} from './helpers';
+import collision from './collision';
 import TileContainer from '../containers/TileContainer';
 import TileView from '../views/TileView';
 import RoomContainer from '../containers/RoomContainer';
 import RoomView from '../views/RoomView';
 
-const getGrid = (props, rectangle, count, roomId) => {
+const getTileGrid = (props, rectangle, count, roomId) => {
   const {rows, columns} = rectangle;
   let y = 0, grid = [];
   while (y++ < rows) {
@@ -15,19 +17,15 @@ const getGrid = (props, rectangle, count, roomId) => {
       const selectTile = () => props.actions.Tile.selectTile(tileId, roomId);
       const tileProps = {
         id: tileId,
-        column: x,
-        row: y,
+        x,
+        y,
         style: {
           margin: `${props.state.Tile.gutter}px`,
           width: `calc(100% * (1/${columns}) - ${props.state.Tile.gutter * 2}px)`,
         },
         onClick: selectTile
       };
-      row.push(
-        <TileContainer key={index}>
-          <TileView {...tileProps}/>
-        </TileContainer>
-      );
+      row.push(tileProps);
     }
     grid.push(row);
   }
@@ -82,43 +80,81 @@ const buildRectangles = (amount, level) => {
 const buildTileGrids = (rectangles, props) => {
   let tileCount = 0;
   return rectangles.reduce((result, rectangle, index) => {
-    result.push(getGrid(props, rectangle, tileCount, index));
+    result.push(getTileGrid(props, rectangle, tileCount, index));
     tileCount += (rectangle.columns * rectangle.rows);
     return result;
   }, []);
 };
 
-const buildRooms = (grids, props) => {
-  let offsetLeft = 0;
-  return grids.reduce((result, tileGrid, index) => {
+const getRoomGrid = (grids, props) => {
+  var rooms = [];
+  var mapSize = 0;
+  for (let i = 0; i < grids.length; i++) {
+    const tileGrid = grids[i];
+    const room = {};
+    const lastRoom = _.get(rooms, 'length') ? rooms[i - 1] : {w: 0, h: 0};
+    room.id = i;
+
+    room.w = props.state.Tile.size * tileGrid[0].length;
+    room.h = props.state.Tile.size * tileGrid.length;
+    mapSize = Math.max(lastRoom.w + (room.w * 3), lastRoom.h + (room.h * 3));
+
+    room.x = math.rand(0, mapSize - room.w);
+    room.y = math.rand(0, mapSize - room.h);
+
+    if (collision.roomCollision(room, rooms)) {
+      i--;
+      continue;
+    }
+
+    rooms.push(room);
+  }
+  rooms = collision.roomSquash(rooms, collision.roomCollision);
+
+  return rooms;
+};
+
+const createInstance = (tileGrids, roomGrids) => {
+  const grids = tileGrids.reduce((result, grid) => {
+    result.push(grid.map(tiles => tiles.map((props, index) => {
+      return (
+        <TileContainer key={index}>
+          <TileView {...props}></TileView>
+        </TileContainer>
+      );
+    })));
+    return result;
+  }, []);
+  return roomGrids.reduce((result, room, index) => {
     const roomProps = {
       id: index,
       style: {
-        left: `${offsetLeft}px`,
-        width: `${props.state.Tile.size * tileGrid[0].length}px`,
-        height: `${props.state.Tile.size * tileGrid.length}px`
+        left: `${room.x}px`,
+        top: `${room.y}px`,
+        width: `${room.w}px`,
+        height: `${room.h}px`
       }
     };
     result.push(
       <RoomContainer key={index}>
-        <RoomView {...roomProps}>{tileGrid}</RoomView>
+        <RoomView {...roomProps}>{grids[index]}</RoomView>
       </RoomContainer>
     );
-    offsetLeft += (props.state.Tile.size * (grids[index][0].length + 1));
     return result;
   }, []);
 };
 
-
-
 export default {
   build: props => {
     const numOfTiles = Math.pow(2, props.state.GameBoard.level);
-    // get squares of each grid as rectangles
+    // get rectangles of each grid
     const rectangles = buildRectangles(numOfTiles, props.state.GameBoard.level);
-    // build tile entities from tiled-rectangles
+    // get tilegrids from rectangles
     const tileGrids = buildTileGrids(rectangles, props);
-    // build room entities from grids
-    return buildRooms(tileGrids, props);
+    // get rooms from grids
+    const roomGrids = getRoomGrid(tileGrids, props);
+    // create component instances
+    return createInstance(tileGrids, roomGrids);
+    debugger;
   }
 };
