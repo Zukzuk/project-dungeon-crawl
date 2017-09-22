@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.0.4] - 2017-08-22
+### Added
+- Keyboard support
+- Path finding helper
+
+### Refactored
+- New collision detection system
+
 ## [0.0.3] - 2017-08-16
 ### Added
 - Collision detection
