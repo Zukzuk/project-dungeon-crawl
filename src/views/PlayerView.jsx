@@ -5,7 +5,7 @@ export default props => {
   if (!isNaN(props.id)) {
     const classList = 'entity player';
     const { id, style } = props;
-    const elmId = 'player' + id;
+    const elmId = `player${id}`;
     const offsetStyle = {
       top: style.top,
       left: style.left

@@ -1,6 +1,8 @@
 export default {
 
-  playerOffset: (buffer, props) => {
+  playerOffset: (component, props) => {
+    if (!component) return;
+
     const entityState = props.state.Entity['Player'];
     const entityPosition = entityState.spawns[0].position.tileId;
     const entityRelativeSize = entityState.relativeSize;
@@ -8,7 +10,7 @@ export default {
     const hasPerspective = props.state.GameBoard.hasPerspective;
 
     // board offset
-    const room = buffer.component.elm;
+    const room = component.elm;
     const tile = room.querySelector(`#tile${entityPosition}`);
     if (!tile) return false;
     const offsetTop = tile.offsetTop + room.offsetTop;
@@ -29,13 +31,15 @@ export default {
     return getEntityOffset(offsetTop, offsetLeft, tileRect, entityRect, entityAlignment, hasPerspective);
   },
 
-  lightRadiusOffset: (buffer, props) => {
+  lightRadiusOffset: (component, props) => {
+    if (!component) return;
+
     const entityState = props.state.Entity['Player'];
     const entityPosition = entityState.spawns[0].position.tileId;
     const entityLightRadius = entityState.spawns[0].lightRadius || 0;
 
     // board offset
-    const room = buffer.component.elm;
+    const room = component.elm;
     const tile = room.querySelector(`#tile${entityPosition}`);
     if (!tile) return false;
     const offsetTop = tile.offsetTop + room.offsetTop;

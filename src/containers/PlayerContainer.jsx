@@ -1,6 +1,6 @@
 import React, {PureComponent} from 'react';
 import {connect} from 'react-redux';
-import {react, redux} from '../helpers/helpers';
+import {dom, react, redux} from '../helpers/helpers';
 import collision from '../helpers/collision';
 import offset from '../helpers/offset';
 import PlayerView from '../views/PlayerView';
@@ -12,7 +12,7 @@ class PlayerContainer extends PureComponent {
 
   constructor(props) {
     super(props);
-    this.collisionBuffer = null;
+    this.roomComponent = null;
     this.state = {
       playerProps: null,
       lightRadiusProps: null
@@ -20,6 +20,8 @@ class PlayerContainer extends PureComponent {
   }
 
   componentDidMount() {
+    this.addKeyboardSupport();
+
     setTimeout(() => {
       this.props.actions.Tile.selectTile(0, 0);
       this.props.actions.Player.updateLightRadius(4);
@@ -47,31 +49,50 @@ class PlayerContainer extends PureComponent {
     });
   }
 
-  /* calculate */
+  /* methods */
 
-  getCollisionBuffer(props) {
-    this.collisionBuffer = collision.getBuffer(props.state.Entity.Player.spawns[0].position.roomId);
+  addKeyboardSupport() {
+    window.addEventListener('keydown', e => {
+      if (e.defaultPrevented) return;
+      e.preventDefault();
+
+      const index = collision.getTileIndex(
+        this.roomComponent,
+        this.props.state.Entity.Player.spawns[0].position.tileId,
+        e.key
+      );
+      debugger;
+      if (!isNaN(index)) this.props.actions.Tile.selectTile(
+        index,
+        this.props.state.Entity.Player.spawns[0].position.roomId
+      );
+    }, true);
+  }
+
+  getRoomComponent(props) {
+    const roomId = props.state.Entity.Player.spawns[0].position.roomId;
+    const roomElm = document.querySelector(`#room${roomId}`);
+    if (!isNaN(roomId) && roomElm) this.roomComponent = dom.getComponent(roomElm);
   }
 
   calculateTileCollision(props) {
-    if (!this.collisionBuffer) this.getCollisionBuffer(props);
+    if (!this.roomComponent) this.getRoomComponent(props);
 
-    if (this.collisionBuffer) {
-      collision.tileCollision(
-        this.collisionBuffer,
-        props.state.Entity.Player.spawns[0].position.tileId,
-        props.state.Entity.Player.spawns[0].lightRadius,
-        props.state.Tile.size
-      );
-    }
+    collision.tileCollision(
+      this.roomComponent,
+      props.state.Entity.Player.spawns[0].position.tileId,
+      props.state.Entity.Player.spawns[0].lightRadius,
+      props.state.Tile.size
+    );
   }
 
   calculatePlayerOffset(props) {
-    if (!this.collisionBuffer) this.getCollisionBuffer(props);
+    if (!this.roomComponent) this.getRoomComponent(props);
 
-    if (!isNaN(props.state.Entity.Player.spawns[0].position.tileId)) {
-      const style = offset.playerOffset(this.collisionBuffer, props);
-      const lightRadiusStyle = offset.lightRadiusOffset(this.collisionBuffer, props);
+    const tileId = props.state.Entity.Player.spawns[0].position.tileId;
+    if (!isNaN(tileId)) {
+      const style = offset.playerOffset(this.roomComponent, props);
+      const lightRadiusStyle = offset.lightRadiusOffset(this.roomComponent, props);
       this.getPlayerProps(style, lightRadiusStyle);
     }
   }
@@ -79,7 +100,6 @@ class PlayerContainer extends PureComponent {
   /* updates */
 
   setPlayerPosition(nextProps) {
-    // set player position
     if (
       react.stateDidUpdate(this.props, nextProps, 'Tile.tileId') ||
       react.stateDidUpdate(this.props, nextProps, 'Tile.roomId')
@@ -89,11 +109,9 @@ class PlayerContainer extends PureComponent {
   }
 
   setTileCollision(nextProps) {
-    // reset and recalculate collisions on level change
-    if (
-      react.stateDidUpdate(this.props, nextProps, 'GameBoard.level')
-    ) {
-      this.collisionBuffer = collision.resetCollision(this.collisionBuffer);
+    if (react.stateDidUpdate(this.props, nextProps, 'GameBoard.level')) {
+      // reset and recalculate collisions on level change
+      this.roomComponent = collision.resetCollision(this.roomComponent);
       if (
         nextProps.state.Entity.Player.spawns[0].position.tileId === 0
       ) {
@@ -101,23 +119,18 @@ class PlayerContainer extends PureComponent {
       } else {
         this.props.actions.Tile.selectTile(0, 0);
       }
+    } else if (react.stateDidUpdate(this.props, nextProps, 'Entity.Player.spawns[0].position.roomId')) {
       // reset and recalculate collisions on room change
-    } else if (
-      react.stateDidUpdate(this.props, nextProps, 'Entity.Player.spawns[0].position.roomId')
-    ) {
-      this.collisionBuffer = collision.resetCollision(this.collisionBuffer);
+      this.roomComponent = collision.resetCollision(this.roomComponent);
       this.calculateTileCollision(nextProps);
+    } else if (react.stateDidUpdate(this.props, nextProps, 'Entity.Player.spawns[0].position.tileId') ||
+      react.stateDidUpdate(this.props, nextProps, 'Entity.Player.spawns[0].lightRadius')) {
       // recalculate collisions on tile or radius change
-    } else if (
-      react.stateDidUpdate(this.props, nextProps, 'Entity.Player.spawns[0].position.tileId') ||
-      react.stateDidUpdate(this.props, nextProps, 'Entity.Player.spawns[0].lightRadius')
-    ) {
       this.calculateTileCollision(nextProps);
     }
   }
 
   setPlayerOffset(nextProps) {
-    // update player style offset
     if (
       react.stateDidUpdate(this.props, nextProps, 'Entity.Player.spawns[0].position.tileId') ||
       react.stateDidUpdate(this.props, nextProps, 'Entity.Player.spawns[0].position.roomId') ||

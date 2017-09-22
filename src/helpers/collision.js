@@ -1,38 +1,25 @@
-import { dom } from './helpers';
-
-let collisionBuffer;
-
 export default {
 
-  getBuffer: (roomId) => {
-    if (isNaN(roomId)) return;
-    // get components
-    const component = dom.getComponent(document.querySelector(`#room${roomId}`));
+  tileCollision: (component, tileId, radius, tileSize) => {
+    if (!component || isNaN(tileId) || isNaN(radius) || isNaN(tileSize)) return;
     // flatten the room into tiles
     const tiles = component.instance.props.children ? Array.prototype.concat.apply([], component.instance.props.children) : null;
-    // buffer components
-    if (!component || !tiles) return;
-    return { component, tiles };
-  },
-
-  tileCollision: (buffer, tileId, radius, tileSize) => {
-    if (!buffer || isNaN(tileId) || isNaN(radius) || isNaN(tileSize)) return;
 
     // get the tile where the light is centered
-    const offsetPosition = buffer.tiles[0].props.children.props.id;
-    const normalizedPosition = tileId - offsetPosition;
-    const lightTile = buffer.tiles[normalizedPosition].props.children.props;
+    const offsetIndex = tiles[0].props.children.props.id;
+    const normalized = tileId - offsetIndex;
+    const currentTile = tiles[normalized].props.children.props;
 
     // create bounding circle from light
     const circle = {
-      x: tileSize + (tileSize*(lightTile.column-1)),
-      y: tileSize + (tileSize*(lightTile.row-1)),
+      x: tileSize + (tileSize*(currentTile.column-1)),
+      y: tileSize + (tileSize*(currentTile.row-1)),
       r: radius * tileSize/2
     };
 
-    for (let i = 0; i < buffer.tiles.length; i++) {
+    for (let i = 0; i < tiles.length; i++) {
       // create bounding box from tile
-      const tile = buffer.tiles[i].props.children.props;
+      const tile = tiles[i].props.children.props;
       const rect = {
         x: tileSize/2 + (tileSize*(tile.column-1)),
         y: tileSize/2 + (tileSize*(tile.row-1)),
@@ -47,7 +34,7 @@ export default {
       const dy = distY - rect.h / 2;
       const ratio = Math.max(0, 1 - ((dx * dx + dy * dy) / (circle.r * circle.r)) );
 
-      const tileElm = buffer.component.elm.querySelector(`#tile${i+offsetPosition}`);
+      const tileElm = component.elm.querySelector(`#tile${i+offsetIndex}`);
       if (ratio) {
         tileElm.setAttribute('data-light', 'on');
         tileElm.style['opacity'] = (ratio > .62) ? 1 : (ratio < .2) ? .2 : ratio;
@@ -57,14 +44,44 @@ export default {
     }
   },
 
-  resetCollision: (collisionBuffer) => {
-    if (collisionBuffer) {
-      const offsetPosition = _.get(collisionBuffer, 'tiles[0].props.children.props.id');
-      for (let i = 0; i < collisionBuffer.tiles.length; i++) {
-        const tileElm = collisionBuffer.component.elm.querySelector(`#tile${i+offsetPosition}`);
-        if (tileElm) tileElm.setAttribute('data-light', 'fogofwar');
-      }
+  resetCollision: component => {
+    if (component) {
+      const room = component.elm;
+      room.querySelectorAll('[data-light]').forEach(tile => {
+        tile.setAttribute('data-light', 'fogofwar');
+      });
     }
     return null;
+  },
+
+  getTileIndex: (component, tileId, pressedKey) => {
+    if (!component || isNaN(tileId) || !pressedKey) return;
+    // flatten the room into tiles
+    const tiles = component.instance.props.children ? Array.prototype.concat.apply([], component.instance.props.children) : null;
+    const offsetIndex = tiles[0].props.children.props.id;
+
+    const normalized = tileId - offsetIndex;
+    const currentTile = tiles[normalized].props.children.props;
+    const coord = { x: currentTile.column, y: currentTile.row };
+
+    switch (pressedKey) {
+      case "ArrowDown":
+        coord.y += 1;
+        break;
+      case "ArrowUp":
+        coord.y -= 1;
+        break;
+      case "ArrowLeft":
+        coord.x -= 1;
+        break;
+      case "ArrowRight":
+        coord.x += 1;
+        break;
+      default:
+        return; // Quit when this doesn't handle the key event.
+    }
+
+    const selectedTile = component.elm.querySelector(`[data-coord="${coord.x}-${coord.y}"]`);
+    return selectedTile ? Number(selectedTile.id.replace('tile', '')) : undefined;
   }
 };

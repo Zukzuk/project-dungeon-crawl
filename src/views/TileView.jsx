@@ -2,13 +2,14 @@ import React from 'react';
 import './TileView.scss';
 
 export default props => {
+  const { id, row, column, style, onClick } = props;
   const classList = 'tile';
-  const id = 'tile' + props.id;
-  const tileNumber = props.id + 1;
-  const { style, onClick } = props;
+  const tileId = `tile${id}`;
+  const coord = `${column}-${row}`;
+  const tileNumber = id + 1;
 
   return (
-    <div className={ classList } id={ id } style={ style } onClick={ onClick } data-light='fogofwar'>
+    <div className={ classList } id={ tileId } style={ style } onClick={ onClick } data-coord={ coord } data-light='fogofwar'>
       { tileNumber }
     </div>
   );

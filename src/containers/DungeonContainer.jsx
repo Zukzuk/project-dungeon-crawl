@@ -19,7 +19,7 @@ class DungeonContainer extends PureComponent {
   }
 
   componentDidMount() {
-    this.props.actions.GameMenu.updateLevel(1);
+    this.props.actions.GameMenu.updateLevel(7);
   }
 
   componentWillReceiveProps(nextProps) {
