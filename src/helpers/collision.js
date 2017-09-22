@@ -20,7 +20,7 @@ export default {
           };
           if (room.x > 1) room.x -= 50;
           if (room.y > 1) room.y -= 50;
-          if ((room.x <= 0) && (room.y <= 0)) break;
+          if ((room.x < 50) && (room.y < 50)) break;
           if (roomCollision(room, rooms, j)) {
             room.x = old_position.x;
             room.y = old_position.y;
@@ -29,7 +29,6 @@ export default {
         }
       }
     }
-    return rooms;
   },
 
   tileCollision: (component, tileId, radius, tileSize) => {

@@ -4,8 +4,14 @@ import {react, redux} from '../helpers/helpers';
 import dungeon from '../helpers/dungeon';
 
 import DungeonView from '../views/DungeonView';
-import PlayerContainer from "./PlayerContainer";
+import RoomContainer from '../containers/RoomContainer';
+import RoomView from '../views/RoomView';
+import TileContainer from '../containers/TileContainer';
+import TileView from '../views/TileView';
+
 import CameraContainer from "./CameraContainer";
+
+import PlayerContainer from "./PlayerContainer";
 
 class DungeonContainer extends PureComponent {
 
@@ -14,7 +20,7 @@ class DungeonContainer extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      rooms: null
+      dungeonInstance: null
     }
   }
 
@@ -35,8 +41,31 @@ class DungeonContainer extends PureComponent {
   }
 
   getDungeonRooms(props) {
-    this.setState({ ...this.state,
-      rooms: dungeon.build(props)
+    const {tileGrids, roomGrids} = dungeon.build(props);
+
+    const grids = tileGrids.reduce((result, grid) => {
+      result.push(grid.map(tiles => tiles.map((props, index) => {
+        return (
+          <TileContainer key={index}>
+            <TileView {...props}></TileView>
+          </TileContainer>
+        );
+      })));
+      return result;
+    }, []);
+
+    const dungeonInstance = roomGrids.reduce((result, props, index) => {
+      const tiles = grids[index];
+      result.push(
+        <RoomContainer key={index}>
+          <RoomView {...props}>{tiles}</RoomView>
+        </RoomContainer>
+      );
+      return result;
+    }, []);
+
+    this.setState({...this.state,
+      dungeonInstance
     });
   }
 
@@ -57,7 +86,7 @@ class DungeonContainer extends PureComponent {
     return (
       <DungeonView {...this.getDungeonProps(this.props)}>
         <CameraContainer>
-          <div className='rooms'>{ this.state.rooms }</div>
+          <div className='rooms'>{this.state.dungeonInstance}</div>
           <PlayerContainer/>
           {/*<MinionContainer />*/}
         </CameraContainer>
