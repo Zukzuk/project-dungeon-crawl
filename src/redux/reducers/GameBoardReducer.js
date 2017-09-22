@@ -10,7 +10,6 @@ export default (state = initialState, action) => {
       };
 
     case GAME_MENU_CONSTANTS.LEVEL_SET:
-      debugger;
       return {
         ...state,
         level: action.payload

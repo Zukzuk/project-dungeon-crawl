@@ -8,9 +8,7 @@ import RoomContainer from '../containers/RoomContainer';
 import RoomView from '../views/RoomView';
 import TileContainer from '../containers/TileContainer';
 import TileView from '../views/TileView';
-
 import CameraContainer from "./CameraContainer";
-
 import PlayerContainer from "./PlayerContainer";
 
 class DungeonContainer extends PureComponent {
@@ -25,11 +23,12 @@ class DungeonContainer extends PureComponent {
   }
 
   componentDidMount() {
-    this.props.actions.GameMenu.updateLevel(7);
+    this.props.actions.GameMenu.updateLevel(8);
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setDungeon(nextProps);
+    this.updateDungeon(nextProps);
+    this.updateRoomVisibility(nextProps);
   }
 
   /* local state */
@@ -40,43 +39,62 @@ class DungeonContainer extends PureComponent {
     };
   }
 
-  getDungeonRooms(props) {
-    const {tileGrids, roomGrids} = dungeon.build(props);
-
+  getDungeonInstance(tileGrids, roomGrids, props) {
     const grids = tileGrids.reduce((result, grid) => {
-      result.push(grid.map(tiles => tiles.map((props, index) => {
+      result.push(grid.map(tiles => tiles.map((tileProps, index) => {
         return (
           <TileContainer key={index}>
-            <TileView {...props}></TileView>
+            <TileView {...tileProps}></TileView>
           </TileContainer>
         );
       })));
       return result;
     }, []);
 
-    const dungeonInstance = roomGrids.reduce((result, props, index) => {
+    const instance = roomGrids.reduce((result, roomProps, index) => {
       const tiles = grids[index];
-      result.push(
-        <RoomContainer key={index}>
-          <RoomView {...props}>{tiles}</RoomView>
-        </RoomContainer>
-      );
+      if (props.state.Entity.Player.spawns[0].position.roomId === index) {
+        result.push(
+          <RoomContainer key={index}>
+            <RoomView {...roomProps}>{tiles}</RoomView>
+          </RoomContainer>
+        );
+      }
       return result;
     }, []);
 
+    this.tileGrids = tileGrids;
+    this.roomGrids = roomGrids;
+
+    return instance;
+  }
+
+  setNewDungeon(props) {
+    const {tileGrids, roomGrids} = dungeon.build(props);
+
     this.setState({...this.state,
-      dungeonInstance
+      dungeonInstance: this.getDungeonInstance(tileGrids, roomGrids, props)
+    });
+  }
+
+  refreshDungeon(props) {
+    this.setState({...this.state,
+      dungeonInstance: this.getDungeonInstance(this.tileGrids, this.roomGrids, props)
     });
   }
 
   /* updates */
 
-  setDungeon(nextProps) {
-    if (
-      react.stateDidUpdate(this.props, nextProps, 'GameBoard.hasPerpective') ||
-      react.stateDidUpdate(this.props, nextProps, 'GameBoard.level')
-    ) {
-      this.getDungeonRooms(nextProps);
+  updateDungeon(nextProps) {
+    if (react.stateDidUpdate(this.props, nextProps, 'GameBoard.hasPerpective') ||
+      react.stateDidUpdate(this.props, nextProps, 'GameBoard.level')) {
+      this.setNewDungeon(nextProps);
+    }
+  }
+
+  updateRoomVisibility(nextProps) {
+    if (react.stateDidUpdate(this.props, nextProps, 'Entity.Player.spawns[0].position.roomId')) {
+      if (!isNaN(nextProps.state.Entity.Player.spawns[0].position.roomId)) this.refreshDungeon(nextProps);
     }
   }
 
@@ -86,7 +104,7 @@ class DungeonContainer extends PureComponent {
     return (
       <DungeonView {...this.getDungeonProps(this.props)}>
         <CameraContainer>
-          <div className='rooms'>{this.state.dungeonInstance}</div>
+          <div className='rooms'>{ this.state.dungeonInstance }</div>
           <PlayerContainer/>
           {/*<MinionContainer />*/}
         </CameraContainer>
@@ -97,9 +115,9 @@ class DungeonContainer extends PureComponent {
 
 export default connect(
   state => redux.mapState(state, [
-    'GameBoard', 'Tile'
+    'GameBoard', 'Tile', 'Entity'
   ]),
   dispatch => redux.mapActions(dispatch, [
-    'GameMenu', 'Tile'
+    'GameMenu', 'Tile', 'Entity'
   ])
 )(DungeonContainer);

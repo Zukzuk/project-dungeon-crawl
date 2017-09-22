@@ -99,7 +99,7 @@ const buildRoomGrid = (grids, props) => {
     rooms.push(room);
   }
 
-  collision.roomSquash(rooms, collision.roomCollision);
+  collision.roomSquash(rooms);
 
   return rooms.map(room => {
     room.style = {
@@ -116,10 +116,8 @@ export default {
   build: props => {
     // get tilegrids from rectangles
     const tileGrids = buildTileGrids(props.state.GameBoard.level, props);
-    debugger;
     // get rooms from grids
     const roomGrids = buildRoomGrid(tileGrids, props);
-    debugger;
     return {tileGrids, roomGrids}
   }
 };
