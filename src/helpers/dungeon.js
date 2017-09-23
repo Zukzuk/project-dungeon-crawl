@@ -80,18 +80,22 @@ const buildTileGrids = (level, props) => {
 };
 
 const buildRoomGrid = (grids, props) => {
-  var rooms = [];
-  var mapSize = 0;
+  const rooms = [];
+  const tileSize = props.state.Tile.size;
+  let mapSize = 0;
+
   for (let i = 0; i < grids.length; i++) {
     const tileGrid = grids[i];
     const room = {};
 
     room.id = i;
-    room.w = props.state.Tile.size * tileGrid[0].length;
-    room.h = props.state.Tile.size * tileGrid.length;
+    room.w = tileSize * tileGrid[0].length;
+    room.h = tileSize * tileGrid.length;
     mapSize = Math.max(mapSize + (room.w * 3), mapSize + (room.h * 3));
-    room.x = math.rand(0, mapSize - room.w);
-    room.y = math.rand(0, mapSize - room.h);
+    const roomX = math.rand(0, mapSize - room.w);
+    const roomY = math.rand(0, mapSize - room.h);
+    room.x = roomX + (tileSize - (roomX % tileSize));
+    room.y = roomY + (tileSize - (roomY % tileSize));
     if (collision.roomCollision(room, rooms)) {
       i--;
       continue;
@@ -99,7 +103,7 @@ const buildRoomGrid = (grids, props) => {
     rooms.push(room);
   }
 
-  collision.roomSquash(rooms);
+  collision.roomSquash(rooms, tileSize);
 
   return rooms.map(room => {
     room.style = {

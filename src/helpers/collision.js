@@ -11,7 +11,7 @@ export default {
     return false;
   },
 
-  roomSquash: (rooms) => {
+  roomSquash: (rooms, tileSize) => {
     for (var i = 0; i < 10; i++) {
       for (var j = 0; j < rooms.length; j++) {
         var room = rooms[j];
@@ -20,9 +20,9 @@ export default {
             x: room.x,
             y: room.y
           };
-          if (room.x > 1) room.x -= 50;
-          if (room.y > 1) room.y -= 50;
-          if ((room.x < 50) && (room.y < 50)) break;
+          if (room.x > 1) room.x -= tileSize;
+          if (room.y > 1) room.y -= tileSize;
+          if ((room.x < tileSize) && (room.y < tileSize)) break;
           if (collision.roomCollision(room, rooms, j)) {
             room.x = old_position.x;
             room.y = old_position.y;

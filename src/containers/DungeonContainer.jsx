@@ -39,8 +39,8 @@ class DungeonContainer extends PureComponent {
     };
   }
 
-  getDungeonInstance(tileGrids, roomGrids, props) {
-    const grids = tileGrids.reduce((result, grid) => {
+  getDungeonInstance(props) {
+    const grids = this.tileGrids.reduce((result, grid) => {
       result.push(grid.map(tiles => tiles.map((tileProps, index) => {
         return (
           <TileContainer key={index}>
@@ -51,35 +51,32 @@ class DungeonContainer extends PureComponent {
       return result;
     }, []);
 
-    const instance = roomGrids.reduce((result, roomProps, index) => {
+    const instance = this.roomGrids.reduce((result, roomProps, index) => {
       const tiles = grids[index];
-      if (props.state.Entity.Player.spawns[0].position.roomId === index) {
+      //if (props.state.Entity.Player.spawns[0].position.roomId === index) {
         result.push(
           <RoomContainer key={index}>
             <RoomView {...roomProps}>{tiles}</RoomView>
           </RoomContainer>
         );
-      }
+      //}
       return result;
     }, []);
-
-    this.tileGrids = tileGrids;
-    this.roomGrids = roomGrids;
 
     return instance;
   }
 
   setNewDungeon(props) {
     const {tileGrids, roomGrids} = dungeon.build(props);
+    this.tileGrids = tileGrids;
+    this.roomGrids = roomGrids;
 
-    this.setState({...this.state,
-      dungeonInstance: this.getDungeonInstance(tileGrids, roomGrids, props)
-    });
+    this.refreshDungeon(props);
   }
 
   refreshDungeon(props) {
     this.setState({...this.state,
-      dungeonInstance: this.getDungeonInstance(this.tileGrids, this.roomGrids, props)
+      dungeonInstance: this.getDungeonInstance(props)
     });
   }
 

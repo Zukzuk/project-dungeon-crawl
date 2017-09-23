@@ -6,14 +6,18 @@ export default props => {
     const classList = 'entity player';
     const { id, style } = props;
     const elmId = `player${id}`;
-    const offsetStyle = {
-      top: style.top,
-      left: style.left
-    };
-    const iconStyle = {
-      width: style.width,
-      height: style.height
-    };
+    let offsetStyle;
+    let iconStyle;
+    if (style) {
+      offsetStyle = {
+        top: style.top,
+        left: style.left
+      };
+      iconStyle = {
+        width: style.width,
+        height: style.height
+      };
+    }
 
     return (
       <div className={classList} id={elmId} style={offsetStyle}>
