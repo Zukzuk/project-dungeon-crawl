@@ -1,6 +1,6 @@
+import GridStuff from './grid-stuff';
 
-
-/** as copied from https://gist.github.com/blixt/f17b47c62508be59987b **/
+/***** as copied from https://gist.github.com/blixt/f17b47c62508be59987b *****/
 /**
  * Creates a pseudo-random value generator. The seed must be an integer.
  *
@@ -34,17 +34,13 @@ class RandomWalker {
   constructor(width, height, seed = Math.floor(Math.random() * 2**32)) {
     this.gridWidth = width;
     this.gridHeight = height;
-    this.grid = this.generateGrid(width, height);
-    this.cursor = [width/2, height/2];
+    this.grid = GridStuff.generateGrid(width, height);
+    this.cursor = [Math.floor(width/2), Math.floor(height/2)];
     this.seed = seed;
     const prng = new PRNG(seed);
     this.rnd = prng.next.bind(prng);
     //this.rnd = new PRNG(seed);
-  }
-  generateGrid(width, height, value = 0) {
-    const rowTempl = Array.apply(null, Array(width)).map( () => value );
-    return Array.apply(null, Array(height)).map( () => rowTempl.slice() );
-  }
+  };
   step() {
     const cursor = this.cursor;
     const maxCursorX = this.gridWidth -1;
@@ -54,7 +50,7 @@ class RandomWalker {
     cursor[0] = Math.max(Math.min(cursor[0] + (direction - 2) % 2, maxCursorX), 0);
     cursor[1] = Math.max(Math.min(cursor[1] + (direction - 1) % 2, maxCursorY), 0);
     this.grid[cursor[1]][cursor[0]] = 1;
-  }
+  };
   walk(numTiles = this.gridWidth * this.gridHeight) {
     const cursor = this.cursor;
     const grid = this.grid;
@@ -67,6 +63,8 @@ class RandomWalker {
       cursor[0] = Math.max(Math.min(cursor[0] + (direction - 2) % 2, maxCursorX), 0);
       cursor[1] = Math.max(Math.min(cursor[1] + (direction - 1) % 2, maxCursorY), 0);
       grid[cursor[1]][cursor[0]] = 1;
-    }
-  }
-}
+    };
+  };
+};
+
+export { RandomWalker as default };

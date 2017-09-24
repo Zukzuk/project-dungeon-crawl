@@ -1,164 +1,121 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>level generator</title>
-    <!-- <script src="https://unpkg.com/babel-standalone@6/babel.min.js" charset="utf-8"></script> -->
-    <script src="https://unpkg.com/react@latest/dist/react.js"></script>
-    <script src="https://unpkg.com/react-dom@latest/dist/react-dom.js"></script>
-    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js" charset="utf-8"></script>
-    <script src="./random-walker.js"></script>
-    <style>
-    body {
-      margin: 8px;
-    }
-    div#tileGridInfo {
-      font-size: medium;
-      position: absolute;
-      background-color: #fff;
-      opacity: 0.5;
-      padding: 0.3em;
-    }
-    div#tileGridInfo p {
-      margin-top: 0em;
-      margin-bottom: 0em;
-    }
+import React from 'react';
+import GridStuff from './grid-stuff';
+import RandomWalker from './random-walker';
+import TileGrid from './components/TileGrid';
+import './level-generator-style.scss';
 
-    .tileRow {
-    }
-    .tileGrid {
-      font-size: 0;
-    }
-    .tile {
-      background-color: #bbb;
-    }
-    .tile.bright {
-      background-color: #ddd;
-    }
-    .tile.highlight {
-      background-color: #4d4;
-    }
-    .tile.highlight.bright {
-      background-color: #6f6;
-    }
-    .tile.cursor {
-      background-color: #fb4;
-    }
-    </style>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="text/babel">
-
-
-class App extends React.Component {
+class LevelGeneratorApp extends React.Component {
+  constructor(props) {
+    super(props);
+  }
   render() {
     //debugger;
-    const width = this.props.grid[0].length;
-    const height = this.props.grid.length;
-    return <TileGrid grid={this.props.grid} cursor={this.props.cursor} gridInfo={this.props.gridInfo}
+    const level = this.state.level;
+    const width = level.grid[0].length;
+    const height = level.grid.length;
+    return <TileGrid grid={level.grid} cursor={level.cursor} gridInfo={this.state.gridInfo}
                      tileSize={ Math.min( (window.innerHeight - 16) / height, (window.innerWidth - 16) / width )} />
 
   }
-}
-class TileGridInfo extends React.Component {
-  render() {
-    const items = [];
-    const info = this.props.gridInfo();
-    for( let key in info ) {
-      if( info.hasOwnProperty(key) ) {
-        items.push(<p key={key}>{key + ": " + info[key]}</p>)
+  componentWillMount() {
+    const size = this.props.size || [50, 25];
+    this.setState({
+      gridSize: size,
+      level: this.props.level || this.generateLevel(...size),
+      step: 0,
+      stepInterval: null,
+      maxSteps: this.props.maxSteps || size[0] * size[1],
+      gridInfo: () => {return {}},
+    });
+  }
+  componentDidMount() {
+    var that = this; // time for some closure
+    document.body.onkeyup = function(e){
+      if(e.keyCode == 32){
+        //const [width, height] = this.state.gridSize;
+        //const level = this.state.level;
+        that.setState({
+          stepInterval: window.setInterval(that.levelStepper.bind(that), 100),
+        });
       }
     }
-    return <div id="tileGridInfo">{items}</div>
   }
-}
-class TileGrid extends React.Component {
-  generateTileGrid() {
-    const tiles = [];
-    const grid = this.props.grid;
-    const width = grid[0].length;
-    const height = grid.length;
-    const cursor = this.props.cursor || [undefined, undefined];
-    for( let y=0; y < height; y++ ) {
-      let row = [];
-      for( let x=0; x < width; x++ ) {
-        row.push(<Tile key={"tile" + x + "." + y} size={this.props.tileSize} tileNum={y*height+x} bright={x % 2 ^ y % 2} highlight={grid[y][x]+(cursor[0]==x&&cursor[1]==y)} />);
+  componentWillUnmount() {
+    document.body.onkeyup = null;
+    if( this.state.stepInterval ) {
+      window.clearInterval(this.state.stepInterval);
+      this.setState({
+        stepInterval: null,
+      });
+    }
+  }
+  generateLevel(x, y, seed) {
+    return new RandomWalker(x, y, seed);
+  }
+  levelStepper() {
+    if( this.state.step === this.state.maxSteps ) {
+      window.clearInterval(this.state.stepInterval);
+      this.setState({
+        stepInterval: null,
+      });
+    } else {
+      const step = this.state.step + 1;
+      const newState = {step: step}
+      this.state.level.step();
+      if( step % 10 === 0 ) {
+        const gridInfoValues = {};
+        const level = this.state.level;
+        gridInfoValues.step = step;
+        gridInfoValues.gridSize = JSON.stringify(this.state.gridSize);
+        gridInfoValues.seed = level.seed;
+        gridInfoValues.levelSize = GridStuff.sumGrid(level.grid);
+        gridInfoValues.efficiency = (gridInfoValues.levelSize/step).toFixed(2);
+        newState.gridInfo = () => {return gridInfoValues};
       }
-      tiles.push(<div key={"row" + y} className="tileRow">{row}</div>);
+      this.setState(newState);
     }
-    return <div className="tileGrid"><TileGridInfo gridInfo={this.props.gridInfo} />{tiles}</div>
-  };
-  render() {
-    return this.generateTileGrid();
-  };
-};
-class Tile extends React.Component {
-  render() {
-    const classes = ["tile"];
-    if ( this.props.bright )
-      classes.push("bright");
-    if ( this.props.highlight ) {
-      if( this.props.highlight == 2 )
-        classes.push("cursor")
-      else
-        classes.push("highlight");
-    }
-    return <div className={classes.join(" ")} style={{width: this.props.size, height: this.props.size, display: "inline-block"}} />
-  };
-};
-
-window.generateLevel = (x, y, seed) => {
-  const rw = new RandomWalker(x, y, seed);
-  //rw.walk();
-  return rw;
+  }
 }
 
-window.showLevel = (grid, cursor, gridInfo = () => {return {}} ) => {
-  //debugger;
-  ReactDOM.render(
-    <App grid={grid} cursor={cursor} gridInfo={gridInfo} /> ,
-    document.getElementById('app')
-  );
-};
+export { LevelGeneratorApp as default };
 
-(function (gridStuff) {
-  gridStuff.sumGrid = (grid) => {
-    return grid.map( (line) => line.reduce( (a,b) => a+b ) ).reduce( (a,b) => a+b );
-  }
-})(window.gridStuff = window.gridStuff || {});
+//window.generateLevel = (x, y, seed) => {
+//  const rw = new RandomWalker(x, y, seed);
+//  //rw.walk();
+//  return rw;
+//}
+
+
+// window.showLevel = (grid, cursor, gridInfo = () => {return {}} ) => {
+//   //debugger;
+//   ReactDOM.render(
+//     <LevelGeneratorApp grid={grid} cursor={cursor} gridInfo={gridInfo} /> ,
+//     document.getElementById('app')
+//   );
+// };
+
 
 //showLevel( generateLevel(200, 100).grid );
 //showLevel( [[]] );
 
-window.stepped = 0;
-window.maxSteps = 5000;
-window.stepper = (level) => {
-  if( window.stepped === window.maxSteps ) {
-    window.stepped = 0;
-    window.clearInterval(window.stepperInterval);
-  } else {
-    window.stepped++;
-    level.step();
-    if( window.stepped % 10 === 0 ) {
-      const giValues = {};
-      giValues.step = window.stepped;
-      giValues.gridSize = JSON.stringify([level.grid[0].length, level.grid.length]);
-      giValues.seed = level.seed;
-      giValues.levelSize = gridStuff.sumGrid(level.grid);
-      giValues.efficiency = (giValues.levelSize/window.stepped).toFixed(2);
-      showLevel(level.grid, level.cursor, () => {return giValues} );
-    }
-  }
-};
 
-document.body.onkeyup = function(e){
-    if(e.keyCode == 32){
-        //showLevel( generateLevel(200, 100).grid );
-        var level = generateLevel(100, 50);
-        window.stepperInterval = window.setInterval(window.stepper.bind(null, level), 10);
-    }
-}
-
-    </script>
-  </body>
-</html>
+// window.stepped = 0;
+// window.maxSteps = 5000;
+// window.stepper = (level) => {
+//   if( window.stepped === window.maxSteps ) {
+//     window.stepped = 0;
+//     window.clearInterval(window.stepperInterval);
+//   } else {
+//     window.stepped++;
+//     level.step();
+//     if( window.stepped % 10 === 0 ) {
+//       const giValues = {};
+//       giValues.step = window.stepped;
+//       giValues.gridSize = JSON.stringify([level.grid[0].length, level.grid.length]);
+//       giValues.seed = level.seed;
+//       giValues.levelSize = GridStuff.sumGrid(level.grid);
+//       giValues.efficiency = (giValues.levelSize/window.stepped).toFixed(2);
+//       showLevel(level.grid, level.cursor, () => {return giValues} );
+//     }
+//   }
+// };
