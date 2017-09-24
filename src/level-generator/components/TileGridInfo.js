@@ -1,6 +1,6 @@
 import React from 'react';
 
-class TileGridInfo extends React.Component {
+class TileGridInfo extends React.PureComponent {
   render() {
     const items = [];
     const info = this.props.gridInfo();
