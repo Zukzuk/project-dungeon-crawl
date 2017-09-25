@@ -14,7 +14,7 @@ export default class LevelGeneratorInput extends React.PureComponent {
              <div><label>seed: <input id="lgiSeed" value={this.props.values.seed} onChange={inputChange} /></label></div>
              <div>
                <input type="button" id="lgiStart" value="start" onClick={this.props.clickStart} />
-               <input type="button" id="lgiPauze" value="pauze" onClick={this.props.clickPauze} />
+               <input type="button" id="lgiPauze" value={(this.props.isRunning ? "pauze" : "run")} onClick={this.props.clickPauze} />
              </div>
            </div>
   }

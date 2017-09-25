@@ -16,9 +16,10 @@ class LevelGeneratorApp extends React.PureComponent {
     const height = level.grid.length;
     const boundStartLevel = this.startLevel.bind(this);
     const boundInputChange = this.inputChange.bind(this);
-
+    const boundToggleStepper = this.toggleStepper.bind(this);
     return <div id="levelGenerator">
-             <LevelGeneratorInput clickStart={boundStartLevel} values={this.state.input} inputChange={boundInputChange} />
+             <LevelGeneratorInput clickStart={boundStartLevel} clickPauze={boundToggleStepper} isRunning={!!this.state.stepInterval}
+                     values={this.state.input} inputChange={boundInputChange} />
              <TileGrid grid={level.grid} cursor={level.cursor} gridInfo={this.state.gridInfo}
                      tileSize={ Math.min( (window.innerHeight - 16) / height, (window.innerWidth - 16) / width )} />
            </div>
@@ -56,7 +57,7 @@ class LevelGeneratorApp extends React.PureComponent {
     const size = [width, height];
     //const size = this.props.size || [50, 25];
     this.setState({
-      input: {width: width, height: height, maxSteps: maxSteps, seed: undefined},
+      input: {width: width.toString(), height: height.toString(), maxSteps: maxSteps.toString(), seed: seed},
       gridSize: size,
       level: this.generateLevel(width, height, seed),
       step: 0,
@@ -88,7 +89,11 @@ class LevelGeneratorApp extends React.PureComponent {
   startLevel() {
     this.stopStepper(); // in case it is running.
     this.initialize();
-    this.startStepper();
+    this.startStepper(true);
+  }
+  resetLevel() {
+    this.stopStepper(); // in case it is running.
+    this.initialize();
   }
   generateLevel(x, y, seed) {
     return new RandomWalker(x, y, seed);
@@ -106,7 +111,7 @@ class LevelGeneratorApp extends React.PureComponent {
       if( step % 10 === 0 ) {
         const gridInfoValues = {};
         const level = this.state.level;
-        gridInfoValues.step = step;
+        gridInfoValues.step = step + " of " + this.state.maxSteps;
         gridInfoValues.gridSize = JSON.stringify(this.state.gridSize);
         gridInfoValues.seed = level.seed;
         gridInfoValues.levelSize = GridStuff.sumGrid(level.grid);
@@ -116,8 +121,8 @@ class LevelGeneratorApp extends React.PureComponent {
       this.setState(newState);
     }
   }
-  startStepper() {
-    if( ! this.state.stepInterval ) {
+  startStepper(forceStart) {
+    if( ! this.state.stepInterval || forceStart ) {
       this.setState({
         stepInterval: window.setInterval(this.levelStepper.bind(this), 10),
       });
@@ -130,6 +135,12 @@ class LevelGeneratorApp extends React.PureComponent {
         stepInterval: null,
       });
     }
+  }
+  toggleStepper() {
+    if( this.state.stepInterval )
+      this.stopStepper();
+    else
+      this.startStepper();
   }
 }
 
