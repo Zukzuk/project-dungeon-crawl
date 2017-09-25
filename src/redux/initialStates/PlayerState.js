@@ -3,11 +3,7 @@ export default {
   relativeSize: { width: .5, height: .8 },
   currentId: 0,
   spawns: [{
-    position: undefined,
-    style: undefined,
-    styleId: undefined,
-    lightRadius: undefined,
-    lightRadiusStyle: undefined,
-    lightRadiusStyleId: undefined
+    position: {},
+    lightRadius: undefined
   }]
 }

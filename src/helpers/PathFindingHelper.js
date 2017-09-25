@@ -1,6 +1,4 @@
-
 import PF from 'pathfinding';
-
 import PlayerActions from '../redux/actions/PlayerActions';
 import ENTITY_CONSTANTS from '../constants';
 
@@ -27,8 +25,8 @@ const gridFromState = (state) => {
   const grid = generateGrid(state.GameBoard);
 
   const obstacles = [];
-  obstacles.splice(obstacles.length, 0, ...state.Entity.Minion.spawns.map((minion) => minion.position));
-  obstacles.splice(obstacles.length, 0, ...state.Entity.Player.spawns.map((player) => player.position));
+  obstacles.splice(obstacles.length, 0, ...state.Entity.Minion.spawns.map((minion) => minion.position.tileId));
+  obstacles.splice(obstacles.length, 0, ...state.Entity.Player.spawns.map((player) => player.position.tileId));
   blockTiles(grid, obstacles, columns);
 
   return grid;
@@ -65,7 +63,7 @@ const calculateRoute = (source, destination, grid) => {
 }
 
 // const planRoute = (dispatch, getState, entity) => {
-//   const playerIndex = getState().Entity.Player.spawns[0].position;
+//   const playerIndex = getState().Entity.Player.spawns[0].position.tileId;
 //   const playerXY = indexToXY(playerIndex, 20);
 //   const destinationIndex = getState().Tile.currentId;
 //   const destinationXY = indexToXY(destinationIndex, 20);
