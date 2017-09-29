@@ -9,10 +9,10 @@
   color: #ccc;
   background-color: #eee;
   &[data-light='fogofwar'] {
-    opacity: .05 !important;
+    opacity: 0 !important;
   }
   &[data-light='off'] {
-    opacity: .2 !important;
+    opacity: .05 !important;
   }
 
   pointer-events: all;

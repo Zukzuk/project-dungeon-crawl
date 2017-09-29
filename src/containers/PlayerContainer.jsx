@@ -17,8 +17,6 @@ class PlayerContainer extends PureComponent {
   };
 
   componentDidMount() {
-    this.addKeyboardSupport();
-
     setTimeout(() => {
       this.props.actions.Tile.selectTile(0, 0);
       this.props.actions.Player.updateLightRadius(4);
@@ -71,35 +69,6 @@ class PlayerContainer extends PureComponent {
   }
 
   /* methods */
-
-  addKeyboardSupport() {
-    window.addEventListener('keydown', e => {
-      if (e.defaultPrevented) return;
-      e.preventDefault();
-      const tileId = this.props.state.Entity.Player.spawns[0].position.tileId;
-      const roomId = this.props.state.Entity.Player.spawns[0].position.roomId;
-      let delta;
-      switch (e.key) {
-        case "ArrowDown":
-          delta = {x: 0, y: 1};
-          break;
-        case "ArrowUp":
-          delta = {x: 0, y: -1};
-
-          break;
-        case "ArrowLeft":
-          delta = {x: -1, y: 0};
-          break;
-        case "ArrowRight":
-          delta = {x: 1, y: 0};
-          break;
-        default:
-          return; // Quit when this doesn't handle the key event.
-      }
-      const index = _collision_.getTileIndex(this.roomComponent, tileId, delta);
-      if (!isNaN(index)) this.props.actions.Tile.selectTile(index, roomId);
-    }, true);
-  }
 
   getRoomComponent(props) {
     const roomId = props.state.Entity.Player.spawns[0].position.roomId;
