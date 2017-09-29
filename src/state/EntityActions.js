@@ -1,8 +1,8 @@
 import {
   ENTITY_CONSTANTS,
-} from '../../constants';
+} from '../constants';
 import EntityActions from './EntityActions';
-import { dom } from '../../helpers/helpers';
+import { dom } from '../helpers/helpers';
 
 export default {
 

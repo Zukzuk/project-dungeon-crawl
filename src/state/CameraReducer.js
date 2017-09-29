@@ -1,7 +1,7 @@
 import {
   CAMERA_CONSTANTS
-} from '../../constants';
-import initialState from '../initialStates/CameraState';
+} from '../constants';
+import initialState from './CameraState';
 
 export default (state = initialState, action) => {
   switch (action.type) {

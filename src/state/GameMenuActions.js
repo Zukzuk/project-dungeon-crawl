@@ -1,6 +1,6 @@
 import {
   GAME_MENU_CONSTANTS
-} from '../../constants';
+} from '../constants';
 import GameMenuActions from './GameMenuActions';
 
 export default {
