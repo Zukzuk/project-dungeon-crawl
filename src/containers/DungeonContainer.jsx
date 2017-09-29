@@ -44,7 +44,7 @@ class DungeonContainer extends PureComponent {
   /* methods */
 
   calculateNewDungeon(props) {
-    const {tileGrids, roomGrids} = _dungeon_.build(props);
+    const {tileGrids, roomGrids} = _dungeon_.build(props.state.GameBoard.level, props.state.Tile.size);
     this.tileGrids = tileGrids;
     this.roomGrids = roomGrids;
 
@@ -54,6 +54,11 @@ class DungeonContainer extends PureComponent {
   getDungeonInstance(props) {
     const grids = this.tileGrids.reduce((result, grid) => {
       result.push(grid.map(tiles => tiles.map((tileProps, index) => {
+        tileProps.onClick = () => props.actions.Tile.selectTile(tileProps.id, tileProps.roomId);
+        tileProps.style = {
+          margin: `${props.state.Tile.gutter}px`,
+          width: `calc(100% * (1/${tileProps.columns}) - ${props.state.Tile.gutter * 2}px)`,
+        };
         return (
           <TileContainer key={index}>
             <TileView {...tileProps}></TileView>
@@ -73,7 +78,7 @@ class DungeonContainer extends PureComponent {
       return result;
     }, []);
 
-    return instance;
+    return <div id='rooms'>{ instance }</div>;
   }
 
   /* local state */
@@ -97,7 +102,7 @@ class DungeonContainer extends PureComponent {
     return (
       <DungeonView {...this.getDungeonProps(this.props)}>
         <CameraContainer>
-          <div className='rooms'>{this.state.dungeonInstance}</div>
+          {this.state.dungeonInstance}
           <PlayerContainer/>
           {/*<MinionContainer />*/}
         </CameraContainer>
@@ -111,6 +116,6 @@ export default connect(
     'GameBoard', 'Tile', 'Entity'
   ]),
   dispatch => _redux_.mapActions(dispatch, [
-    'GameMenu', 'Tile', 'Entity'
+    'GameMenu', 'Tile'
   ])
 )(DungeonContainer);

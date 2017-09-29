@@ -5,9 +5,14 @@
 
   position: relative;
   cursor: pointer;
-
   color: #ccc;
   background-color: #eee;
+
+  pointer-events: all;
+  > * {
+    pointer-events: none;
+  }
+
   &[data-light='fogofwar'] {
     opacity: 0 !important;
   }
@@ -15,12 +20,11 @@
     opacity: .05 !important;
   }
 
-  pointer-events: all;
-  > * {
-    pointer-events: none;
-  }
-
   &:hover {
-    background-color: #ddd;
+    opacity: 1 !important;
+  }
+  &[data-light='off']:hover,
+  &[data-light='fogofwar']:hover {
+    opacity: .2 !important;
   }
 }

@@ -24,7 +24,7 @@ export const _dom_ = {
 
 export const _react_ = {
   stateDidUpdate: (nextProps, stateSlice, color) => {
-    const colorString = color ? 'background: #EEE; color: red' : '';
+    const colorString = color ? `background: #EEE; color: ${color}` : '';
     const { props, contextName, methodName } = nextProps;
     const currentState = _.get(props, `state[${stateSlice}]`);
     const nextState = _.get(nextProps, `state[${stateSlice}]`);

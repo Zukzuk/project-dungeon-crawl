@@ -17,9 +17,14 @@ class CameraContainer extends PureComponent {
   }
 
   updatePan(nextProps) {
-    if (_react_.stateDidUpdate(nextProps, 'Tile.tileId') ||
+    if (_react_.stateDidUpdate(nextProps, 'GameBoard.level', 'blue') ||
+      _react_.stateDidUpdate(nextProps, 'Tile.tileId') ||
       _react_.stateDidUpdate(nextProps, 'Tile.roomId')) {
-      this.calculatePan(nextProps);
+      if (this.props.state.GameBoard.level === undefined) {
+        setTimeout(() => this.calculatePan(nextProps), 500);
+      } else {
+        this.calculatePan(nextProps);
+      }
     }
   }
 
@@ -28,10 +33,17 @@ class CameraContainer extends PureComponent {
   calculatePan(props) {
     const tileId = props.state.Tile.tileId;
     const roomId = props.state.Tile.roomId;
-    const tileElm = document.querySelector(`#tile${tileId}`);
-    const roomElm = document.querySelector(`#room${roomId}`);
+
+    let tileElm = document.querySelector(`#tile${tileId}`);
+    const tileRect = tileElm ? tileElm.getBoundingClientRect() : { width: 0, height: 0 };
+    if (!tileElm) tileElm = { offsetLeft: 0, offsetTop: 0 };
+
+    const roomElm = document.querySelector(`#room${roomId}`) || { offsetLeft: 0, offsetTop: 0 };
+
     const gameboardElm = document.querySelector(`#gameboard`);
-    if (tileElm && roomElm && gameboardElm) this.setCameraProps(tileElm, tileElm.getBoundingClientRect(), roomElm, gameboardElm.getBoundingClientRect());
+    const gameboardRect = gameboardElm.getBoundingClientRect();
+
+    if (tileElm && roomElm && gameboardElm) this.setCameraProps(tileElm, tileRect, roomElm, gameboardRect);
   }
 
   /* local state */
@@ -61,6 +73,6 @@ class CameraContainer extends PureComponent {
 
 export default connect(
   state => _redux_.mapState(state, [
-    'Tile'
+    'Tile', 'GameBoard'
   ]),
 )(CameraContainer);

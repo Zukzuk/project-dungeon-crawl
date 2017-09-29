@@ -87,17 +87,17 @@ const getLightRadiusOffset = (offsetTop, offsetLeft, tileRect, entityLightRadius
   const lightHeight = tileRect.height * entityLightRadius;
 
   const inline = {
-    offsetTop: - lightHeight*.5 + tileRect.height*.5,
-    offsetLeft: - lightWidth*.5 + tileRect.width*.5,
+    offsetTop: - lightHeight*.25 + tileRect.height*.5,
+    offsetLeft: - lightWidth*.25 + tileRect.width*.5,
   };
 
   return {
     top: `${Math.round(offsetTop + inline.offsetTop)}px`,
     left: `${Math.round(offsetLeft + inline.offsetLeft)}px`,
-    width: `${Math.round(lightWidth)}px`,
-    height: `${Math.round(lightHeight)}px`,
-    borderRadius: `${(lightHeight*.5)}px ${(lightWidth*.5)}px`,
-    //boxShadow: `0 0 ${lightWidth/2}px ${Math.round(lightWidth)}px papayawhip`
+    width: `${Math.round(lightWidth/2)}px`,
+    height: `${Math.round(lightHeight/2)}px`,
+    borderRadius: `${(lightHeight*.25)}px ${(lightWidth*.25)}px`,
+    boxShadow: `0 0 ${lightWidth*.5}px ${Math.round(lightWidth*.25)}px papayawhip`
   }
 };
 
