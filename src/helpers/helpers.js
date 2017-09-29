@@ -23,13 +23,13 @@ export const _dom_ = {
 };
 
 export const _react_ = {
-  stateDidUpdate: (context, method, next, slice, color) => {
+  stateDidUpdate: (nextProps, stateSlice, color) => {
     const colorString = color ? 'background: #EEE; color: red' : '';
-    const name = context.constructor.name;
-    const currentState = _.get(context.props, `state[${slice}]`);
-    const nextState = _.get(next, `state[${slice}]`);
+    const { props, contextName, methodName } = nextProps;
+    const currentState = _.get(props, `state[${stateSlice}]`);
+    const nextState = _.get(nextProps, `state[${stateSlice}]`);
     const doUpdate = nextState !== currentState;
-    if (doUpdate) console.log(`%c ${name}.${method} reacting to '${slice}' update: ${currentState} => ${nextState}`, colorString);
+    if (doUpdate) console.log(`%c ${contextName}.${methodName} reacting to '${stateSlice}' update: ${currentState} => ${nextState}`, colorString);
     return currentState !== nextState;
   },
 

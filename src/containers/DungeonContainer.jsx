@@ -24,18 +24,19 @@ class DungeonContainer extends PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.updateDungeon(nextProps, this.updateDungeon.name);
-    this.updateRoomVisibility(nextProps, this.updateRoomVisibility.name);
+    const _update_ = {props: this.props, contextName: this.constructor.name};
+    this.updateDungeon({...nextProps, ...{ ..._update_, methodName: this.updateDungeon.name }});
+    this.updateRoomVisibility({...nextProps, ...{ ..._update_, methodName: this.updateRoomVisibility.name }});
   }
 
-  updateDungeon(nextProps, method) {
-    if (_react_.stateDidUpdate(this, method, nextProps, 'GameBoard.level')) {
+  updateDungeon(nextProps) {
+    if (_react_.stateDidUpdate(nextProps, 'GameBoard.level')) {
       this.calculateNewDungeon(nextProps);
     }
   }
 
-  updateRoomVisibility(nextProps, method) {
-    if (_react_.stateDidUpdate(this, method, nextProps, 'Entity.Player.spawns[0].position.roomId')) {
+  updateRoomVisibility(nextProps) {
+    if (_react_.stateDidUpdate(nextProps, 'Entity.Player.spawns[0].position.roomId')) {
       if (!isNaN(nextProps.state.Entity.Player.spawns[0].position.roomId)) this.setDungeon(nextProps);
     }
   }

@@ -12,12 +12,13 @@ class CameraContainer extends PureComponent {
   };
 
   componentWillReceiveProps(nextProps) {
-    this.updatePan(nextProps, this.updatePan.name);
+    const _update_ = {props: this.props, contextName: this.constructor.name};
+    this.updatePan({...nextProps, ...{ ..._update_, methodName: this.updatePan.name }});
   }
 
-  updatePan(nextProps, methods) {
-    if (_react_.stateDidUpdate(this, methods, nextProps, 'Tile.tileId') ||
-      _react_.stateDidUpdate(this, methods, nextProps, 'Tile.roomId')) {
+  updatePan(nextProps) {
+    if (_react_.stateDidUpdate(nextProps, 'Tile.tileId') ||
+      _react_.stateDidUpdate(nextProps, 'Tile.roomId')) {
       this.calculatePan(nextProps);
     }
   }
