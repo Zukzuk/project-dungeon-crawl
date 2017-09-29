@@ -8,18 +8,15 @@ const getTileGrid = (props, rectangle, count, roomId) => {
   while (y++ < rows) {
     let x = 0, row = [];
     while (x++ < columns) {
-      let index = x + ((y - 1) * columns);
+      const index = x + ((y - 1) * columns);
       const tileId = count + index - 1;
       const selectTile = () => props.actions.Tile.selectTile(tileId, roomId);
       const tileProps = {
-        id: tileId,
-        x,
-        y,
+        id: tileId, x, y, onClick: selectTile,
         style: {
           margin: `${props.state.Tile.gutter}px`,
           width: `calc(100% * (1/${columns}) - ${props.state.Tile.gutter * 2}px)`,
-        },
-        onClick: selectTile
+        }
       };
       row.push(tileProps);
     }
