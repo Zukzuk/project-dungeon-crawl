@@ -1,4 +1,4 @@
-import collision from './collision';
+import _collision_ from './collision';
 
 export default {
 
@@ -23,7 +23,7 @@ export default {
           if (room.x > 1) room.x -= tileSize;
           if (room.y > 1) room.y -= tileSize;
           if ((room.x < tileSize) && (room.y < tileSize)) break;
-          if (collision.roomCollision(room, rooms, j)) {
+          if (_collision_.roomCollision(room, rooms, j)) {
             room.x = old_position.x;
             room.y = old_position.y;
             break;
@@ -87,32 +87,15 @@ export default {
     return null;
   },
 
-  getTileIndex: (component, tileId, pressedKey) => {
-    if (!component || isNaN(tileId) || !pressedKey) return;
+  getTileIndex: (component, tileId, delta) => {
+    if (!component || isNaN(tileId) || !delta) return;
     // flatten the room into tiles
     const tiles = component.instance.props.children ? Array.prototype.concat.apply([], component.instance.props.children) : null;
     const offsetIndex = tiles[0].props.children.props.id;
 
     const normalized = tileId - offsetIndex;
     const currentTile = tiles[normalized].props.children.props;
-    const coord = { x: currentTile.x, y: currentTile.y };
-
-    switch (pressedKey) {
-      case "ArrowDown":
-        coord.y += 1;
-        break;
-      case "ArrowUp":
-        coord.y -= 1;
-        break;
-      case "ArrowLeft":
-        coord.x -= 1;
-        break;
-      case "ArrowRight":
-        coord.x += 1;
-        break;
-      default:
-        return; // Quit when this doesn't handle the key event.
-    }
+    const coord = { x: currentTile.x + delta.x, y: currentTile.y + delta.y };
 
     const selectedTile = component.elm.querySelector(`[data-coord="${coord.x}-${coord.y}"]`);
     return selectedTile ? Number(selectedTile.id.replace('tile', '')) : undefined;

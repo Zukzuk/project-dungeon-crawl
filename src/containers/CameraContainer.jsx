@@ -1,28 +1,23 @@
-import React, { PureComponent } from 'react';
+import React, {PureComponent} from 'react';
 import {connect} from 'react-redux';
-import {react, redux} from '../helpers/helpers';
+import {_react_, _redux_} from '../helpers/helpers';
 import CameraView from '../views/CameraView';
 
 class CameraContainer extends PureComponent {
 
   /* lifecycle */
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      cameraProps: null
-    }
-  }
+  state = {
+    cameraProps: null
+  };
 
   componentWillReceiveProps(nextProps) {
-    this.updatePan(nextProps);
+    this.updatePan(nextProps, this.updatePan.name);
   }
 
-  updatePan(nextProps) {
-    if (
-      react.stateDidUpdate(this.props, nextProps, 'Tile.tileId') ||
-      react.stateDidUpdate(this.props, nextProps, 'Tile.roomId')
-    ) {
+  updatePan(nextProps, methods) {
+    if (_react_.stateDidUpdate(this, methods, nextProps, 'Tile.tileId') ||
+      _react_.stateDidUpdate(this, methods, nextProps, 'Tile.roomId')) {
       this.calculatePan(nextProps);
     }
   }
@@ -41,13 +36,12 @@ class CameraContainer extends PureComponent {
   /* local state */
 
   setCameraProps(tileElm, tileRect, roomElm, gameboardRect) {
-    debugger;
     this.setState({
       ...this.state,
       cameraProps: {
         pan: {
-          x: (gameboardRect.width/2 - tileRect.width/2) - tileElm.offsetLeft - roomElm.offsetLeft,
-          y: (gameboardRect.height/2 - tileRect.height/2) - tileElm.offsetTop - roomElm.offsetTop
+          x: (gameboardRect.width / 2 - tileRect.width / 2) - tileElm.offsetLeft - roomElm.offsetLeft,
+          y: (gameboardRect.height / 2 - tileRect.height / 2) - tileElm.offsetTop - roomElm.offsetTop
         }
       }
     });
@@ -56,17 +50,16 @@ class CameraContainer extends PureComponent {
   /* render */
 
   render() {
-    debugger;
     return (
       <CameraView {...this.state.cameraProps}>
-        { this.props.children }
+        {this.props.children}
       </CameraView>
     );
   }
 }
 
 export default connect(
-  state => redux.mapState(state, [
+  state => _redux_.mapState(state, [
     'Tile'
   ]),
 )(CameraContainer);

@@ -6,9 +6,6 @@ import LevelGeneratorInput from './components/LevelGeneratorInput';
 import './level-generator-style.scss';
 
 class LevelGeneratorApp extends React.PureComponent {
-  constructor(props) {
-    super(props);
-  }
   render() {
     const level = this.state.level;
     const width = level.grid[0].length;

@@ -1,6 +1,6 @@
 import React from 'react';
-import {math} from './helpers';
-import collision from './collision';
+import { _math_ } from './helpers';
+import _collision_ from './collision';
 
 const getTileGrid = (props, rectangle, count, roomId) => {
   const {rows, columns} = rectangle;
@@ -92,18 +92,18 @@ const buildRoomGrid = (grids, props) => {
     room.w = tileSize * tileGrid[0].length;
     room.h = tileSize * tileGrid.length;
     mapSize = Math.max(mapSize + (room.w * 3), mapSize + (room.h * 3));
-    const roomX = math.rand(0, mapSize - room.w);
-    const roomY = math.rand(0, mapSize - room.h);
+    const roomX = _math_.rand(0, mapSize - room.w);
+    const roomY = _math_.rand(0, mapSize - room.h);
     room.x = roomX + (tileSize - (roomX % tileSize));
     room.y = roomY + (tileSize - (roomY % tileSize));
-    if (collision.roomCollision(room, rooms)) {
+    if (_collision_.roomCollision(room, rooms)) {
       i--;
       continue;
     }
     rooms.push(room);
   }
 
-  collision.roomSquash(rooms, tileSize);
+  _collision_.roomSquash(rooms, tileSize);
 
   return rooms.map(room => {
     room.style = {

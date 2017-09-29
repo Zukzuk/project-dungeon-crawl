@@ -2,7 +2,7 @@ import {
   ENTITY_CONSTANTS,
 } from '../constants';
 import EntityActions from './EntityActions';
-import { dom } from '../helpers/helpers';
+import { _dom_ } from '../helpers/helpers';
 
 export default {
 

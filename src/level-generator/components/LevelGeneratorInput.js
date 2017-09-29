@@ -1,9 +1,7 @@
 import React from 'react'
 
 export default class LevelGeneratorInput extends React.PureComponent {
-  constructor(props) {
-    super(props);
-  }
+
   render() {
     const inputChange = this.props.inputChange;
     return <div id="levelGeneratorInput">

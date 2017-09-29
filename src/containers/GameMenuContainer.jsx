@@ -1,6 +1,6 @@
 import React, {PureComponent} from 'react';
 import {connect} from 'react-redux';
-import {redux} from '../helpers/helpers';
+import {_redux_} from '../helpers/helpers';
 import GameMenuView from '../views/GameMenuView';
 
 class GameMenuContainer extends PureComponent {
@@ -58,10 +58,10 @@ class GameMenuContainer extends PureComponent {
 }
 
 export default connect(
-  state => redux.mapState(state, [
+  state => _redux_.mapState(state, [
     'GameBoard', 'GameMenu', 'Entity'
   ]),
-  dispatch => redux.mapActions(dispatch, [
+  dispatch => _redux_.mapActions(dispatch, [
     'GameMenu', 'Player'
   ])
 )(GameMenuContainer);
