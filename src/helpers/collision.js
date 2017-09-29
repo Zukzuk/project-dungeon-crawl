@@ -70,7 +70,7 @@ export default {
       const tileElm = component.elm.querySelector(`#tile${i+offsetIndex}`);
       if (ratio) {
         tileElm.setAttribute('data-light', 'on');
-        tileElm.style['opacity'] = (ratio > .62) ? 1 : (ratio < .2) ? .2 : ratio;
+        tileElm.style['opacity'] = (ratio > .72) ? 1 : (ratio < .2) ? .2 : ratio;
       } else if (_.get(tileElm, 'attributes[\'data-light\'].nodeValue') === 'on') {
         tileElm.setAttribute('data-light', 'off');
       }

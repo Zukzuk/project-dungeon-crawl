@@ -31,12 +31,27 @@ class DungeonContainer extends PureComponent {
     this.updateRoomVisibility(nextProps);
   }
 
-  /* local state */
+  updateDungeon(nextProps) {
+    if (react.stateDidUpdate(this.props, nextProps, 'GameBoard.hasPerpective') ||
+      react.stateDidUpdate(this.props, nextProps, 'GameBoard.level')) {
+      this.calculateNewDungeon(nextProps);
+    }
+  }
 
-  getDungeonProps(props) {
-    return {
-      state: props.state.GameBoard
-    };
+  updateRoomVisibility(nextProps) {
+    if (react.stateDidUpdate(this.props, nextProps, 'Entity.Player.spawns[0].position.roomId')) {
+      if (!isNaN(nextProps.state.Entity.Player.spawns[0].position.roomId)) this.setDungeon(nextProps);
+    }
+  }
+
+  /* methods */
+
+  calculateNewDungeon(props) {
+    const {tileGrids, roomGrids} = dungeon.build(props);
+    this.tileGrids = tileGrids;
+    this.roomGrids = roomGrids;
+
+    this.setDungeon(props);
   }
 
   getDungeonInstance(props) {
@@ -54,11 +69,11 @@ class DungeonContainer extends PureComponent {
     const instance = this.roomGrids.reduce((result, roomProps, index) => {
       const tiles = grids[index];
       //if (props.state.Entity.Player.spawns[0].position.roomId === index) {
-        result.push(
-          <RoomContainer key={index}>
-            <RoomView {...roomProps}>{tiles}</RoomView>
-          </RoomContainer>
-        );
+      result.push(
+        <RoomContainer key={index}>
+          <RoomView {...roomProps}>{tiles}</RoomView>
+        </RoomContainer>
+      );
       //}
       return result;
     }, []);
@@ -66,33 +81,18 @@ class DungeonContainer extends PureComponent {
     return instance;
   }
 
-  setNewDungeon(props) {
-    const {tileGrids, roomGrids} = dungeon.build(props);
-    this.tileGrids = tileGrids;
-    this.roomGrids = roomGrids;
+  /* local state */
 
-    this.refreshDungeon(props);
+  getDungeonProps(props) {
+    return {
+      state: props.state.GameBoard
+    };
   }
 
-  refreshDungeon(props) {
+  setDungeon(props) {
     this.setState({...this.state,
       dungeonInstance: this.getDungeonInstance(props)
     });
-  }
-
-  /* updates */
-
-  updateDungeon(nextProps) {
-    if (react.stateDidUpdate(this.props, nextProps, 'GameBoard.hasPerpective') ||
-      react.stateDidUpdate(this.props, nextProps, 'GameBoard.level')) {
-      this.setNewDungeon(nextProps);
-    }
-  }
-
-  updateRoomVisibility(nextProps) {
-    if (react.stateDidUpdate(this.props, nextProps, 'Entity.Player.spawns[0].position.roomId')) {
-      if (!isNaN(nextProps.state.Entity.Player.spawns[0].position.roomId)) this.refreshDungeon(nextProps);
-    }
   }
 
   /* render */
