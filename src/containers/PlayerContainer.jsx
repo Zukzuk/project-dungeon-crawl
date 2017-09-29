@@ -104,8 +104,7 @@ class PlayerContainer extends PureComponent {
     this.setState({
       ...this.state,
       playerProps: {
-        style,
-        id: 0
+        style, id: 0
       },
       lightRadiusProps: {
         style: lightRadiusStyle
