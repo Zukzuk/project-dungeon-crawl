@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.0.8] - 2017-08-29
+### Added
+- Added dungeon camera panning
+
 ## [0.0.7] - 2017-08-29
 ### Added
 - Added new level generator
