@@ -8,7 +8,7 @@ export default {
 
   // offsetAllEntities: name => {
   //   return (dispatch, getState) => {
-  //     // get all entities on game-board
+  //     // get all entities on gameboard
   //     const target = name ? [name] : Object.keys(getState().Entity);
   //     target.forEach(name => {
   //       document.querySelectorAll('.' + name.toLowerCase())

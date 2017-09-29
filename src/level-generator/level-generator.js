@@ -10,7 +10,6 @@ class LevelGeneratorApp extends React.PureComponent {
     super(props);
   }
   render() {
-    //debugger;
     const level = this.state.level;
     const width = level.grid[0].length;
     const height = level.grid.length;

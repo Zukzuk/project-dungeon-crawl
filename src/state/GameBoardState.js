@@ -1,4 +1,4 @@
 export default {
   level:undefined,
-  hasPerspective: true
+  hasPerspective: false
 };

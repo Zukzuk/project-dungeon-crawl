@@ -23,7 +23,6 @@ class PlayerContainer extends PureComponent {
     this.addKeyboardSupport();
 
     setTimeout(() => {
-      debugger;
       this.props.actions.Tile.selectTile(0, 0);
       this.props.actions.Player.updateLightRadius(4);
     }, 1000);
@@ -48,7 +47,7 @@ class PlayerContainer extends PureComponent {
     if (react.stateDidUpdate(this.props, nextProps, 'GameBoard.level')) {
       // reset and recalculate collisions on level change
       this.roomComponent = collision.resetCollision(this.roomComponent);
-      const tileId = nextProps.state.Entity.Player.spawns[0].position.tileId;
+      const tileId = _.get(nextProps, 'state.Entity.Player.spawns[0].position.tileId');
       if (tileId === 0) {
         this.calculateTileCollision(nextProps);
       } else if (tileId !== undefined) {

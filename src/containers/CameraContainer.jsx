@@ -23,7 +23,6 @@ class CameraContainer extends PureComponent {
       react.stateDidUpdate(this.props, nextProps, 'Tile.tileId') ||
       react.stateDidUpdate(this.props, nextProps, 'Tile.roomId')
     ) {
-      debugger;
       this.calculatePan(nextProps);
     }
   }
@@ -32,16 +31,24 @@ class CameraContainer extends PureComponent {
 
   calculatePan(props) {
     const tileId = props.state.Tile.tileId;
+    const roomId = props.state.Tile.roomId;
     const tileElm = document.querySelector(`#tile${tileId}`);
-    debugger;
+    const roomElm = document.querySelector(`#room${roomId}`);
+    const gameboardElm = document.querySelector(`#gameboard`);
+    if (tileElm && roomElm && gameboardElm) this.setCameraProps(tileElm, tileElm.getBoundingClientRect(), roomElm, gameboardElm.getBoundingClientRect());
   }
 
   /* local state */
 
-  setCameraProps(props) {
-    this.setState({ ...this.state,
+  setCameraProps(tileElm, tileRect, roomElm, gameboardRect) {
+    debugger;
+    this.setState({
+      ...this.state,
       cameraProps: {
-
+        pan: {
+          x: (gameboardRect.width/2 - tileRect.width/2) - tileElm.offsetLeft - roomElm.offsetLeft,
+          y: (gameboardRect.height/2 - tileRect.height/2) - tileElm.offsetTop - roomElm.offsetTop
+        }
       }
     });
   }
@@ -49,8 +56,9 @@ class CameraContainer extends PureComponent {
   /* render */
 
   render() {
+    debugger;
     return (
-      <CameraView { ...this.state.cameraProps }>
+      <CameraView {...this.state.cameraProps}>
         { this.props.children }
       </CameraView>
     );
@@ -59,6 +67,6 @@ class CameraContainer extends PureComponent {
 
 export default connect(
   state => redux.mapState(state, [
-    'Tile',
+    'Tile'
   ]),
 )(CameraContainer);

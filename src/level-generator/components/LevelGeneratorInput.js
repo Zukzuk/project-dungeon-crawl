@@ -6,7 +6,6 @@ export default class LevelGeneratorInput extends React.PureComponent {
   }
   render() {
     const inputChange = this.props.inputChange;
-    //debugger;
     return <div id="levelGeneratorInput">
              <div><label>width: <input id="lgiWidth" value={this.props.values.width} onChange={inputChange} /></label></div>
              <div><label>height: <input id="lgiHeight" value={this.props.values.height} onChange={inputChange} /></label></div>

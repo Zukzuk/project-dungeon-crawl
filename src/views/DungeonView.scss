@@ -24,6 +24,10 @@ $ani-duration: .5s;
   }
 }
 
+#camera {
+  transition: left var($ani-duration), top var($ani-duration);
+}
+
 .rooms {
   position: absolute;
   width: 100%;
