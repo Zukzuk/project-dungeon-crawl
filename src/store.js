@@ -5,11 +5,11 @@ import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
 import createHistory from 'history/createBrowserHistory';
 
-import GameMenu from './redux/GameMenuReducer';
-import GameBoard from './redux/GameBoardReducer';
-import Entity from './redux/EntityReducer';
-import Tile from './redux/TileReducer';
-import Camera from './redux/CameraReducer';
+import GameMenu from './state/GameMenuReducer';
+import GameBoard from './state/GameBoardReducer';
+import Entity from './state/EntityReducer';
+import Tile from './state/TileReducer';
+import Camera from './state/CameraReducer';
 
 export const history = createHistory();
 

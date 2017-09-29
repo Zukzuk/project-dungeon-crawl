@@ -1,9 +1,9 @@
 import React from 'react';
 import { bindActionCreators } from 'redux';
-import EntityActions from '../redux/EntityActions';
-import PlayerActions from '../redux/PlayerActions';
-import TileActions from '../redux/TileActions';
-import GameMenuActions from '../redux/GameMenuActions';
+import EntityActions from '../state/EntityActions';
+import PlayerActions from '../state/PlayerActions';
+import TileActions from '../state/TileActions';
+import GameMenuActions from '../state/GameMenuActions';
 
 export const dom = {
 
