@@ -28,7 +28,7 @@ $ani-duration: .5s;
   transition: left var($ani-duration), top var($ani-duration);
 }
 
-.rooms {
+#rooms {
   position: absolute;
   width: 100%;
   height: 100%;

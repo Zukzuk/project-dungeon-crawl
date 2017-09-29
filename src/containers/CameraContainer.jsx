@@ -21,7 +21,8 @@ class CameraContainer extends PureComponent {
   updatePan(nextProps) {
     if (
       react.stateDidUpdate(this.props, nextProps, 'Tile.tileId') ||
-      react.stateDidUpdate(this.props, nextProps, 'Tile.roomId')
+      react.stateDidUpdate(this.props, nextProps, 'Tile.roomId') ||
+      react.stateDidUpdate(this.props, nextProps, 'GameBoard.level')
     ) {
       this.calculatePan(nextProps);
     }
@@ -41,7 +42,6 @@ class CameraContainer extends PureComponent {
   /* local state */
 
   setCameraProps(tileElm, tileRect, roomElm, gameboardRect) {
-    debugger;
     this.setState({
       ...this.state,
       cameraProps: {
@@ -56,7 +56,6 @@ class CameraContainer extends PureComponent {
   /* render */
 
   render() {
-    debugger;
     return (
       <CameraView {...this.state.cameraProps}>
         { this.props.children }
@@ -67,6 +66,6 @@ class CameraContainer extends PureComponent {
 
 export default connect(
   state => redux.mapState(state, [
-    'Tile'
+    'Tile', 'GameBoard'
   ]),
 )(CameraContainer);

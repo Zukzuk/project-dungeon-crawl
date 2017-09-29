@@ -66,15 +66,19 @@ class DungeonContainer extends PureComponent {
       return result;
     }, []);
 
+    const roomId = props.state.Entity.Player.spawns[0].position.roomId;
+    const renderRange = (!isNaN(roomId)) ? [roomId, roomId - 1, roomId + 1] : [];
+    debugger;
     const instance = this.roomGrids.reduce((result, roomProps, index) => {
       const tiles = grids[index];
-      //if (props.state.Entity.Player.spawns[0].position.roomId === index) {
-      result.push(
-        <RoomContainer key={index}>
-          <RoomView {...roomProps}>{tiles}</RoomView>
-        </RoomContainer>
-      );
-      //}
+      debugger;
+      if (renderRange.indexOf(index) !== -1) {
+        result.push(
+          <RoomContainer key={index}>
+            <RoomView {...roomProps}>{tiles}</RoomView>
+          </RoomContainer>
+        );
+      }
       return result;
     }, []);
 
@@ -90,7 +94,8 @@ class DungeonContainer extends PureComponent {
   }
 
   setDungeon(props) {
-    this.setState({...this.state,
+    this.setState({
+      ...this.state,
       dungeonInstance: this.getDungeonInstance(props)
     });
   }
@@ -101,7 +106,7 @@ class DungeonContainer extends PureComponent {
     return (
       <DungeonView {...this.getDungeonProps(this.props)}>
         <CameraContainer>
-          <div className='rooms'>{ this.state.dungeonInstance }</div>
+          <div id='rooms'>{this.state.dungeonInstance}</div>
           <PlayerContainer/>
           {/*<MinionContainer />*/}
         </CameraContainer>
