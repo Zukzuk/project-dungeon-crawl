@@ -1,36 +1,44 @@
-body {
+#levelGenerator {
   margin: 8px;
-}
-div#tileGridInfo {
-  font-size: medium;
-  position: absolute;
-  background-color: #fff;
-  opacity: 0.5;
-  padding: 0.3em;
-  z-index: 1;
-}
-div#tileGridInfo p {
-  margin-top: 0em;
-  margin-bottom: 0em;
-}
 
-.tileRow {
-}
-.tileGrid {
-  font-size: 0;
-}
-.tile {
-  background-color: #bbb;
-}
-.tile.bright {
-  background-color: #ddd;
-}
-.tile.highlight {
-  background-color: #4d4;
-}
-.tile.highlight.bright {
-  background-color: #6f6;
-}
-.tile.cursor {
-  background-color: #fb4;
+  #tileGridInfo {
+    font-size: medium;
+    position: absolute;
+    background: rgba(255,255,255,0.6);
+    padding: 0.3em;
+    z-index: 1;
+  }
+  #tileGridInfo p {
+    margin-top: 0em;
+    margin-bottom: 0em;
+  }
+
+  .tileRow {
+  }
+  .tileGrid {
+    font-size: 0;
+  }
+  .tile {
+    background-color: #bbb;
+  }
+  .tile.bright {
+    background-color: #ddd;
+  }
+  .tile.highlight {
+    background-color: #4d4;
+  }
+  .tile.highlight.bright {
+    background-color: #6f6;
+  }
+  .tile.cursor {
+    background-color: #fb4;
+  }
+  #levelGeneratorInput {
+    font-size: medium;
+    position: absolute;
+    right: 8px;
+    background: rgba(255,255,255,0.6);
+    padding: 0.3em;
+    z-index: 1;
+  }
 }

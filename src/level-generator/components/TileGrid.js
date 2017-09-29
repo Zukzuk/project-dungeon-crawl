@@ -2,7 +2,7 @@ import React from 'react';
 import TileGridInfo from './TileGridInfo';
 import Tile from './Tile';
 
-class TileGrid extends React.Component {
+class TileGrid extends React.PureComponent {
   generateTileGrid() {
     const tiles = [];
     const grid = this.props.grid;
