@@ -3,29 +3,30 @@ import _collision_ from './collision';
 export default {
 
   roomCollision: (room, rooms, ignored) => {
-    for (var i = 0; i < rooms.length; i++) {
+    for (let i = 0; i < rooms.length; i++) {
       if (i == ignored) continue;
       const check = rooms[i];
-      if (!((room.x + room.w < check.x) || (room.x > check.x + check.w) || (room.y + room.h < check.y) || (room.y > check.y + check.h))) return true;
+      if (!((room.x + room.w < check.x) ||
+          (room.x > check.x + check.w) ||
+          (room.y + room.h < check.y) ||
+          (room.y > check.y + check.h))
+      ) return true;
     }
     return false;
   },
 
   roomSquash: (rooms, tileSize) => {
-    for (var i = 0; i < 10; i++) {
-      for (var j = 0; j < rooms.length; j++) {
-        var room = rooms[j];
+    for (let i = 0; i < 10; i++) {
+      for (let j = 0; j < rooms.length; j++) {
+        const room = rooms[j];
         while (true) {
-          var old_position = {
-            x: room.x,
-            y: room.y
-          };
+          const oldPos = { x: room.x, y: room.y };
           if (room.x > 1) room.x -= tileSize;
           if (room.y > 1) room.y -= tileSize;
           if ((room.x < tileSize) && (room.y < tileSize)) break;
           if (_collision_.roomCollision(room, rooms, j)) {
-            room.x = old_position.x;
-            room.y = old_position.y;
+            room.x = oldPos.x;
+            room.y = oldPos.y;
             break;
           }
         }
@@ -36,7 +37,8 @@ export default {
   tileCollision: (component, tileId, radius, tileSize) => {
     if (!component || isNaN(tileId) || isNaN(radius) || isNaN(tileSize)) return;
     // flatten the room into tiles
-    const tiles = component.instance.props.children ? Array.prototype.concat.apply([], component.instance.props.children) : null;
+    const tiles = component.instance.props.children
+      ? Array.prototype.concat.apply([], component.instance.props.children) : null;
 
     // get the tile where the light is centered
     const offsetIndex = tiles[0].props.children.props.id;

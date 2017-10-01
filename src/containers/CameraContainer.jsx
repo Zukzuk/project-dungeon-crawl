@@ -17,7 +17,7 @@ class CameraContainer extends PureComponent {
   }
 
   updatePan(nextProps) {
-    if (_react_.stateDidUpdate(nextProps, 'GameBoard.level', 'blue') ||
+    if (_react_.stateDidUpdate(nextProps, 'GameBoard.level', 'green') ||
       _react_.stateDidUpdate(nextProps, 'Tile.tileId') ||
       _react_.stateDidUpdate(nextProps, 'Tile.roomId')) {
       if (this.props.state.GameBoard.level === undefined) {
