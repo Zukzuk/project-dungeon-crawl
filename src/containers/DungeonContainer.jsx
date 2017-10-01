@@ -56,13 +56,14 @@ class DungeonContainer extends PureComponent {
       result.push(grid.map(tiles => tiles.map((tileProps, index) => {
         tileProps.onClick = () => props.actions.Tile.selectTile(tileProps.id, tileProps.roomId);
         // const tileGutter = props.state.Tile.gutter;
-        const tileWidth = (1/tileProps.columns) ;
+        const tileWidth = 1/tileProps.columns;
+        const spriteSize = Math.ceil(Math.random()*9)/9;
         tileProps.style = {
           //margin: `${tileGutter}px`,
           //width: `calc(100% * ${tileWidth} - ${tileGutter * 2}px)`,
           width: `calc(100% * ${tileWidth})`,
           backgroundSize: `900%`,
-          backgroundPosition: `calc(900%*${Math.ceil(Math.random()*9)/9}) calc(900%*${Math.ceil(Math.random()*9)/9})`
+          backgroundPosition: `calc(900%*${spriteSize}) calc(900%*${spriteSize})`
         };
         return (
           <TileContainer key={index}>
