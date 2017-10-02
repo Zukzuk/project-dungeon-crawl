@@ -1,9 +1,11 @@
 import React from 'react';
 import GridStuff from './grid-stuff';
 import RandomWalker from './random-walker';
+import ConnectedRooms from './connected-rooms.js';
 import TileGrid from './components/TileGrid';
 import LevelGeneratorInput from './components/LevelGeneratorInput';
 import './level-generator-style.scss';
+
 
 class LevelGeneratorApp extends React.PureComponent {
   constructor(props) {
@@ -11,17 +13,23 @@ class LevelGeneratorApp extends React.PureComponent {
   }
   render() {
     //debugger;
-    const level = this.state.level;
-    const width = level.grid[0].length;
-    const height = level.grid.length;
+    const state = this.state;
+    const level = state.level;
+    const grid = level.grid;
+    const width = grid[0].length;
+    const height = grid.length;
     const boundStartLevel = this.startLevel.bind(this);
     const boundInputChange = this.inputChange.bind(this);
     const boundToggleStepper = this.toggleStepper.bind(this);
+    const boundLevelStepper = this.levelStepper.bind(this);
     return <div id="levelGenerator">
-             <LevelGeneratorInput clickStart={boundStartLevel} clickPauze={boundToggleStepper} isRunning={!!this.state.stepInterval}
-                     values={this.state.input} inputChange={boundInputChange} />
-             <TileGrid grid={level.grid} cursor={level.cursor} gridInfo={this.state.gridInfo}
-                     tileSize={ Math.min( (window.innerHeight - 16) / height, (window.innerWidth - 16) / width )} />
+             <LevelGeneratorInput clickStart={boundStartLevel} clickPauze={boundToggleStepper} clickStep={boundLevelStepper}
+                     isRunning={!!state.stepInterval}
+                     values={state.input} inputChange={boundInputChange} />
+             <TileGrid grid={level.grid} cursor={level.cursor} gridInfo={state.gridInfo}
+                     tileSize={ Math.min( (window.innerHeight - 16) / (height * 1.01), (window.innerWidth - 16) / (width * 1.01) )}
+                     showGridValues={state.input.showGridValues}
+             />
            </div>
   }
   componentWillMount() {
@@ -41,25 +49,21 @@ class LevelGeneratorApp extends React.PureComponent {
     document.body.onkeyup = null;
     stopStepper()
   }
-  initialize(width = 100, height = 50, maxSteps = width * height, seed) {
-    // var width = 100;
-    // var height = 50;
-    // var maxSteps = width * height;
-    // var seed = undefined;
-
+  initialize(width = 100, height = 50, maxSteps = width * height, seed, showGridValues=false) {
     if( this.state ) {
       const input = this.state.input;
       width = parseInt(input.width) || width;
       height = parseInt(input.height) || height;
       maxSteps = parseInt(input.maxSteps) || maxSteps;
       seed = parseInt(input.seed) || seed;
+      showGridValues = input.showGridValues;
     }
     const size = [width, height];
-    //const size = this.props.size || [50, 25];
+    const level = this.generateLevel(width, height, seed);
     this.setState({
-      input: {width: width.toString(), height: height.toString(), maxSteps: maxSteps.toString(), seed: seed},
+      input: {width: width.toString(), height: height.toString(), maxSteps: maxSteps.toString(), seed: seed, showGridValues: showGridValues},
       gridSize: size,
-      level: this.generateLevel(width, height, seed),
+      level: level,
       step: 0,
       stepInterval: null,
       maxSteps: maxSteps,
@@ -83,6 +87,9 @@ class LevelGeneratorApp extends React.PureComponent {
         newInput.seed = newValue;
         if( newInput.seed === "" )
           newInput.seed = undefined;
+        break;
+      case "lgiShowValues":
+        newInput.showGridValues = event.target.checked;
     }
     this.setState({input: newInput});
   }
@@ -96,28 +103,28 @@ class LevelGeneratorApp extends React.PureComponent {
     this.initialize();
   }
   generateLevel(x, y, seed) {
-    return new RandomWalker(x, y, seed);
+    //return new RandomWalker(x, y, seed);
+    return new ConnectedRooms(x, y, seed);
   }
   levelStepper() {
-    if( this.state.step >= this.state.maxSteps ) {
+    //if( this.state.step >= this.state.maxSteps ) {
+    if( this.state.level.isCompleted() ) {
       window.clearInterval(this.state.stepInterval);
       this.setState({
         stepInterval: null,
       });
     } else {
-      const step = this.state.step + 1;
-      const newState = {step: step}
-      this.state.level.step();
-      if( step % 10 === 0 ) {
-        const gridInfoValues = {};
-        const level = this.state.level;
-        gridInfoValues.step = step + " of " + this.state.maxSteps;
-        gridInfoValues.gridSize = JSON.stringify(this.state.gridSize);
-        gridInfoValues.seed = level.seed;
-        gridInfoValues.levelSize = GridStuff.sumGrid(level.grid);
-        gridInfoValues.efficiency = (gridInfoValues.levelSize/step).toFixed(2);
-        newState.gridInfo = () => {return gridInfoValues};
-      }
+      //const step = this.state.step + 1;
+      const newState = {};
+      const level = this.state.level;
+      const levelCompleted = level.isCompleted();
+      const gridInfoInterval = this.state.gridInfoInterval || 10;
+      newState.prevGrid = level.grid.slice();
+      level.step();
+      //if( step % gridInfoInterval === 0 ) {
+        const gridInfoValues = level.gridInfo();
+        newState.gridInfo = () => {return gridInfoValues}; // setting gridInfo does cause the tiles in DOM to be updated.
+      //}
       this.setState(newState);
     }
   }

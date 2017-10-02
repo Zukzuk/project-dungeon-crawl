@@ -9,10 +9,20 @@ class TileGrid extends React.PureComponent {
     const width = grid[0].length;
     const height = grid.length;
     const cursor = this.props.cursor || [undefined, undefined];
+    var textContent = "";
+    const showGridValues = this.props.showGridValues;
     for( let y=0; y < height; y++ ) {
       let row = [];
       for( let x=0; x < width; x++ ) {
-        row.push(<Tile key={"tile" + x + "." + y} size={this.props.tileSize} tileNum={y*height+x} bright={x % 2 ^ y % 2} highlight={grid[y][x]+(cursor[0]==x&&cursor[1]==y)} />);
+        if( this.props.showGridValues )
+          textContent = grid[y][x];
+        row.push(<Tile key={"tile" + x + "." + y}
+                       size={this.props.tileSize}
+                       tileNum={y*height+x}
+                       bright={x % 2 ^ y % 2}
+                       highlight={grid[y][x]+(cursor[0]==x&&cursor[1]==y)}
+                       textContent={textContent}
+                   />);
       }
       tiles.push(<div key={"row" + y} className="tileRow">{row}</div>);
     }
