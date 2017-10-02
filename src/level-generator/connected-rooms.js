@@ -147,34 +147,40 @@ export default class ConnectedRooms {
       const tileVal = fGrid[index];
       var otherTile;
       const offsets = [-gridWidth, gridWidth, -1, 1];
+      const otherRoomTiles = [];
 
       for( var i=0, len=offsets.length; i < len; i++ ) {
         var idx = offsets[i] + index;
-        if( i > 1 && Math.abs( idx % gridWidth - index % gridWidth ) > 1 ) {
-          // if moving over X axis, and diff X is bigger than one, then we wrapped over edge of level.
+        // if moving over X axis, and diff X is bigger than one, then we wrapped over edge of level.
+        if( i > 1 && Math.abs( idx % gridWidth - index % gridWidth ) > 1 )
           continue;
-        }
+
         otherTile = fGrid[idx];
         if( otherTile === 0 ) {
           fGrid[idx] = detectPaint;
           nextPaintEdge.push(paintEdgeF.bind(null, fGrid, idx, roomID, distance+1, gridWidth, nextPaintEdge, paintEdgeF));
         } else if( typeof(otherTile) === "number" ) {
-          // return x,y of other tile found
-          return [idx % gridWidth, Math.floor(idx / gridWidth)];
+          // return x,y of other tile found, which could be multiple but we'll return only one.
+          otherRoomTiles.push([idx % gridWidth, Math.floor(idx / gridWidth)]);
         }
       }
-      return false;
+      return otherRoomTiles;
     }
     const paintRoom = (fGrid, index, roomID, gridWidth, nextPaintRoom, nextPaintEdge, paintEdgeF) => {
       const roomPaint = roomID + "d0";
       const edgePaint = roomID + "d1";
       const tileVal = fGrid[index];
       var otherTile = undefined;
+      const otherRoomTiles = [];
       // offsets up, down, left, right
       const offsets = [-gridWidth, gridWidth, -1, 1];
 
       for( var i=0, len=4, idx; i < len; i++ ) {
         idx = offsets[i] + index;
+        // prevent x-wrapping
+        if( i > 1 && Math.abs(idx % gridWidth - index % gridWidth) > 1 )
+          continue;
+
         otherTile = fGrid[idx];
         if( otherTile === 0 ) {
           fGrid[idx] = edgePaint;
@@ -182,28 +188,33 @@ export default class ConnectedRooms {
         } else if( otherTile === roomID ) {
           fGrid[idx] = roomPaint;
           nextPaintRoom.push(paintRoom.bind(null, fGrid, idx, roomID, gridWidth, nextPaintRoom, nextPaintEdge, paintEdgeF));
+        } else if( typeof(otherTile) === "number" ) {
+          // remember x,y of other tile found
+          otherRoomTiles.push([idx % gridWidth, Math.floor(idx / gridWidth)]);
         }
       }
+      return otherRoomTiles
     }
+
+    const nearestRoomTiles = [];
+    const pushInNRT = Function.apply.bind(Array.prototype.push, nearestRoomTiles);
     fGrid[index] = roomID + "d0";
     nextPaintRoom.push(paintRoom.bind(null, fGrid, index, roomID, gridWidth, nextPaintRoom, nextPaintEdge, paintEdge));
     while( nextPaintRoom.length ) {
-      nextPaintRoom.pop()();
+      pushInNRT( nextPaintRoom.pop()() );
     }
-    var nearestRoomTiles = [];
+
     while(nextPaintEdge.length && ! nearestRoomTiles.length) { // nextPaintEdge array is filled by calls to paintAroundRoom
       var edgeTiles = nextPaintEdge.slice(); // create copy of nextPaintEdge array
       nextPaintEdge.splice(0, nextPaintEdge.length); // empty nextPaintEdge array
 
       for( var i=0, boundPaintAroundRoom; boundPaintAroundRoom = edgeTiles[i]; i++ ) {
-        var result = boundPaintAroundRoom();
-        if( result )
-          nearestRoomTiles.push(result);
+        pushInNRT( boundPaintAroundRoom() );
       }
     }
     //console.log(GridStuff.gridFromArray(fGrid, gridWidth));
     //console.log(nearestRoomTiles);
-    const traceOrigin = (fGrid, index, gridWidth) => {
+    const traceOrigin = (fGrid, index, gridWidth, roomID) => {
       const origIndex = index;
       const offset = [-gridWidth, gridWidth, -1, 1];
       var curPaint = fGrid[index];
@@ -211,18 +222,18 @@ export default class ConnectedRooms {
         for( var i=0; i<4; i++) {
           var otherTile = fGrid[origIndex + offset[i]];
           if( typeof(otherTile) === "string" ) {
-            if( typeof(curPaint) === "number" || typeof(curPaint) === "string" && curPaint.slice(2) > otherTile.slice(2) ) {
+            if( typeof(curPaint) === "number" || typeof(curPaint) === "string" && curPaint.split('d')[1] > otherTile.split('d')[1] ) {
               index = origIndex + offset[i];
               curPaint = otherTile;
             }
           };
         };
       };
-      var distance = parseInt(curPaint.slice(2));
+      var distance = parseInt(curPaint.split('d')[1]);
       if( distance === 0 )
         return [index % gridWidth, Math.floor(index / gridWidth)];
 
-      var lowerPaint = curPaint.slice(0,2) + (distance - 1);
+      var lowerPaint = curPaint.split('d')[0] + "d" + (distance - 1);
       while( true ) {
         var curIndex = index;
         for( var i=0; i<4; i++) {
@@ -232,22 +243,24 @@ export default class ConnectedRooms {
             if( distance === 0 )
               return [index % gridWidth, Math.floor(index / gridWidth)];
             curPaint = lowerPaint;
-            lowerPaint = curPaint.slice(0,2) + (distance - 1);
+            lowerPaint = curPaint.split("d")[0] + "d" + (distance - 1);
             break;
           }
         }
         if( i === 4 ) {
+          const cGrid = GridStuff.gridFromArray(fGrid, gridWidth);
+          console.log(cGrid);
           debugger;
           throw 'traceOrigin should never end up at this point! i = ' + i;
         }
       }
-      const cGrid = GridStuff.gridFromArray(fGrid, width);
+      const cGrid = GridStuff.gridFromArray(fGrid, gridWidth);
       console.log(cGrid);
       debugger;
       throw 'traceOrigin should never end up at this point!';
     }
     const point = nearestRoomTiles[0];
-    origin = traceOrigin(fGrid, point[0] + point[1]*gridWidth, gridWidth);
+    origin = traceOrigin(fGrid, point[0] + point[1]*gridWidth, gridWidth, roomID);
     return [origin, point];
   }
   mergeRooms(roomA, roomB) {
@@ -271,8 +284,10 @@ export default class ConnectedRooms {
       direction[1] += ( direction[1] < 0 ) * 2 - 1;
     }
 
-    this.moveRoom(roomB, direction);
-    roomB = [roomB[0] + direction[0], roomB[1] + direction[1]];
+    if( direction[0] != 0 || direction[1] != 0 ) {
+      this.moveRoom(roomB, direction);
+      roomB = [roomB[0] + direction[0], roomB[1] + direction[1]];
+    }
     GridStuff.colorRoom(grid, roomB, roomIDa);
 
     const roomIndexByID = ((roomIDb, room) => {

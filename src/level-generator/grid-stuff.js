@@ -46,6 +46,9 @@ export default class GridStuff {
     return grid;
   }
   static moveTiles(grid, tiles, direction) {
+    if( direction[0] == 0 && direction[1] == 0 ) {
+      return;
+    }
     const sortFunc = (orderX, orderY, tilePosA, tilePosB) => {
       var r = tilePosA[0] * orderX - tilePosB[0] * orderX;
       if( r !== 0 )
