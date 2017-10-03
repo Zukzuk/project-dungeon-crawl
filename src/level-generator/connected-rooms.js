@@ -62,8 +62,21 @@ export default class ConnectedRooms {
         this.detectAndColorRooms();
         return;
       }
-      var room = this.rooms[0];
-      var [nearestPointA, nearestPointB] = this.detectNearestRoom(room); // nearData contains nearestPointA, nearestPointB, where A is in room A and B in B
+
+      // check for all rooms how far they are from their nearest other rooms,
+      // and remember the first room with the smallest distance to any other.
+      var [nearestPointA, nearestPointB] = [undefined, undefined];
+      var curDistance = Infinity;
+      for( var i = 0, len=this.rooms.length; i < len; i++ ) {
+        var room = this.rooms[i];
+        var [nearA, nearB] = this.detectNearestRoom(room); // nearData contains nearestPointA, nearestPointB, where A is in room A and B in B
+        var distance = Math.abs(nearA[0] - nearB[0]) + Math.abs(nearA[1] - nearB[1]);
+        if( distance < curDistance ) {
+          curDistance = distance;
+          [nearestPointA, nearestPointB] = [nearA, nearB];
+        }
+      }
+      // For the room which is closest to another, merge it with that nearby room
       this.mergeRooms(nearestPointA, nearestPointB);
       return;
     } else if (action === "paint first room one" || (action === undefined && sg >= this.requestedNumTiles &&
