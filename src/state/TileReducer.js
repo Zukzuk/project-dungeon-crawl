@@ -1,7 +1,7 @@
 import {
   TILE_CONSTANTS
-} from '../../constants';
-import initialState from '../initialStates/TileState';
+} from '../constants';
+import initialState from './TileState';
 
 export default (state = initialState, action) => {
   switch (action.type) {

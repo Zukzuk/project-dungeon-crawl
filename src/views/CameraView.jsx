@@ -1,8 +1,8 @@
 import React from 'react';
-import './RoomView.scss';
+import './CameraView.scss';
 
 export default props => {
-  const classList = 'camera';
-  const style = props.style;
-  return <div className={ classList }  style={ style }>{ props.children }</div>;
+  const id = 'camera';
+  const style = (props.pan) ? { left: `${props.pan.x}px`, top: `${props.pan.y}px` } : null;
+  return <div id={ id } style={ style }>{ props.children }</div>;
 };

@@ -1,6 +1,6 @@
 import {
   TILE_CONSTANTS
-} from '../../constants';
+} from '../constants';
 import PlayerActions from './PlayerActions';
 
 export default {

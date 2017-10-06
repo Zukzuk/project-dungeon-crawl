@@ -1,9 +1,9 @@
 import {
   ENTITY_CONSTANTS,
   PLAYER_CONSTANTS
-} from '../../constants';
-import PlayerStates from '../initialStates/PlayerState';
-import MinionStates from '../initialStates/MinionState';
+} from '../constants';
+import PlayerStates from './PlayerState';
+import MinionStates from './MinionState';
 
 const initialState = {
   Player: PlayerStates,

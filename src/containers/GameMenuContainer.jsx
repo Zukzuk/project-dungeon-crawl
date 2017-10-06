@@ -1,6 +1,6 @@
 import React, {PureComponent} from 'react';
 import {connect} from 'react-redux';
-import {redux} from '../helpers/helpers';
+import {_redux_} from '../helpers/helpers';
 import GameMenuView from '../views/GameMenuView';
 
 class GameMenuContainer extends PureComponent {
@@ -17,20 +17,20 @@ class GameMenuContainer extends PureComponent {
     return [{
       title: `perspective: ${state.GameMenu.perspectiveLabel}`,
       buttons: [
-        <button key="TogglePersp" onClick={togglePersp}>toggle</button>
+        <button key="TogglePersp" onClick={togglePersp} className="btn btn-info">toggle</button>
       ]
     },{
       title: `level: ${state.GameBoard.level}`,
       buttons: [
-        <button key="ReloadLevel" onClick={reloadLevel}>reload</button>,
-        <button key="DecrLevel" disabled={state.GameBoard.level === 1} onClick={decrLevel}>-</button>,
-        <button key="IncrLevel" disabled={state.GameBoard.level === 12} onClick={incrLevel}>+</button>
+        <button key="ReloadLevel" onClick={reloadLevel} className="btn btn-info">reload</button>,
+        <button key="DecrLevel" disabled={state.GameBoard.level === 1} onClick={decrLevel} className="btn btn-info">-</button>,
+        <button key="IncrLevel" disabled={state.GameBoard.level === 12} onClick={incrLevel} className="btn btn-info">+</button>
       ]
     },{
       title: `lightradius: ${state.Entity.Player.spawns[0].lightRadius}`,
       buttons: [
-        <button key="DecrLightRadius" onClick={decrLightRadius}>-</button>,
-        <button key="IncrLightRadius" onClick={incrLightRadius}>+</button>
+        <button key="DecrLightRadius" onClick={decrLightRadius} className="btn btn-info">-</button>,
+        <button key="IncrLightRadius" onClick={incrLightRadius} className="btn btn-info">+</button>
       ]
     }]
   }
@@ -58,10 +58,10 @@ class GameMenuContainer extends PureComponent {
 }
 
 export default connect(
-  state => redux.mapState(state, [
+  state => _redux_.mapState(state, [
     'GameBoard', 'GameMenu', 'Entity'
   ]),
-  dispatch => redux.mapActions(dispatch, [
+  dispatch => _redux_.mapActions(dispatch, [
     'GameMenu', 'Player'
   ])
 )(GameMenuContainer);

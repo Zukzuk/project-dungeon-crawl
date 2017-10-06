@@ -5,22 +5,27 @@
 
   position: relative;
   cursor: pointer;
-
   color: #ccc;
   background-color: #eee;
-  &[data-light='fogofwar'] {
-    opacity: .05 !important;
-  }
-  &[data-light='off'] {
-    opacity: .2 !important;
-  }
+  background-image: url(/src/views/assets/tiles_stone_grey_9x9.jpg);
 
   pointer-events: all;
   > * {
     pointer-events: none;
   }
 
+  &[data-light='fogofwar'] {
+    opacity: 0 !important;
+  }
+  &[data-light='off'] {
+    opacity: .1 !important;
+  }
+
   &:hover {
-    background-color: #ddd;
+    opacity: 1 !important;
+  }
+  &[data-light='off']:hover,
+  &[data-light='fogofwar']:hover {
+    opacity: .2 !important;
   }
 }

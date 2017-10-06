@@ -1,19 +1,11 @@
 import React from 'react';
-import { bindActionCreators } from 'redux';
-import EntityActions from '../redux/actions/EntityActions';
-import PlayerActions from '../redux/actions/PlayerActions';
-import TileActions from '../redux/actions/TileActions';
-import GameMenuActions from '../redux/actions/GameMenuActions';
+import {bindActionCreators} from 'redux';
+import EntityActions from '../state/EntityActions';
+import PlayerActions from '../state/PlayerActions';
+import TileActions from '../state/TileActions';
+import GameMenuActions from '../state/GameMenuActions';
 
-export const dom = {
-
-  getComponent: dom => {
-    const internalInstance = dom[Object.keys(dom).find(key =>
-      key.startsWith('__reactInternalInstance$'))];
-    if (!internalInstance) return null;
-    return { instance: internalInstance._currentElement, elm: dom };
-  },
-
+export const _dom_ = {
   getComputedSize: node => {
     const style = getComputedStyle(node);
     const sumOfPixels = pixels => {
@@ -30,26 +22,39 @@ export const dom = {
   }
 };
 
-export const react = {
-  stateDidUpdate: (current, next, slice) => {
-    const doUpdate = _.get(next, `state[${slice}]`) !== _.get(current, `state[${slice}]`);
-    if (doUpdate) console.log(slice, ':', _.get(current, `state[${slice}]`), '=>', _.get(next, `state[${slice}]`));
-    return _.get(current, `state[${slice}]`) !== _.get(next, `state[${slice}]`);
+export const _react_ = {
+  stateDidUpdate: (nextProps, stateSlice, color) => {
+    const colorString = color ? `background: #EEE; color: ${color}` : '';
+    const boldColorString = color ? `background: #EEE; color: ${color}; font-weight: bold` : 'font-weight: bold';
+    const { props, contextName, methodName } = nextProps;
+    const currentState = _.get(props, `state[${stateSlice}]`);
+    const nextState = _.get(nextProps, `state[${stateSlice}]`);
+    const doUpdate = nextState !== currentState;
+    if (doUpdate) console.log(`%c${contextName}.${methodName}%c reacting to %c'${stateSlice}' %cupdate: %c${currentState} => ${nextState}`,
+      boldColorString, colorString, boldColorString, colorString, boldColorString);
+    return currentState !== nextState;
+  },
+
+  getComponent: elm => {
+    const internalInstance = elm[Object.keys(elm).find(key =>
+      key.startsWith('__reactInternalInstance$'))];
+    if (!internalInstance) return null;
+    return {instance: internalInstance._currentElement, elm};
   }
 };
 
-export const math = {
+export const _math_ = {
   rand: (min, max) => {
     return Math.random() * (max - min) + min;
   }
 };
 
-export const redux = {
+export const _redux_ = {
   mapState: (state, slices) => {
     return slices.reduce((result, slice) => {
       result.state[slice] = state[slice];
       return result;
-    }, { state: {} });
+    }, {state: {}});
   },
 
   mapActions: (dispatch, actions) => {
@@ -65,6 +70,6 @@ export const redux = {
       if (!importedAction) throw new Error(`Make sure you import ${action}Actions into helpers.js`);
       result.actions[action] = bindActionCreators(importedAction, dispatch);
       return result;
-    }, { actions: {} });
+    }, {actions: {}});
   }
 };

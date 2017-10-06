@@ -1,14 +1,14 @@
 import {
   ENTITY_CONSTANTS,
-} from '../../constants';
+} from '../constants';
 import EntityActions from './EntityActions';
-import { dom } from '../../helpers/helpers';
+import { _dom_ } from '../helpers/helpers';
 
 export default {
 
   // offsetAllEntities: name => {
   //   return (dispatch, getState) => {
-  //     // get all entities on game-board
+  //     // get all entities on gameboard
   //     const target = name ? [name] : Object.keys(getState().Entity);
   //     target.forEach(name => {
   //       document.querySelectorAll('.' + name.toLowerCase())

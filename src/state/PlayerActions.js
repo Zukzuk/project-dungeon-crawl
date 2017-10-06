@@ -1,6 +1,6 @@
 import {
   PLAYER_CONSTANTS
-} from '../../constants';
+} from '../constants';
 
 export default {
   updatePosition: () => {

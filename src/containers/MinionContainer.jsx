@@ -1,6 +1,6 @@
 import React, {PureComponent} from 'react';
 import {connect} from 'react-redux';
-import {redux} from '../helpers/helpers';
+import {_redux_} from '../helpers/helpers';
 import MinionView from '../views/MinionView';
 
 class MinionContainer extends PureComponent {
@@ -39,10 +39,10 @@ class MinionContainer extends PureComponent {
 }
 
 export default connect(
-  state => redux.mapState(state, [
+  state => _redux_.mapState(state, [
     'Entity'
   ]),
-  dispatch => redux.mapActions(dispatch, [
+  dispatch => _redux_.mapActions(dispatch, [
     'Entity'
   ])
 )(MinionContainer);

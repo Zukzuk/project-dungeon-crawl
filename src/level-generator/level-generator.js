@@ -8,9 +8,6 @@ import './level-generator-style.scss';
 
 
 class LevelGeneratorApp extends React.PureComponent {
-  constructor(props) {
-    super(props);
-  }
   render() {
     //debugger;
     const state = this.state;

@@ -1,5 +1,5 @@
 import PF from 'pathfinding';
-import PlayerActions from '../redux/actions/PlayerActions';
+import PlayerActions from '../state/PlayerActions';
 import ENTITY_CONSTANTS from '../constants';
 
 export default {

@@ -1,5 +1,5 @@
-import { GAME_MENU_CONSTANTS } from '../../constants';
-import initialState from '../initialStates/GameBoardState';
+import { GAME_MENU_CONSTANTS } from '../constants';
+import initialState from './GameBoardState';
 
 export default (state = initialState, action) => {
   switch (action.type) {

@@ -5,6 +5,8 @@ import GameMenuContainer from './GameMenuContainer';
 
 class GameContainer extends PureComponent {
 
+  /* render */
+
   render() {
     return (
       <GameView>

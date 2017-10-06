@@ -9,7 +9,6 @@ $ani-duration: .5s;
   top: 0;
   width: 100%;
   height: 100vh;
-  //background-color: #DB4456;
 
   will-change: transform;
   transform-style: preserve-3d;
@@ -24,7 +23,11 @@ $ani-duration: .5s;
   }
 }
 
-.rooms {
+#camera {
+  transition: left var($ani-duration), top var($ani-duration);
+}
+
+#rooms {
   position: absolute;
   width: 100%;
   height: 100%;

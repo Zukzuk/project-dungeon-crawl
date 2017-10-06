@@ -1,26 +1,16 @@
 import React from 'react';
-import {math} from './helpers';
-import collision from './collision';
+import { _math_ } from './helpers';
+import _collision_ from './collision';
 
-const getTileGrid = (props, rectangle, count, roomId) => {
+const getTileGrid = (rectangle, count, roomId) => {
   const {rows, columns} = rectangle;
   let y = 0, grid = [];
   while (y++ < rows) {
     let x = 0, row = [];
     while (x++ < columns) {
-      let index = x + ((y - 1) * columns);
+      const index = x + ((y - 1) * columns);
       const tileId = count + index - 1;
-      const selectTile = () => props.actions.Tile.selectTile(tileId, roomId);
-      const tileProps = {
-        id: tileId,
-        x,
-        y,
-        style: {
-          margin: `${props.state.Tile.gutter}px`,
-          width: `calc(100% * (1/${columns}) - ${props.state.Tile.gutter * 2}px)`,
-        },
-        onClick: selectTile
-      };
+      const tileProps = { id: tileId, roomId, x, y, columns, rows };
       row.push(tileProps);
     }
     grid.push(row);
@@ -38,8 +28,8 @@ const getSlices = (count, min, max, arr = []) => {
   return arr;
 };
 
-const buildTileGrids = (level, props) => {
-  const numOfTiles = Math.pow(2, props.state.GameBoard.level);
+const buildTileGrids = level => {
+  const numOfTiles = Math.pow(2, level);
   if (level === 1) return [{columns: 2, rows: [1]}]; // columns -> rows -> length
 
   const isEven = (level % 2 === 0);
@@ -52,19 +42,13 @@ const buildTileGrids = (level, props) => {
   const columns = getSlices(mainWidth, min, max);
 
   const columnsAndRows = columns.reduce((result, colWidth) => {
-    result.push({
-      width: colWidth,
-      heights: getSlices(mainHeight, min, max)
-    });
+    result.push({width: colWidth, heights: getSlices(mainHeight, min, max)});
     return result;
   }, []);
 
   const rectangles = columnsAndRows.reduce((result, slice) => {
     const _rectangles = slice.heights.reduce((_result, height) => {
-      _result.push({
-        columns: slice.width,
-        rows: height
-      });
+      _result.push({columns: slice.width, rows: height});
       return _result;
     }, []);
     result = result.concat(_rectangles);
@@ -73,15 +57,14 @@ const buildTileGrids = (level, props) => {
 
   let tileCount = 0;
   return rectangles.reduce((result, rectangle, index) => {
-    result.push(getTileGrid(props, rectangle, tileCount, index));
+    result.push(getTileGrid(rectangle, tileCount, index));
     tileCount += (rectangle.columns * rectangle.rows);
     return result;
   }, []);
 };
 
-const buildRoomGrid = (grids, props) => {
+const buildRoomGrid = (tileSize, grids) => {
   const rooms = [];
-  const tileSize = props.state.Tile.size;
   let mapSize = 0;
 
   for (let i = 0; i < grids.length; i++) {
@@ -92,18 +75,18 @@ const buildRoomGrid = (grids, props) => {
     room.w = tileSize * tileGrid[0].length;
     room.h = tileSize * tileGrid.length;
     mapSize = Math.max(mapSize + (room.w * 3), mapSize + (room.h * 3));
-    const roomX = math.rand(0, mapSize - room.w);
-    const roomY = math.rand(0, mapSize - room.h);
+    const roomX = _math_.rand(0, mapSize - room.w);
+    const roomY = _math_.rand(0, mapSize - room.h);
     room.x = roomX + (tileSize - (roomX % tileSize));
     room.y = roomY + (tileSize - (roomY % tileSize));
-    if (collision.roomCollision(room, rooms)) {
+    if (_collision_.roomCollision(room, rooms)) {
       i--;
       continue;
     }
     rooms.push(room);
   }
 
-  collision.roomSquash(rooms, tileSize);
+  _collision_.roomSquash(rooms, tileSize);
 
   return rooms.map(room => {
     room.style = {
@@ -117,11 +100,11 @@ const buildRoomGrid = (grids, props) => {
 };
 
 export default {
-  build: props => {
+  build: (level, tileSize) => {
     // get tilegrids from rectangles
-    const tileGrids = buildTileGrids(props.state.GameBoard.level, props);
+    const tileGrids = buildTileGrids(level);
     // get rooms from grids
-    const roomGrids = buildRoomGrid(tileGrids, props);
+    const roomGrids = buildRoomGrid(tileSize, tileGrids);
     return {tileGrids, roomGrids}
   }
 };

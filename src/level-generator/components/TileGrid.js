@@ -8,6 +8,7 @@ class TileGrid extends React.PureComponent {
     const grid = this.props.grid;
     const width = grid[0].length;
     const height = grid.length;
+    const style = {height: `${this.props.tileSize}px`};
     const cursor = this.props.cursor || [undefined, undefined];
     var textContent = "";
     const showGridValues = this.props.showGridValues;
@@ -24,7 +25,7 @@ class TileGrid extends React.PureComponent {
                        textContent={textContent}
                    />);
       }
-      tiles.push(<div key={"row" + y} className="tileRow">{row}</div>);
+      tiles.push(<div key={"row" + y} className="tileRow" style={style}>{row}</div>);
     }
     return <div className="tileGrid"><TileGridInfo gridInfo={this.props.gridInfo} />{tiles}</div>
   };
