@@ -11,7 +11,12 @@ class Tile extends React.PureComponent {
       else
         classes.push("highlight");
     }
-    return <div className={classes.join(" ")} style={{width: this.props.size, height: this.props.size, display: "inline-block"}} />
+    const style = {
+      width: this.props.size,
+       height: this.props.size,
+      display: "inline-block"
+    };
+    return <div className={classes.join(" ")} style={style}>{this.props.textContent}</div>
   };
 };
 
