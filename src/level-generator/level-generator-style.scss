@@ -1,3 +1,25 @@
+$tile-image: url(/src/views/assets/tiles_stone_grey_9x9.jpg);
+
+$white-highlight-color: rgba(255, 255, 255, 0.25);
+$green-highlight-color: rgba(64, 224, 64, 0.45);
+$bright-green-highlight-color: rgba(96, 255, 96, 0.45);
+$red-highlight-color: rgba(224, 64, 64, 0.45);
+$blue-highlight-color: rgba(64, 64, 244, 0.45);
+
+$bright-gradient: linear-gradient($white-highlight-color, $white-highlight-color);
+$green-gradient: linear-gradient($green-highlight-color, $green-highlight-color);
+$bright-green-gradient: linear-gradient($bright-green-highlight-color, $bright-green-highlight-color);
+$red-gradient: linear-gradient($red-highlight-color, $red-highlight-color);
+$blue-gradient: linear-gradient($blue-highlight-color, $blue-highlight-color);
+
+$red-diagonal-stripe: repeating-linear-gradient(
+  -45deg,
+  $red-highlight-color,
+  $red-highlight-color 3px,
+  transparent 3px,
+  transparent 6px
+);
+
 #levelGenerator {
   margin: 8px;
 
@@ -22,33 +44,47 @@
     font-size: 0px;
     .tileRow {
       .tile {
-        background-color: #bbb;
+        background-color: #999;
         font-style: normal;
         color: #fff;
         font-size: small;
+        background-image: none;
+
+        &.bright {
+          background-color: #bbb;
+        }
+        &.visible {
+          background-image: $tile-image;
+        }
+        &.visible.bright {
+          background-image: $bright-gradient, $tile-image;
+        }
       }
-      .tile.bright {
-        background-color: #ddd;
+      .tile.highlight1 {
+        background-image: $green-gradient, $tile-image;
+        &.bright {
+          background-image: $bright-green-gradient, $tile-image;
+        }
       }
-      .tile.highlight {
-        background-color: #4d4;
-      }
-      .tile.highlight.bright {
-        background-color: #6f6;
+      .tile.strikeThrough1 {
+        background-image: $red-diagonal-stripe, $tile-image;
+        &.bright {
+          background-image: $bright-gradient, $red-diagonal-stripe, $tile-image;
+        }
       }
       .tile.cursor {
         background-color: #fb4;
+      }
+      &:nth-child(10n+11) {
+        //.tile.visible {
+          border-bottom: solid 1px #000;
+        //}
       }
       .tile:nth-child(10n+10) {
         border-right: solid 1px #000;
       }
       .tile:nth-child(1) {
         border-left: solid 1px #000;
-      }
-    }
-    .tileRow:nth-child(10n+11) {
-      .tile {
-        border-bottom: solid 1px #000;
       }
     }
     .tileRow:nth-child(2) {
