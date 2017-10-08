@@ -33,7 +33,7 @@ export default class GridStuff {
   static copyGrid(grid) {
     return grid.map( (line) => line.slice() );
   }
-  static flattenGrid(grid) {
+  static flattenedGrid(grid) {
     return Array.prototype.concat.apply([], grid);
   }
   static gridFromArray(arr, width) {

@@ -13,8 +13,8 @@ class LevelGeneratorApp extends React.PureComponent {
     const state = this.state;
     const level = state.level;
     const grid = level.grid;
-    const width = grid[0].length;
-    const height = grid.length;
+    const width = grid.width;
+    const height = grid.height;
     const boundStartLevel = this.startLevel.bind(this);
     const boundInputChange = this.inputChange.bind(this);
     const boundToggleStepper = this.toggleStepper.bind(this);
@@ -23,7 +23,7 @@ class LevelGeneratorApp extends React.PureComponent {
              <LevelGeneratorInput clickStart={boundStartLevel} clickPauze={boundToggleStepper} clickStep={boundLevelStepper}
                      isRunning={!!state.stepInterval}
                      values={state.input} inputChange={boundInputChange} />
-             <TileGrid grid={grid} prevGrid={state.prevGrid} cursor={level.cursor} gridInfo={state.gridInfo}
+             <TileGrid grid={grid.rawGrid} prevGrid={state.prevGrid} cursor={level.cursor} gridInfo={state.gridInfo}
                      tileSize={ Math.min( (window.innerHeight - 16) / (height * 1.01), (window.innerWidth - 16) / (width * 1.01) )}
                      showGridValues={state.input.showGridValues}
              />
@@ -116,7 +116,7 @@ class LevelGeneratorApp extends React.PureComponent {
       const level = this.state.level;
       const levelCompleted = level.isCompleted();
       const gridInfoInterval = this.state.gridInfoInterval || 10;
-      newState.prevGrid = GridStuff.copyGrid(this.state.level.grid);
+      newState.prevGrid = this.state.level.grid.copyRawGrid();
       level.step();
       //if( step % gridInfoInterval === 0 ) {
         const gridInfoValues = level.gridInfo();

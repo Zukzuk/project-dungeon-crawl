@@ -1,4 +1,5 @@
 
+import Grid from './grid';
 import GridStuff from './grid-stuff';
 
 /***** as copied from https://gist.github.com/blixt/f17b47c62508be59987b *****/
@@ -45,17 +46,17 @@ export default class ConnectedRooms {
     this.maxRoomHeight = maxRoomSize;
     this.maxRoomWidth = maxRoomSize;
     this.rooms = []; // filled with room objects: {roomID: n, pos: [x,y]}
-    this.grid = GridStuff.generateGrid(width, height, 0);
+    this.grid = new Grid(width, height, 0); //GridStuff.generateGrid(width, height, 0);
     this.prng = new PRNG(seed);
     this.completed = false;
   };
   step(action) {
     const grid = this.grid;
-    const sg = GridStuff.countNonZero(grid);
+    const sg = grid.countNonZero();
     if( action === "add room" || (action === undefined && sg < this.requestedNumTiles) ) {
       const room = this.generateRoom();
       const position = this.generateRoomPosition(room);
-      this.drawRoom(room, position);
+      grid.drawRoom(room, position);
       return;
     } else if (action === "connect room" || (action === undefined && sg >= this.requestedNumTiles && this.rooms.length !== 1) ) {
       if( this.rooms.length == 0 ) {
@@ -81,7 +82,7 @@ export default class ConnectedRooms {
       return;
     } else if (action === "paint first room one" || (action === undefined && sg >= this.requestedNumTiles &&
                                                       this.rooms.length === 1 && this.rooms[0].roomID !== 1 )) {
-      GridStuff.colorRoom(grid, this.rooms[0].pos, 1);
+      grid.colorRoom(this.rooms[0].pos, 1);
       this.rooms[0].roomID = 1;
       return;
     }
@@ -91,25 +92,26 @@ export default class ConnectedRooms {
     return this.completed;
   };
   detectAndColorRooms() {
-    const grid = this.grid; //GridStuff.copyGrid(this.grid);
+    const grid = this.grid;
+    const rawGrid = grid.rawGrid;
     const width = this.width;
     const height = this.height;
-    const paintRoom = (x, y, grid, num, nextPaint = []) => {
-      if( y > 0 && grid[y-1][x] == 1 ) {
-        nextPaint.push(paintRoom.bind(null, x, y-1, grid, num, nextPaint));
-        grid[y-1][x] = num;
+    const paintRoom = (x, y, rawGrid, num, nextPaint = []) => {
+      if( y > 0 && rawGrid[y-1][x] == 1 ) {
+        nextPaint.push(paintRoom.bind(null, x, y-1, rawGrid, num, nextPaint));
+        rawGrid[y-1][x] = num;
       }
-      if( y < height-1 && grid[y+1][x] == 1 ) {
-        nextPaint.push(paintRoom.bind(null, x, y+1, grid, num, nextPaint));
-        grid[y+1][x] = num;
+      if( y < height-1 && rawGrid[y+1][x] == 1 ) {
+        nextPaint.push(paintRoom.bind(null, x, y+1, rawGrid, num, nextPaint));
+        rawGrid[y+1][x] = num;
       }
-      if( x > 0 && grid[y][x-1] == 1 ) {
-        nextPaint.push(paintRoom.bind(null, x-1, y, grid, num, nextPaint));
-        grid[y][x-1] = num;
+      if( x > 0 && rawGrid[y][x-1] == 1 ) {
+        nextPaint.push(paintRoom.bind(null, x-1, y, rawGrid, num, nextPaint));
+        rawGrid[y][x-1] = num;
       }
-      if( x < width-1 && grid[y][x+1] == 1 ) {
-        nextPaint.push(paintRoom.bind(null, x+1, y, grid, num, nextPaint));
-        grid[y][x+1] = num;
+      if( x < width-1 && rawGrid[y][x+1] == 1 ) {
+        nextPaint.push(paintRoom.bind(null, x+1, y, rawGrid, num, nextPaint));
+        rawGrid[y][x+1] = num;
       }
       return nextPaint;
     }
@@ -118,14 +120,14 @@ export default class ConnectedRooms {
     //var paints = 1;
     for( var y = 0; y < height; y++ ) {
       for( var x = 0; x < width; x++ ) {
-        if( grid[y][x] == 1 ) {
+        if( rawGrid[y][x] == 1 ) {
           var room = {roomID: rooms.length + 3, pos: [x,y]};
           rooms.push(room);
           // paint current tile
-          grid[y][x] = room.roomID;
+          rawGrid[y][x] = room.roomID;
           // queue paint jobs to paint tiles around the current tile (paintRoom adds new paint requests to nextPaint)
           const nextPaint = [];
-          nextPaint.push(paintRoom.bind(null, x, y, grid, room.roomID, nextPaint));
+          nextPaint.push(paintRoom.bind(null, x, y, rawGrid, room.roomID, nextPaint));
           while( nextPaint.length ) {
             nextPaint.pop()();
           }
@@ -143,12 +145,10 @@ export default class ConnectedRooms {
     /* 1: detect the entire room and its edge (painting over the room with <roomID>d0, and the edge with <roomID>d1) */
     /* 2: with the detected edge from phase one, paint over any tiles containing 0 with <roomID>d<distance> */
 
-    // Could flatten grid for performance, and easier iteration.
-    //const cGrid = GridStuff.copyGrid(this.grid);
-    const fGrid = GridStuff.flattenGrid(this.grid);
+    const fGrid = this.grid.flattenedGrid();
     // paint around the room with a character + room number, until another room is found
-    const gridWidth = this.grid[0].length;
-    const gridHeight = this.grid.length;
+    const gridWidth = this.grid.width;
+    const gridHeight = this.grid.height;
     const fGridLen = fGrid.length;
     const index = roomA.pos[0] + roomA.pos[1] * gridWidth;
     const roomID = fGrid[index];
@@ -277,13 +277,14 @@ export default class ConnectedRooms {
     return [origin, point];
   }
   mergeRooms(roomA, roomB) {
-    const grid = this.grid;
-    var sizeA = GridStuff.countValue(grid, grid[roomA[1]][roomA[0]]);
-    var sizeB = GridStuff.countValue(grid, grid[roomB[1]][roomB[0]]);
+    const grid = this.grid
+    const rawGrid = grid.rawGrid;
+    var sizeA = grid.countValue(rawGrid[roomA[1]][roomA[0]]);
+    var sizeB = grid.countValue(rawGrid[roomB[1]][roomB[0]]);
     if( sizeB > sizeA ) // reverse the two rooms, so that B <= A
       [roomA, roomB, sizeA, sizeB] = [roomB, roomA, sizeB, sizeA];
-    var roomIDa = grid[roomA[1]][roomA[0]];
-    var roomIDb = grid[roomB[1]][roomB[0]];
+    var roomIDa = rawGrid[roomA[1]][roomA[0]];
+    var roomIDb = rawGrid[roomB[1]][roomB[0]];
     if( ! roomIDa || ! roomIDb )
       throw('mergeRooms; Invalid roomID. roomIDa: ' + roomIDa + ' [' + JSON.stringify(roomA) +
                                      '], roomIDb: ' + roomIDb + ' [' + JSON.stringify(roomB) + ']');
@@ -301,7 +302,7 @@ export default class ConnectedRooms {
       this.moveRoom(roomB, direction);
       roomB = [roomB[0] + direction[0], roomB[1] + direction[1]];
     }
-    GridStuff.colorRoom(grid, roomB, roomIDa);
+    grid.colorRoom(roomB, roomIDa);
 
     const roomIndexByID = ((roomIDb, room) => {
       return room.roomID === roomIDb;
@@ -314,9 +315,10 @@ export default class ConnectedRooms {
   }
   moveRoom(roomPosition, direction) {
     const grid = this.grid;
+    const rawGrid = grid.rawGrid;
     const [xPos, yPos] = roomPosition;
     const [xDirection, yDirection] = direction;
-    var roomID = grid[yPos][xPos];
+    var roomID = rawGrid[yPos][xPos];
     if( ! roomID )
       throw('moveRoom; Invalid roomID. roomID: ' + roomID);
 
@@ -341,16 +343,15 @@ export default class ConnectedRooms {
     const allTiles = [];
     const nextPaintRoom = [];
 
-    nextPaintRoom.push(getRoomTiles.bind(null, GridStuff.flattenGrid(grid), index, roomID, this.width, nextPaintRoom, allTiles));
+    nextPaintRoom.push(getRoomTiles.bind(null, grid.flattenedGrid(), index, roomID, grid.width, nextPaintRoom, allTiles));
     while( nextPaintRoom.length ) {
       nextPaintRoom.pop()();
     }
-    GridStuff.moveTiles(grid, allTiles, direction);
+    grid.moveTiles(allTiles, direction);
 
   }
   generateDungeon() {
-    const countNonZero = GridStuff.countNonZero;
-    while(countNonZero(this.grid) < this.requestedNumTiles)
+    while(this.grid.countNonZero() < this.requestedNumTiles)
       this.step("add room");
   };
   generateRoom(maxSize=undefined) {
@@ -368,10 +369,10 @@ export default class ConnectedRooms {
     return [nextBetween(0, maxX), nextBetween(0, maxY)];
   };
   drawRoom(room, position) {
-    const grid = this.grid;
+    const rawGrid = this.grid.rawGrid;
     var yGrid = [];
     for( var y = 0; y < room[1]; y++ ) {
-      yGrid = grid[y+position[1]];
+      yGrid = rawGrid[y+position[1]];
       for( var x = 0; x < room[0]; x++ ) {
         yGrid[x+position[0]] = 1;
       }
@@ -381,7 +382,7 @@ export default class ConnectedRooms {
     const gridInfoValues = {};
     gridInfoValues.gridSize = JSON.stringify([this.width, this.height]);
     gridInfoValues.seed = this.seed;
-    gridInfoValues.levelSize = GridStuff.countNonZero(this.grid) + " of " + this.requestedNumTiles;
+    gridInfoValues.levelSize = this.grid.countNonZero() + " of " + this.requestedNumTiles;
     gridInfoValues.maxRoomSize = JSON.stringify([this.maxRoomWidth, this.maxRoomHeight]);
     return gridInfoValues;
   }
