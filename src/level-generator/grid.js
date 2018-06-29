@@ -113,12 +113,20 @@ export default class Grid {
         nextPaint.push(paintRoom.bind(null, x+1, y, rawGrid, roomID, paint, nextPaint));
       }
       return nextPaint;
-    }
+    };
 
     const nextPaint = [];
     nextPaint.push(paintRoom.bind(null, pos[0], pos[1], rawGrid, roomID, paint, nextPaint));
     while( nextPaint.length ) {
       nextPaint.pop()();
     }
+  }
+  crop(rimThickness = 1, rimValue = 0) {
+    GridStuff.crop(this.rawGrid, rimThickness, rimValue);
+    this.width = this.rawGrid[0].length;
+    this.height = this.rawGrid.length;
+  }
+  cropable(rimThickness = 1, rimValue = 0) {
+    return GridStuff.cropable(this.rawGrid, rimThickness, rimValue);
   }
 }

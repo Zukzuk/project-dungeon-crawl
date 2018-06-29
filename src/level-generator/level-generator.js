@@ -15,12 +15,17 @@ class LevelGeneratorApp extends React.PureComponent {
     const grid = level.grid;
     const width = grid.width;
     const height = grid.height;
-    const boundStartLevel = this.startLevel.bind(this);
-    const boundInputChange = this.inputChange.bind(this);
-    const boundToggleStepper = this.toggleStepper.bind(this);
-    const boundLevelStepper = this.levelStepper.bind(this);
+    const boundStartLevel = () => this.startLevel();
+    const boundInputChange = (event) => this.inputChange(event);
+    const boundToggleStepper = () => this.toggleStepper();
+    const boundLevelStepper = () => this.levelStepper();
+    const boundDumpLevel = () => this.dumpGrid();
+
     return <div id="levelGenerator">
-             <LevelGeneratorInput clickStart={boundStartLevel} clickPauze={boundToggleStepper} clickStep={boundLevelStepper}
+             <LevelGeneratorInput clickStart={boundStartLevel}
+                                  clickPauze={boundToggleStepper}
+                                  clickStep={boundLevelStepper}
+                                  clickDump={boundDumpLevel}
                      isRunning={!!state.stepInterval}
                      values={state.input} inputChange={boundInputChange} />
              <TileGrid grid={grid.rawGrid} prevGrid={state.prevGrid} cursor={level.cursor} gridInfo={state.gridInfo}
@@ -145,6 +150,9 @@ class LevelGeneratorApp extends React.PureComponent {
       this.stopStepper();
     else
       this.startStepper();
+  }
+  dumpGrid() {
+    console.log(this.state.level.grid);
   }
 }
 

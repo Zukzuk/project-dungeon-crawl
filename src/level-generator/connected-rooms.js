@@ -57,6 +57,8 @@ export default class ConnectedRooms {
       const room = this.generateRoom();
       const position = this.generateRoomPosition(room);
       grid.drawRoom(room, position);
+      if( this.rooms.length )
+        this.rooms = [];
       return;
     } else if (action === "connect room" || (action === undefined && sg >= this.requestedNumTiles && this.rooms.length !== 1) ) {
       if( this.rooms.length == 0 ) {
@@ -84,6 +86,10 @@ export default class ConnectedRooms {
                                                       this.rooms.length === 1 && this.rooms[0].roomID !== 1 )) {
       grid.colorRoom(this.rooms[0].pos, 1);
       this.rooms[0].roomID = 1;
+      return;
+    } else if (action === "crop level" || (action === undefined && sg >= this.requestedNumTiles &&
+                                                      this.rooms.length === 1 && this.grid.cropable() )) {
+      grid.crop();
       return;
     }
     this.completed = true;
@@ -115,7 +121,10 @@ export default class ConnectedRooms {
       }
       return nextPaint;
     }
+
+    GridStuff.repaint(grid.rawGrid, (val) => ( val ? 1 : 0 ) );
     const rooms = this.rooms = [];
+
     //var maxStackLen = 0;
     //var paints = 1;
     for( var y = 0; y < height; y++ ) {

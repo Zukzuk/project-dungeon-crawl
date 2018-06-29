@@ -13,12 +13,12 @@ class TileGrid extends React.PureComponent {
     const height = grid.length;
     const style = {height: `${this.props.tileSize}px`};
     const cursor = this.props.cursor || [undefined, undefined];
-    var textContent = "";
+    let textContent = "";
     const showGridValues = this.props.showGridValues;
     for( let y=0; y < height; y++ ) {
       let row = [];
       for( let x=0; x < width; x++ ) {
-        var tProps = ( tileStyles ? tileStyles[y][x] : {} );
+        let tProps = ( tileStyles && tileStyles[y] && tileStyles[y][x] ? tileStyles[y][x] : {} );
         if( this.props.showGridValues )
           textContent = grid[y][x];
         row.push(<Tile key={"tile" + x + "." + y}
@@ -33,16 +33,16 @@ class TileGrid extends React.PureComponent {
       tiles.push(<div key={"row" + y} className="tileRow" style={style}>{row}</div>);
     }
     return <div className="tileGrid"><TileGridInfo gridInfo={this.props.gridInfo} />{tiles}</div>
-  };
+  }
   tileStyles(grid, prevGrid) {
-    const gridWidth = grid[0].length;
-    const gridHeight = grid.length;
+    const gridWidth = Math.min(grid[0].length, prevGrid[0].length);
+    const gridHeight = Math.min(grid.length, prevGrid.length);
     const cursor = this.props.cursor || [];
     const tileProps = GridStuff.generateGrid(gridWidth, gridHeight, null);
-    for( var y = 0, newRow, oldRow; y < gridHeight; y++ ) {
+    for( let y = 0, newRow, oldRow; y < gridHeight; y++ ) {
       newRow = grid[y];
-      oldRow = prevGrid[y]
-      for( var x = 0, newVal, oldVal, props; x < gridWidth; x++ ) {
+      oldRow = prevGrid[y];
+      for( let x = 0, newVal, oldVal, props; x < gridWidth; x++ ) {
         newVal = newRow[x];
         oldVal = oldRow[x];
         props = tileProps[y][x] = {};
@@ -61,10 +61,10 @@ class TileGrid extends React.PureComponent {
       }
     }
     return tileProps;
-  };
+  }
   render() {
     return this.generateTileGrid();
-  };
-};
+  }
+}
 
 export {TileGrid as default};

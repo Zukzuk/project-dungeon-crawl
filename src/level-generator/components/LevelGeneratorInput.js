@@ -15,6 +15,7 @@ export default class LevelGeneratorInput extends React.PureComponent {
                <input type="button" id="lgiStart" value="start" onClick={this.props.clickStart} />
                <input type="button" id="lgiPauze" value={(this.props.isRunning ? "pauze" : "run")} onClick={this.props.clickPauze} />
                <input type="button" id="lgiStep" value="step" onClick={this.props.clickStep} />
+               <input type="button" id="lgiDump" value="dump" onClick={this.props.clickDump} />
              </div>
              <div><label>show values: <input id="lgiShowValues" type="checkbox" checked={values.showGridValues} onChange={inputChange} /></label></div>
            </div>
