@@ -1,5 +1,5 @@
 import React from 'react';
-import GridStuff from './grid-stuff';
+//import GridStuff from './grid-stuff';
 import RandomWalker from './random-walker';
 import ConnectedRooms from './connected-rooms.js';
 import TileGrid from './components/TileGrid';
@@ -13,8 +13,8 @@ class LevelGeneratorApp extends React.PureComponent {
     const state = this.state;
     const level = state.level;
     const grid = level.grid;
-    const width = grid.width;
-    const height = grid.height;
+    const width = grid.width();
+    const height = grid.height();
     const boundStartLevel = () => this.startLevel();
     const boundInputChange = (event) => this.inputChange(event);
     const boundToggleStepper = () => this.toggleStepper();
@@ -125,7 +125,7 @@ class LevelGeneratorApp extends React.PureComponent {
       level.step();
       //if( step % gridInfoInterval === 0 ) {
         const gridInfoValues = level.gridInfo();
-        newState.gridInfo = () => {return gridInfoValues}; // setting gridInfo does cause the tiles in DOM to be updated.
+        newState.gridInfo = () => gridInfoValues; // setting gridInfo does cause the tiles in DOM to be updated.
       //}
       this.setState(newState);
     }

@@ -1,6 +1,6 @@
 
 import Grid from './grid';
-import GridStuff from './grid-stuff';
+//import GridStuff from './grid-stuff';
 
 /***** as copied from https://gist.github.com/blixt/f17b47c62508be59987b *****/
 /**
@@ -88,7 +88,7 @@ export default class ConnectedRooms {
       this.rooms[0].roomID = 1;
       return;
     } else if (action === "crop level" || (action === undefined && sg >= this.requestedNumTiles &&
-                                                      this.rooms.length === 1 && this.grid.cropable() )) {
+                                                      this.rooms.length === 1 && grid.cropable() )) {
       grid.crop();
       return;
     }
@@ -121,8 +121,7 @@ export default class ConnectedRooms {
       }
       return nextPaint;
     }
-
-    GridStuff.repaint(grid.rawGrid, (val) => ( val ? 1 : 0 ) );
+    grid.repaint( (val) => ( val ? 1 : 0 ) );
     const rooms = this.rooms = [];
 
     //var maxStackLen = 0;
@@ -156,8 +155,8 @@ export default class ConnectedRooms {
 
     const fGrid = this.grid.flattenedGrid();
     // paint around the room with a character + room number, until another room is found
-    const gridWidth = this.grid.width;
-    const gridHeight = this.grid.height;
+    const gridWidth = this.grid.width();
+    const gridHeight = this.grid.height();
     const fGridLen = fGrid.length;
     const index = roomA.pos[0] + roomA.pos[1] * gridWidth;
     const roomID = fGrid[index];
@@ -325,6 +324,7 @@ export default class ConnectedRooms {
   moveRoom(roomPosition, direction) {
     const grid = this.grid;
     const rawGrid = grid.rawGrid;
+    const gridWidth = rawGrid[0].length;
     const [xPos, yPos] = roomPosition;
     const [xDirection, yDirection] = direction;
     var roomID = rawGrid[yPos][xPos];
@@ -352,7 +352,7 @@ export default class ConnectedRooms {
     const allTiles = [];
     const nextPaintRoom = [];
 
-    nextPaintRoom.push(getRoomTiles.bind(null, grid.flattenedGrid(), index, roomID, grid.width, nextPaintRoom, allTiles));
+    nextPaintRoom.push(getRoomTiles.bind(null, grid.flattenedGrid(), index, roomID, gridWidth, nextPaintRoom, allTiles));
     while( nextPaintRoom.length ) {
       nextPaintRoom.pop()();
     }
@@ -389,9 +389,10 @@ export default class ConnectedRooms {
   };
   gridInfo() {
     const gridInfoValues = {};
-    gridInfoValues.gridSize = JSON.stringify([this.width, this.height]);
+    const grid = this.grid;
+    gridInfoValues.gridSize = JSON.stringify([grid.width(), grid.height()]);
     gridInfoValues.seed = this.seed;
-    gridInfoValues.levelSize = this.grid.countNonZero() + " of " + this.requestedNumTiles;
+    gridInfoValues.levelSize = grid.countNonZero() + " of " + this.requestedNumTiles;
     gridInfoValues.maxRoomSize = JSON.stringify([this.maxRoomWidth, this.maxRoomHeight]);
     return gridInfoValues;
   }
