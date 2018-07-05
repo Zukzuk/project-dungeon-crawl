@@ -1,6 +1,8 @@
 
 import Grid from './grid';
+import StateMachine from 'javascript-state-machine';
 //import GridStuff from './grid-stuff';
+
 
 /***** as copied from https://gist.github.com/blixt/f17b47c62508be59987b *****/
 /**
@@ -34,7 +36,7 @@ window.PRNG.prototype.nextFloat = function (opt_minOrMax, opt_max) {
 };
 
 export default class ConnectedRooms {
-  constructor(width, height, seed = Math.floor(Math.random() * 2**32), numTiles = Math.floor(width * height / 4)) {
+  constructor(width, height, seed = Math.floor(Math.random() * Math.pow(2, 32)), numTiles = Math.floor(width * height / 4)) {
     this.width = width;
     this.height  = height;
     this.seed = seed;
@@ -47,33 +49,73 @@ export default class ConnectedRooms {
     this.maxRoomWidth = maxRoomSize;
     this.rooms = []; // filled with room objects: {roomID: n, pos: [x,y]}
     this.grid = new Grid(width, height, 0); //GridStuff.generateGrid(width, height, 0);
-    this.prng = new PRNG(seed);
+    this.prng = new window.PRNG(seed);
     this.completed = false;
-  };
-  step(action) {
+    this.phaseSM = this.initialize_fsm();
+  }
+  initialize_fsm() {
+    const fsm = new StateMachine({
+      init: 'creating',
+      transitions: [
+        { name: 'connect', from: 'creating', to: 'connecting' },
+        { name: 'crop', from: 'connecting', to: 'cropping' },
+        { name: 'complete', from: 'cropping', to: 'finished' }
+      ],
+      methods: {
+        onEnterConnecting: (event, from, to) => {this.detectAndColorRooms();},
+        onLeaveConnecting: (event, from, to) => {
+          this.grid.colorRoom(this.rooms[0].pos, 1);
+          this.rooms[0].roomID = 1;
+        },
+      }
+    });
+    return fsm;
+  }
+  step(phase) {
+    if( phase === undefined )
+      phase = this.phaseSM.state;
+
+    switch(phase) {
+      case 'creating':
+        this.stepPhaseCreating();
+        break;
+      case 'connecting':
+        this.stepPhaseConnecting();
+        break;
+      case 'cropping':
+        this.stepPhaseCropping();
+        break;
+      case 'finished':
+        this.completed = true;
+        return true;
+      default:
+        window.console.log('Unable to handle step for phase:', phase);
+    }
+  }
+  stepPhaseCreating() {
     const grid = this.grid;
-    const sg = grid.countNonZero();
-    if( action === "add room" || (action === undefined && sg < this.requestedNumTiles) ) {
+
+    if( grid.countNonZero() < this.requestedNumTiles ) {
       const room = this.generateRoom();
       const position = this.generateRoomPosition(room);
       grid.drawRoom(room, position);
       if( this.rooms.length )
         this.rooms = [];
       return;
-    } else if (action === "connect room" || (action === undefined && sg >= this.requestedNumTiles && this.rooms.length !== 1) ) {
-      if( this.rooms.length == 0 ) {
-        this.detectAndColorRooms();
-        return;
-      }
-
+    } else {
+      this.phaseSM.connect();
+    }
+  }
+  stepPhaseConnecting() {
+    if( this.rooms.length !== 1 ) {
       // check for all rooms how far they are from their nearest other rooms,
       // and remember the first room with the smallest distance to any other.
-      var [nearestPointA, nearestPointB] = [undefined, undefined];
-      var curDistance = Infinity;
-      for( var i = 0, len=this.rooms.length; i < len; i++ ) {
-        var room = this.rooms[i];
-        var [nearA, nearB] = this.detectNearestRoom(room); // nearData contains nearestPointA, nearestPointB, where A is in room A and B in B
-        var distance = Math.abs(nearA[0] - nearB[0]) + Math.abs(nearA[1] - nearB[1]);
+      let [nearestPointA, nearestPointB] = [undefined, undefined];
+      let curDistance = Infinity;
+      for( let i = 0, len=this.rooms.length; i < len; i++ ) {
+        let room = this.rooms[i];
+        let [nearA, nearB] = this.detectNearestRoom(room); // nearData contains nearestPointA, nearestPointB, where A is in room A and B in B
+        let distance = Math.abs(nearA[0] - nearB[0]) + Math.abs(nearA[1] - nearB[1]);
         if( distance < curDistance ) {
           curDistance = distance;
           [nearestPointA, nearestPointB] = [nearA, nearB];
@@ -82,21 +124,17 @@ export default class ConnectedRooms {
       // For the room which is closest to another, merge it with that nearby room
       this.mergeRooms(nearestPointA, nearestPointB);
       return;
-    } else if (action === "paint first room one" || (action === undefined && sg >= this.requestedNumTiles &&
-                                                      this.rooms.length === 1 && this.rooms[0].roomID !== 1 )) {
-      grid.colorRoom(this.rooms[0].pos, 1);
-      this.rooms[0].roomID = 1;
-      return;
-    } else if (action === "crop level" || (action === undefined && sg >= this.requestedNumTiles &&
-                                                      this.rooms.length === 1 && grid.cropable() )) {
-      grid.crop();
-      return;
+    } else {
+      this.phaseSM.crop();
     }
-    this.completed = true;
-  };
+  }
+  stepPhaseCropping() {
+    this.grid.crop();
+    this.phaseSM.complete();
+  }
   isCompleted() {
     return this.completed;
-  };
+  }
   detectAndColorRooms() {
     const grid = this.grid;
     const rawGrid = grid.rawGrid;
@@ -120,16 +158,16 @@ export default class ConnectedRooms {
         rawGrid[y][x+1] = num;
       }
       return nextPaint;
-    }
+    };
     grid.repaint( (val) => ( val ? 1 : 0 ) );
     const rooms = this.rooms = [];
 
     //var maxStackLen = 0;
     //var paints = 1;
-    for( var y = 0; y < height; y++ ) {
-      for( var x = 0; x < width; x++ ) {
+    for( let y = 0; y < height; y++ ) {
+      for( let x = 0; x < width; x++ ) {
         if( rawGrid[y][x] == 1 ) {
-          var room = {roomID: rooms.length + 3, pos: [x,y]};
+          let room = {roomID: rooms.length + 3, pos: [x,y]};
           rooms.push(room);
           // paint current tile
           rawGrid[y][x] = room.roomID;
@@ -281,25 +319,25 @@ export default class ConnectedRooms {
       throw 'traceOrigin should never end up at this point!';
     }
     const point = nearestRoomTiles[0];
-    origin = traceOrigin(fGrid, point[0] + point[1]*gridWidth, gridWidth, roomID);
+    const origin = traceOrigin(fGrid, point[0] + point[1]*gridWidth, gridWidth, roomID);
     return [origin, point];
   }
   mergeRooms(roomA, roomB) {
-    const grid = this.grid
+    const grid = this.grid;
     const rawGrid = grid.rawGrid;
-    var sizeA = grid.countValue(rawGrid[roomA[1]][roomA[0]]);
-    var sizeB = grid.countValue(rawGrid[roomB[1]][roomB[0]]);
+    let sizeA = grid.countValue(rawGrid[roomA[1]][roomA[0]]);
+    let sizeB = grid.countValue(rawGrid[roomB[1]][roomB[0]]);
     if( sizeB > sizeA ) // reverse the two rooms, so that B <= A
       [roomA, roomB, sizeA, sizeB] = [roomB, roomA, sizeB, sizeA];
-    var roomIDa = rawGrid[roomA[1]][roomA[0]];
-    var roomIDb = rawGrid[roomB[1]][roomB[0]];
+    let roomIDa = rawGrid[roomA[1]][roomA[0]];
+    let roomIDb = rawGrid[roomB[1]][roomB[0]];
     if( ! roomIDa || ! roomIDb )
       throw('mergeRooms; Invalid roomID. roomIDa: ' + roomIDa + ' [' + JSON.stringify(roomA) +
                                      '], roomIDb: ' + roomIDb + ' [' + JSON.stringify(roomB) + ']');
 
     // set vector for moving the smallest room
     // the goal is to have the two rooms adjacent, not overlapping
-    var direction = [roomA[0] - roomB[0], roomA[1] - roomB[1]];
+    let direction = [roomA[0] - roomB[0], roomA[1] - roomB[1]];
     if( direction[0] ) { // if X is not zero, then increment/decrement it by one
       direction[0] += ( direction[0] < 0 ) * 2 - 1;
     } else { // else increment or decrement Y by one
