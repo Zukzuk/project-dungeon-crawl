@@ -1,11 +1,20 @@
 import React from 'react';
-//import GridStuff from './grid-stuff';
 import RandomWalker from './random-walker';
 import ConnectedRooms from './connected-rooms.js';
 import TileGrid from './components/TileGrid';
 import LevelGeneratorInput from './components/LevelGeneratorInput';
 import './level-generator-style.scss';
 
+
+const classes = {
+  RandomWalker,
+  ConnectedRooms,
+};
+class DynamicClass {
+  constructor (className, ...args) {
+    return new classes[className](...args);
+  }
+}
 
 class LevelGeneratorApp extends React.PureComponent {
   render() {
@@ -21,7 +30,7 @@ class LevelGeneratorApp extends React.PureComponent {
     const boundLevelStepper = () => this.levelStepper();
     const boundDumpLevel = () => this.dumpGrid();
 
-    return <div id="levelGenerator">
+    return ( <div id="levelGenerator">
              <LevelGeneratorInput clickStart={boundStartLevel}
                                   clickPauze={boundToggleStepper}
                                   clickStep={boundLevelStepper}
@@ -29,10 +38,10 @@ class LevelGeneratorApp extends React.PureComponent {
                      isRunning={!!state.stepInterval}
                      values={state.input} inputChange={boundInputChange} />
              <TileGrid grid={grid.rawGrid} prevGrid={state.prevGrid} cursor={level.cursor} gridInfo={state.gridInfo}
-                     tileSize={ Math.min( (window.innerHeight - 16) / (height * 1.01), (window.innerWidth - 16) / (width * 1.01) )}
+                     tileSize={Math.min( (window.innerHeight - 16) / (height * 1.01), (window.innerWidth - 16) / (width * 1.01) )}
                      showGridValues={state.input.showGridValues}
              />
-           </div>
+           </div> );
   }
   componentWillMount() {
     this.initialize();
@@ -49,7 +58,7 @@ class LevelGeneratorApp extends React.PureComponent {
   }
   componentWillUnmount() {
     document.body.onkeyup = null;
-    stopStepper()
+    this.stopStepper();
   }
   initialize(width = 100, height = 50, maxSteps = width * height, seed, showGridValues=false) {
     if( this.state ) {
@@ -69,7 +78,8 @@ class LevelGeneratorApp extends React.PureComponent {
       step: 0,
       stepInterval: null,
       maxSteps: maxSteps,
-      gridInfo: () => {return {}},
+      gridInfo: () => {return {};},
+      algorithm: "ConnectedRooms",
     });
   }
   inputChange(event) {
@@ -92,6 +102,8 @@ class LevelGeneratorApp extends React.PureComponent {
         break;
       case "lgiShowValues":
         newInput.showGridValues = event.target.checked;
+      case "lgiAlgorithm":
+        newInput.algorithm = event.target.value;
     }
     this.setState({input: newInput});
   }
@@ -106,7 +118,8 @@ class LevelGeneratorApp extends React.PureComponent {
   }
   generateLevel(x, y, seed) {
     //return new RandomWalker(x, y, seed);
-    return new ConnectedRooms(x, y, seed);
+    //return new ConnectedRooms(x, y, seed);
+    return new DynamicClass(this.state && this.state.input.algorithm || "ConnectedRooms", x, y, seed);
   }
   levelStepper() {
     //if( this.state.step >= this.state.maxSteps ) {

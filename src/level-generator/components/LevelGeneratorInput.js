@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
 export default class LevelGeneratorInput extends React.PureComponent {
 
@@ -6,7 +6,11 @@ export default class LevelGeneratorInput extends React.PureComponent {
     const inputChange = this.props.inputChange;
     const values = this.props.values;
     //debugger;
-    return <div id="levelGeneratorInput">
+    return ( <div id="levelGeneratorInput">
+             <div><select id="lgiAlgorithm" onChange={inputChange} value={values.algorithm}>
+               <option value="ConnectedRooms">Connected Rooms</option>
+               <option value="RandomWalker">Random Walker</option>
+             </select></div>
              <div><label>width: <input id="lgiWidth" value={values.width} onChange={inputChange} /></label></div>
              <div><label>height: <input id="lgiHeight" value={values.height} onChange={inputChange} /></label></div>
              <div><label>iterations: <input id="lgiIterations" value={values.iterations} onChange={inputChange} /></label></div>
@@ -18,6 +22,6 @@ export default class LevelGeneratorInput extends React.PureComponent {
                <input type="button" id="lgiDump" value="dump" onClick={this.props.clickDump} />
              </div>
              <div><label>show values: <input id="lgiShowValues" type="checkbox" checked={values.showGridValues} onChange={inputChange} /></label></div>
-           </div>
+           </div> );
   }
 }

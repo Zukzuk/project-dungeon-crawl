@@ -1,6 +1,16 @@
-//import GridStuff from './grid-stuff';
-
 export default class Grid {
+  static gridFromArray(arr, width) {
+    if( ! width )
+      throw 'gridFromArray: Width parameter not defined or zero';
+    let grid = [];
+    for( let i=0, len=arr.length; i < len; i+=width) {
+      grid.push(arr.slice(i, width + i));
+    }
+    const newGrid = new Grid(grid[0].length, grid.length);
+    newGrid.rawGrid = grid;
+    return newGrid;
+  }
+
   constructor(width = 50, height = 50, value = 0) {
     this.initialWidth = width;
     this.initialHeight = height;

@@ -1,7 +1,5 @@
-
 import Grid from './grid';
 import StateMachine from 'javascript-state-machine';
-//import GridStuff from './grid-stuff';
 
 
 /***** as copied from https://gist.github.com/blixt/f17b47c62508be59987b *****/
@@ -14,7 +12,7 @@ import StateMachine from 'javascript-state-machine';
 window.PRNG = function (seed) {
   this._seed = seed % 2147483647;
   if (this._seed <= 0) this._seed += 2147483646;
-}
+};
 
 /**
  * Returns a pseudo-random value between 1 and 2^32 - 2.
@@ -25,7 +23,7 @@ window.PRNG.prototype.next = function () {
 window.PRNG.prototype.nextBetween = function (x,y) {
   // assumes x > y
   return this.next() % (y-x+1) + x;
-}
+};
 
 /**
  * Returns a pseudo-random floating point number in range [0, 1).
@@ -37,8 +35,8 @@ window.PRNG.prototype.nextFloat = function (opt_minOrMax, opt_max) {
 
 export default class ConnectedRooms {
   constructor(width, height, seed = Math.floor(Math.random() * Math.pow(2, 32)), numTiles = Math.floor(width * height / 4)) {
-    this.width = width;
-    this.height  = height;
+    this.initialWidth = width;
+    this.initialHeight  = height;
     this.seed = seed;
     this.requestedNumTiles = numTiles;
     this.minRoomWidth = 2;
@@ -138,8 +136,8 @@ export default class ConnectedRooms {
   detectAndColorRooms() {
     const grid = this.grid;
     const rawGrid = grid.rawGrid;
-    const width = this.width;
-    const height = this.height;
+    const width = grid.width();
+    const height = grid.height();
     const paintRoom = (x, y, rawGrid, num, nextPaint = []) => {
       if( y > 0 && rawGrid[y-1][x] == 1 ) {
         nextPaint.push(paintRoom.bind(null, x, y-1, rawGrid, num, nextPaint));
@@ -159,7 +157,9 @@ export default class ConnectedRooms {
       }
       return nextPaint;
     };
+    // paint every tile with a value as 1. Zero stays zero.
     grid.repaint( (val) => ( val ? 1 : 0 ) );
+    // (re)set this.rooms
     const rooms = this.rooms = [];
 
     //var maxStackLen = 0;
@@ -193,23 +193,23 @@ export default class ConnectedRooms {
 
     const fGrid = this.grid.flattenedGrid();
     // paint around the room with a character + room number, until another room is found
-    const gridWidth = this.grid.width();
-    const gridHeight = this.grid.height();
+    const grid = this.grid;
+    const [gridWidth, gridHeight] = [grid.width(), grid.height()];
     const fGridLen = fGrid.length;
     const index = roomA.pos[0] + roomA.pos[1] * gridWidth;
     const roomID = fGrid[index];
     const roomPaint = roomID + "d0";
-    var nextPaintRoom = [];
-    var nextPaintEdge = [];
+    let nextPaintRoom = [];
+    let nextPaintEdge = [];
     const paintEdge = (fGrid, index, roomID, distance, gridWidth, nextPaintEdge, paintEdgeF) => {
       const detectPaint = roomID + "d" + (distance+1);
       const tileVal = fGrid[index];
-      var otherTile;
+      let otherTile;
       const offsets = [-gridWidth, gridWidth, -1, 1];
       const otherRoomTiles = [];
 
-      for( var i=0, len=offsets.length; i < len; i++ ) {
-        var idx = offsets[i] + index;
+      for( let i=0, len=offsets.length; i < len; i++ ) {
+        let idx = offsets[i] + index;
         // if moving over X axis, and diff X is bigger than one, then we wrapped over edge of level.
         if( i > 1 && Math.abs( idx % gridWidth - index % gridWidth ) > 1 )
           continue;
@@ -224,17 +224,17 @@ export default class ConnectedRooms {
         }
       }
       return otherRoomTiles;
-    }
+    };
     const paintRoom = (fGrid, index, roomID, gridWidth, nextPaintRoom, nextPaintEdge, paintEdgeF) => {
       const roomPaint = roomID + "d0";
       const edgePaint = roomID + "d1";
       const tileVal = fGrid[index];
-      var otherTile = undefined;
+      let otherTile = undefined;
       const otherRoomTiles = [];
       // offsets up, down, left, right
       const offsets = [-gridWidth, gridWidth, -1, 1];
 
-      for( var i=0, len=4, idx; i < len; i++ ) {
+      for( let i=0, len=4, idx; i < len; i++ ) {
         idx = offsets[i] + index;
         // prevent x-wrapping
         if( i > 1 && Math.abs(idx % gridWidth - index % gridWidth) > 1 )
@@ -252,8 +252,8 @@ export default class ConnectedRooms {
           otherRoomTiles.push([idx % gridWidth, Math.floor(idx / gridWidth)]);
         }
       }
-      return otherRoomTiles
-    }
+      return otherRoomTiles;
+    };
 
     const nearestRoomTiles = [];
     const pushInNRT = Function.apply.bind(Array.prototype.push, nearestRoomTiles);
@@ -264,10 +264,10 @@ export default class ConnectedRooms {
     }
 
     while(nextPaintEdge.length && ! nearestRoomTiles.length) { // nextPaintEdge array is filled by calls to paintAroundRoom
-      var edgeTiles = nextPaintEdge.slice(); // create copy of nextPaintEdge array
+      let edgeTiles = nextPaintEdge.slice(); // create copy of nextPaintEdge array
       nextPaintEdge.splice(0, nextPaintEdge.length); // empty nextPaintEdge array
 
-      for( var i=0, boundPaintAroundRoom; boundPaintAroundRoom = edgeTiles[i]; i++ ) {
+      for( let i=0, boundPaintAroundRoom; (boundPaintAroundRoom = edgeTiles[i]); i++ ) {
         pushInNRT( boundPaintAroundRoom() );
       }
     }
@@ -276,28 +276,30 @@ export default class ConnectedRooms {
     const traceOrigin = (fGrid, index, gridWidth, roomID) => {
       const origIndex = index;
       const offset = [-gridWidth, gridWidth, -1, 1];
-      var curPaint = fGrid[index];
+      let curPaint = fGrid[index];
       if( typeof(curPaint) === "number" ) {
-        for( var i=0; i<4; i++) {
-          var otherTile = fGrid[origIndex + offset[i]];
+        for( let i=0; i<4; i++) {
+          let otherTile = fGrid[origIndex + offset[i]];
           if( typeof(otherTile) === "string" ) {
             if( typeof(curPaint) === "number" || typeof(curPaint) === "string" && curPaint.split('d')[1] > otherTile.split('d')[1] ) {
               index = origIndex + offset[i];
               curPaint = otherTile;
             }
-          };
-        };
-      };
-      var distance = parseInt(curPaint.split('d')[1]);
+          }
+        }
+      }
+      let distance = parseInt(curPaint.split('d')[1]);
       if( distance === 0 )
         return [index % gridWidth, Math.floor(index / gridWidth)];
 
-      var lowerPaint = curPaint.split('d')[0] + "d" + (distance - 1);
-      while( true ) {
-        var curIndex = index;
-        for( var i=0; i<4; i++) {
+      let lowerPaint = curPaint.split('d')[0] + "d" + (distance - 1);
+      let tracing = true;
+      while( tracing ) {
+        let curIndex = index;
+        let i=0;
+        for( ; i<4; i++) {
           if( fGrid[index + offset[i]] === lowerPaint ) {
-            var index = curIndex + offset[i];
+            index = curIndex + offset[i];
             distance--;
             if( distance === 0 )
               return [index % gridWidth, Math.floor(index / gridWidth)];
@@ -307,17 +309,13 @@ export default class ConnectedRooms {
           }
         }
         if( i === 4 ) {
-          const cGrid = GridStuff.gridFromArray(fGrid, gridWidth);
-          console.log(cGrid);
-          debugger;
-          throw 'traceOrigin should never end up at this point! i = ' + i;
+          const cGrid = Grid.gridFromArray(fGrid, gridWidth);
+          throw 'traceOrigin should never end up at this point! i = ' + i + ', grid: ' + JSON.stringify(cGrid.rawGrid);
         }
       }
-      const cGrid = GridStuff.gridFromArray(fGrid, gridWidth);
-      console.log(cGrid);
-      debugger;
-      throw 'traceOrigin should never end up at this point!';
-    }
+      const cGrid = Grid.gridFromArray(fGrid, gridWidth);
+      throw 'traceOrigin should never end up at this point! Grid: ' + JSON.stringify(grid.rawGrid);
+    };
     const point = nearestRoomTiles[0];
     const origin = traceOrigin(fGrid, point[0] + point[1]*gridWidth, gridWidth, roomID);
     return [origin, point];
@@ -355,7 +353,7 @@ export default class ConnectedRooms {
     }).bind(null, roomIDb);
     const roomIndex = this.rooms.findIndex(roomIndexByID);
     if( roomIndex < 0 )
-      console.error('Room index not found; roomIDb: ', roomIDb, 'roomB', roomB);
+      throw('Room index not found; roomIDb: ', roomIDb, 'roomB', roomB);
     else
       this.rooms.splice(roomIndex, 1);
   }
@@ -365,17 +363,17 @@ export default class ConnectedRooms {
     const gridWidth = rawGrid[0].length;
     const [xPos, yPos] = roomPosition;
     const [xDirection, yDirection] = direction;
-    var roomID = rawGrid[yPos][xPos];
+    let roomID = rawGrid[yPos][xPos];
     if( ! roomID )
       throw('moveRoom; Invalid roomID. roomID: ' + roomID);
 
     // getRoomTiles is destructive to the grid. Be careful to reuse the supplied grid
     const getRoomTiles = (fGrid, index, roomID, gridWidth, nextPaintRoom = [], allTiles = []) => {
       const roomPaint = roomID + "d";
-      var otherTile = undefined;
+      let otherTile = undefined;
       const offsets = [-gridWidth, gridWidth, -1, 1];
 
-      for( var i=0, len=4, idx; i < len; i++ ) {
+      for( let i=0, len=4, idx; i < len; i++ ) {
         idx = offsets[i] + index;
         otherTile = fGrid[idx];
         if( otherTile === roomID ) {
@@ -386,7 +384,7 @@ export default class ConnectedRooms {
       }
       return allTiles;
     };
-    const index = xPos + yPos * this.width;
+    const index = xPos + yPos * grid.width();
     const allTiles = [];
     const nextPaintRoom = [];
 
@@ -400,7 +398,7 @@ export default class ConnectedRooms {
   generateDungeon() {
     while(this.grid.countNonZero() < this.requestedNumTiles)
       this.step("add room");
-  };
+  }
   generateRoom(maxSize=undefined) {
     const nextBetween = this.prng.nextBetween.bind(this.prng);
     const minRoomFactor = this.minRoomFactor;
@@ -408,23 +406,24 @@ export default class ConnectedRooms {
     const height = nextBetween(Math.max(Math.ceil(width * minRoomFactor), this.minRoomHeight),
                                Math.min(Math.floor(width / minRoomFactor), this.maxRoomHeight));
     return [width, height];
-  };
+  }
   generateRoomPosition(room) {
+    const [width, height] = [this.grid.width(), this.grid.height()];
     const nextBetween = this.prng.nextBetween.bind(this.prng);
-    const maxX = this.width - room[0];
-    const maxY = this.height - room[1];
+    const maxX = width - room[0];
+    const maxY = height - room[1];
     return [nextBetween(0, maxX), nextBetween(0, maxY)];
-  };
+  }
   drawRoom(room, position) {
     const rawGrid = this.grid.rawGrid;
-    var yGrid = [];
-    for( var y = 0; y < room[1]; y++ ) {
+    let yGrid = [];
+    for( let y = 0; y < room[1]; y++ ) {
       yGrid = rawGrid[y+position[1]];
-      for( var x = 0; x < room[0]; x++ ) {
+      for( let x = 0; x < room[0]; x++ ) {
         yGrid[x+position[0]] = 1;
       }
     }
-  };
+  }
   gridInfo() {
     const gridInfoValues = {};
     const grid = this.grid;
