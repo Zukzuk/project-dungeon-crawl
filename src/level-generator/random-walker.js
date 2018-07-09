@@ -1,33 +1,6 @@
 import Grid from './grid';
+import PRNG from './pseudo-random-number-generator';
 
-/***** as copied from https://gist.github.com/blixt/f17b47c62508be59987b *****/
-/**
- * Creates a pseudo-random value generator. The seed must be an integer.
- *
- * Uses an optimized version of the Park-Miller PRNG.
- * http://www.firstpr.com.au/dsp/rand31/
- */
-window.PRNG = function (seed) {
-  this._seed = seed % 2147483647;
-  if (this._seed <= 0) this._seed += 2147483646;
-};
-
-/**
- * Returns a pseudo-random value between 1 and 2^32 - 2.
- */
-window.PRNG.prototype.next = function () {
-  return this._seed = this._seed * 16807 % 2147483647;
-};
-
-/**
- * Returns a pseudo-random floating point number in range [0, 1).
- */
-window.PRNG.prototype.nextFloat = function (opt_minOrMax, opt_max) {
-  // We know that result of next() will be 1 to 2147483646 (inclusive).
-  return (this.next() - 1) / 2147483646;
-};
-
-/******************************************************************************/
 
 class RandomWalker {
   constructor(width, height, seed = Math.floor(Math.random() * Math.pow(2, 32)), maxSteps=undefined) {
@@ -36,7 +9,7 @@ class RandomWalker {
     this.grid = new Grid(width, height);
     this.cursor = [Math.floor(width/2), Math.floor(height/2)];
     this.seed = seed;
-    const prng = new window.PRNG(seed);
+    const prng = new PRNG(seed);
     this.rnd = prng.next.bind(prng);
     this.steps = 0;
     this.maxSteps = maxSteps || width * height;

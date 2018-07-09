@@ -1,40 +1,10 @@
 import Grid from './grid';
 import StateMachine from 'javascript-state-machine';
+import PRNG from './pseudo-random-number-generator';
 
-
-/***** as copied from https://gist.github.com/blixt/f17b47c62508be59987b *****/
-/**
- * Creates a pseudo-random value generator. The seed must be an integer.
- *
- * Uses an optimized version of the Park-Miller PRNG.
- * http://www.firstpr.com.au/dsp/rand31/
- */
-window.PRNG = function (seed) {
-  this._seed = seed % 2147483647;
-  if (this._seed <= 0) this._seed += 2147483646;
-};
-
-/**
- * Returns a pseudo-random value between 1 and 2^32 - 2.
- */
-window.PRNG.prototype.next = function () {
-  return this._seed = this._seed * 16807 % 2147483647;
-};
-window.PRNG.prototype.nextBetween = function (x,y) {
-  // assumes x > y
-  return this.next() % (y-x+1) + x;
-};
-
-/**
- * Returns a pseudo-random floating point number in range [0, 1).
- */
-window.PRNG.prototype.nextFloat = function (opt_minOrMax, opt_max) {
-  // We know that result of next() will be 1 to 2147483646 (inclusive).
-  return (this.next() - 1) / 2147483646;
-};
 
 export default class ConnectedRooms {
-  constructor(width, height, seed = Math.floor(Math.random() * Math.pow(2, 32)), numTiles = Math.floor(width * height / 4)) {
+  constructor(width, height, seed, numTiles = Math.floor(width * height / 4)) {
     this.initialWidth = width;
     this.initialHeight  = height;
     this.seed = seed;
@@ -47,7 +17,7 @@ export default class ConnectedRooms {
     this.maxRoomWidth = maxRoomSize;
     this.rooms = []; // filled with room objects: {roomID: n, pos: [x,y]}
     this.grid = new Grid(width, height, 0); //GridStuff.generateGrid(width, height, 0);
-    this.prng = new window.PRNG(seed);
+    this.prng = new PRNG(seed);
     this.completed = false;
     this.phaseSM = this.initialize_fsm();
   }
