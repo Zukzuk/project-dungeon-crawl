@@ -60,7 +60,7 @@ class LevelGeneratorApp extends React.PureComponent {
     document.body.onkeyup = null;
     this.stopStepper();
   }
-  initialize(width = 100, height = 50, maxSteps = width * height, seed, showGridValues=false) {
+  initialize(width = 100, height = 50, maxSteps = width * height, seed, showGridValues=false, algorithm = "ConnectedRooms") {
     if( this.state ) {
       const input = this.state.input;
       width = parseInt(input.width) || width;
@@ -68,6 +68,7 @@ class LevelGeneratorApp extends React.PureComponent {
       maxSteps = parseInt(input.maxSteps) || maxSteps;
       seed = parseInt(input.seed) || seed;
       showGridValues = input.showGridValues;
+      algorithm = input.algorithm;
     }
     const size = [width, height];
     const level = this.generateLevel(width, height, seed);
@@ -79,7 +80,7 @@ class LevelGeneratorApp extends React.PureComponent {
       stepInterval: null,
       maxSteps: maxSteps,
       gridInfo: () => {return {};},
-      algorithm: "ConnectedRooms",
+      algorithm: algorithm,
     });
   }
   inputChange(event) {
@@ -102,8 +103,10 @@ class LevelGeneratorApp extends React.PureComponent {
         break;
       case "lgiShowValues":
         newInput.showGridValues = event.target.checked;
+        break;
       case "lgiAlgorithm":
         newInput.algorithm = event.target.value;
+        break;
     }
     this.setState({input: newInput});
   }
