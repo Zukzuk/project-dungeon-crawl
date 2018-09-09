@@ -26,6 +26,9 @@ export default class Grid {
   height() {
     return this.rawGrid.length;
   }
+  size() {
+    return [this.rawGrid[0].length, this.rawGrid.length];
+  }
   sumGrid() {
     return this.rawGrid.map( (line) => line.reduce( (a,b) => a+b ) ).reduce( (a,b) => a+b );
   }
@@ -305,5 +308,16 @@ export default class Grid {
       }
     }
     return this;
+  }
+  each_cb(callback) {
+    const [width, height] = this.size();
+    const rawGrid = this.rawGrid;
+    for( let y = 0; y < height; y++ ) {
+      let row = rawGrid[y];
+      for( let x = 0; x < width; x++ ) {
+        callback(row[x], [x,y]);
+      }
+    }
+    return null;
   }
 }

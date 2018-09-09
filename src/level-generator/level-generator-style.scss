@@ -59,6 +59,9 @@ $red-diagonal-stripe: repeating-linear-gradient(
         &.visible.bright {
           background-image: $bright-gradient, $tile-image;
         }
+        &.visible.monster, &.visible.bright.monster {
+          background-image: $red-gradient, $tile-image;
+        }
       }
       .tile.highlight1 {
         background-image: $green-gradient, $tile-image;

@@ -2,26 +2,32 @@ import React from 'react';
 
 class Tile extends React.PureComponent {
   render() {
+    let title = undefined;
     const classes = ["tile"];
-    if( this.props.visible )
+    const props = this.props;
+    if( props.visible )
       classes.push("visible");
-    if ( this.props.bright )
+    if ( props.bright )
       classes.push("bright");
-    if ( this.props.highlight ) {
-      if( this.props.highlight == 2 )
+    if ( props.highlight ) {
+      if( props.highlight == 2 )
         classes.push("cursor");
-      else if( this.props.highlight > 0 )
-        classes.push("highlight" + this.props.highlight);
+      else if( props.highlight > 0 )
+        classes.push("highlight" + props.highlight);
       else
-        classes.push("strikeThrough" + this.props.highlight * -1);
+        classes.push("strikeThrough" + props.highlight * -1);
+    }
+    if ( props.monster ) {
+      title = props.monster;
+      classes.push("monster");
     }
     const style = {
-      width: this.props.size,
-      height: this.props.size,
+      width: props.size,
+      height: props.size,
       display: "inline-block"
     };
-    return <div className={classes.join(" ")} style={style}>{this.props.textContent}</div>
-  };
-};
+    return <div className={classes.join(" ")} style={style} title={title}>{props.textContent}</div> ;
+  }
+}
 
 export {Tile as default};
